@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'motion/react';
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText } from 'lucide-react';
@@ -355,6 +355,97 @@ const skillNodes: SkillNode[] = [
   }
 ];
 
+interface SkillNodeProps {
+  node: SkillNode;
+  active: boolean;
+  anyActive: boolean;
+  connectedToActive: boolean;
+  isDark: boolean;
+  isMobile: boolean;
+  coords: { x: number; y: number };
+  colors: { bg: string; text: string; stroke: string; gradient: string };
+  shortTitle: string;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}
+
+const SkillTreeNode = memo(function SkillTreeNode({
+  node,
+  active,
+  anyActive,
+  connectedToActive,
+  isDark,
+  isMobile,
+  coords,
+  colors,
+  shortTitle,
+  onMouseEnter,
+  onMouseLeave
+}: SkillNodeProps) {
+  let fillGradient = "url(#blue-cyan)";
+  if (node.category === "Infrastructure") fillGradient = "url(#emerald-teal)";
+  if (node.category === "AI & Integrations") fillGradient = "url(#purple-pink)";
+
+  return (
+    <g
+      className="cursor-pointer group"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* Subtle ambient pulse ring for unhovered active look */}
+      <circle
+        cx={coords.x}
+        cy={coords.y}
+        r={active ? 20 : 12}
+        className={cn(
+          "transition-all duration-300 fill-none",
+          active ? "stroke-2 opacity-100" : "stroke-1 opacity-0 group-hover:opacity-50"
+        )}
+        stroke={colors.stroke}
+      />
+
+      {/* Node fill circle */}
+      <circle
+        cx={coords.x}
+        cy={coords.y}
+        r={active ? 12 : 7}
+        fill={fillGradient}
+        className={cn(
+          "transition-all duration-300 shadow-lg",
+          anyActive && !connectedToActive ? "opacity-40" : "opacity-100"
+        )}
+      />
+
+      {/* Interactive Larger Invisible Circle for generous hover target */}
+      <circle
+        cx={coords.x}
+        cy={coords.y}
+        r={24}
+        fill="transparent"
+      />
+
+      {/* Floating Node Label */}
+      <text
+        x={coords.x}
+        y={coords.y - (isMobile ? 14 : 16)}
+        textAnchor="middle"
+        className={cn(
+          "font-mono font-bold tracking-tight select-none pointer-events-none transition-all duration-300",
+          isMobile ? "text-[8px]" : "text-[10px]",
+          active 
+            ? "fill-current " + colors.text
+            : anyActive && !connectedToActive
+              ? "opacity-30 fill-current" 
+              : "fill-current opacity-90"
+        )}
+        fill={isDark ? '#f4f4f5' : '#18181b'}
+      >
+        {shortTitle}
+      </text>
+    </g>
+  );
+});
+
 function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean }) {
   const [hoveredNode, setHoveredNode] = useState<SkillNode | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -368,7 +459,7 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const getBezierPath = (x1: number, y1: number, x2: number, y2: number) => {
+  const getBezierPath = useCallback((x1: number, y1: number, x2: number, y2: number) => {
     if (isMobile) {
       const dy = (y2 - y1) * 0.5;
       return `M ${x1} ${y1} C ${x1} ${y1 + dy}, ${x2} ${y2 - dy}, ${x2} ${y2}`;
@@ -376,9 +467,9 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
       const dx = (x2 - x1) * 0.5;
       return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
     }
-  };
+  }, [isMobile]);
 
-  const getNodeCoords = (node: SkillNode) => {
+  const getNodeCoords = useCallback((node: SkillNode) => {
     if (!isMobile) {
       return { x: node.x, y: node.y };
     }
@@ -398,7 +489,7 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
       case "vectordb": return { x: 245, y: 580 };
       default: return { x: node.x, y: node.y };
     }
-  };
+  }, [isMobile]);
 
   const getShortTitle = (node: SkillNode) => {
     switch (node.id) {
@@ -430,7 +521,7 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
     return false;
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = useCallback((category: string) => {
     switch (category) {
       case "Core Backend":
         return {
@@ -454,7 +545,37 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
           gradient: "from-purple-500 to-pink-400"
         };
     }
-  };
+  }, []);
+
+  const handleNodeMouseEnter = useCallback((node: SkillNode) => {
+    setHoveredNode(node);
+  }, []);
+
+  const handleNodeMouseLeave = useCallback(() => {
+    setHoveredNode(null);
+  }, []);
+
+  // Pre-calculate and memoize connection paths to optimize rendering
+  const connectionPaths = useMemo(() => {
+    return skillNodes.flatMap(node => {
+      const colors = getCategoryColor(node.category);
+      const coords = getNodeCoords(node);
+      return node.connections.map(connId => {
+        const target = skillNodes.find(n => n.id === connId);
+        if (!target) return null;
+        const targetCoords = getNodeCoords(target);
+        const path = getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y);
+        
+        return {
+          id: `${node.id}-${connId}`,
+          sourceId: node.id,
+          targetId: connId,
+          colors,
+          path
+        };
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
+    });
+  }, [getBezierPath, getCategoryColor, getNodeCoords]);
 
   if (isLoading) {
     return (
@@ -560,38 +681,31 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
             </defs>
 
             {/* Render all curved connection paths */}
-            {skillNodes.map(node => {
-              const colors = getCategoryColor(node.category);
-              const coords = getNodeCoords(node);
-              return node.connections.map(connId => {
-                const target = skillNodes.find(n => n.id === connId);
-                if (!target) return null;
-                const targetCoords = getNodeCoords(target);
-                const active = isConnected(node.id, target.id);
-                return (
-                  <g key={`${node.id}-${connId}`}>
-                    {/* Shadow / Base track path */}
-                    <path
-                      d={getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y)}
-                      fill="none"
-                      stroke={isDark ? '#27272a' : '#e4e4e7'}
-                      strokeWidth={3}
-                      className="transition-colors duration-300"
-                    />
-                    {/* Glowing active path overlay */}
-                    <path
-                      d={getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y)}
-                      fill="none"
-                      stroke={colors.stroke}
-                      strokeWidth={active ? 4 : 1.5}
-                      className={cn(
-                        "transition-all duration-300",
-                        active ? "opacity-100" : "opacity-30 dark:opacity-40"
-                      )}
-                    />
-                  </g>
-                );
-              });
+            {connectionPaths.map(conn => {
+              const active = isConnected(conn.sourceId, conn.targetId);
+              return (
+                <g key={conn.id}>
+                  {/* Shadow / Base track path */}
+                  <path
+                    d={conn.path}
+                    fill="none"
+                    stroke={isDark ? '#27272a' : '#e4e4e7'}
+                    strokeWidth={3}
+                    className="transition-colors duration-300"
+                  />
+                  {/* Glowing active path overlay */}
+                  <path
+                    d={conn.path}
+                    fill="none"
+                    stroke={conn.colors.stroke}
+                    strokeWidth={active ? 4 : 1.5}
+                    className={cn(
+                      "transition-all duration-300",
+                      active ? "opacity-100" : "opacity-30 dark:opacity-40"
+                    )}
+                  />
+                </g>
+              );
             })}
 
             {/* Render all interactive nodes */}
@@ -602,68 +716,23 @@ function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean
               
               const colors = getCategoryColor(node.category);
               const coords = getNodeCoords(node);
-              let fillGradient = "url(#blue-cyan)";
-              if (node.category === "Infrastructure") fillGradient = "url(#emerald-teal)";
-              if (node.category === "AI & Integrations") fillGradient = "url(#purple-pink)";
+              const shortTitle = getShortTitle(node);
 
               return (
-                <g
+                <SkillTreeNode
                   key={node.id}
-                  className="cursor-pointer group"
-                  onMouseEnter={() => setHoveredNode(node)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                >
-                  {/* Subtle ambient pulse ring for unhovered active look */}
-                  <circle
-                    cx={coords.x}
-                    cy={coords.y}
-                    r={active ? 20 : 12}
-                    className={cn(
-                      "transition-all duration-300 fill-none",
-                      active ? "stroke-2 opacity-100" : "stroke-1 opacity-0 group-hover:opacity-50"
-                    )}
-                    stroke={colors.stroke}
-                  />
-
-                  {/* Node fill circle */}
-                  <circle
-                    cx={coords.x}
-                    cy={coords.y}
-                    r={active ? 12 : 7}
-                    fill={fillGradient}
-                    className={cn(
-                      "transition-all duration-300 shadow-lg",
-                      anyActive && !connectedToActive ? "opacity-40" : "opacity-100"
-                    )}
-                  />
-
-                  {/* Interactive Larger Invisible Circle for generous hover target */}
-                  <circle
-                    cx={coords.x}
-                    cy={coords.y}
-                    r={24}
-                    fill="transparent"
-                  />
-
-                  {/* Floating Node Label */}
-                  <text
-                    x={coords.x}
-                    y={coords.y - (isMobile ? 14 : 16)}
-                    textAnchor="middle"
-                    className={cn(
-                      "font-mono font-bold tracking-tight select-none pointer-events-none transition-all duration-300",
-                      isMobile ? "text-[8px]" : "text-[10px]",
-                      active 
-                        ? "fill-current " + colors.text
-                        : anyActive && !connectedToActive
-                          ? "opacity-30 fill-current" 
-                          : "fill-current opacity-90"
-                    )}
-                    fill={isDark ? '#f4f4f5' : '#18181b'}
-                  >
-                    {getShortTitle(node)}
-                  </text>
-                </g>
+                  node={node}
+                  active={active}
+                  anyActive={anyActive}
+                  connectedToActive={connectedToActive}
+                  isDark={isDark}
+                  isMobile={isMobile}
+                  coords={coords}
+                  colors={colors}
+                  shortTitle={shortTitle}
+                  onMouseEnter={() => handleNodeMouseEnter(node)}
+                  onMouseLeave={handleNodeMouseLeave}
+                />
               );
             })}
           </svg>
@@ -1383,7 +1452,7 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
-    const sections = ['hero', 'projects', 'skills', 'experience', 'contact'];
+    const sections = ['hero', 'projects', 'proficiency', 'insights', 'skills', 'experience', 'resume'];
     const observerOptions = {
       root: null,
       rootMargin: '-30% 0px -40% 0px',
@@ -1558,39 +1627,53 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300 relative">
       
-      {/* Sticky side navigation */}
-      <div className="fixed right-3 sm:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 sm:gap-4 p-2 sm:p-3 rounded-2xl bg-neu-bg/80 backdrop-blur-md shadow-neu border border-white/5 transition-all scale-90 sm:scale-100">
-        {[
-          { id: 'hero', label: 'Intro' },
-          { id: 'projects', label: 'Projects' },
-          { id: 'skills', label: 'Skills' },
-          { id: 'experience', label: 'Experience' },
-          { id: 'contact', label: 'Contact' }
-        ].map((sec) => {
-          const active = activeSection === sec.id;
-          return (
-            <button
-              key={sec.id}
-              onClick={() => {
-                document.getElementById(sec.id)?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="group relative flex items-center justify-center w-8 h-8 rounded-xl bg-neu-bg shadow-neu hover:shadow-neu-sm hover:text-neu-accent active:scale-95 transition-all"
-              title={sec.label}
-            >
-              <div
-                className={cn(
-                  "w-2.5 h-2.5 rounded-full transition-all duration-300",
-                  active
-                    ? "bg-neu-accent scale-125 shadow-sm"
-                    : "bg-neu-text-muted opacity-60 group-hover:opacity-100"
+      {/* Sticky bottom dock navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] sm:max-w-none p-1 sm:p-1.5 rounded-2xl bg-neu-bg/75 dark:bg-black/40 backdrop-blur-md shadow-neu-modal border border-white/10 transition-all scale-95 sm:scale-100 flex items-center">
+        <div className="overflow-x-auto flex items-center gap-1 sm:gap-2 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] max-w-full sm:max-w-none">
+          {[
+            { id: 'hero', label: 'Intro', icon: <Terminal size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'projects', label: 'Projects', icon: <BookOpen size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'proficiency', label: 'Proficiency', icon: <Cpu size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'insights', label: 'Insights', icon: <Layers size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'skills', label: 'Skills', icon: <BrainCircuit size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'experience', label: 'Experience', icon: <Briefcase size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'resume', label: 'Resume', icon: <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> }
+          ].map((sec) => {
+            const active = activeSection === sec.id;
+            return (
+              <button
+                key={sec.id}
+                onClick={() => {
+                  document.getElementById(sec.id)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:text-neu-accent active:scale-90 transition-all cursor-pointer flex-shrink-0"
+                title={sec.label}
+              >
+                {active && (
+                  <motion.div
+                    layoutId="activeDockButton"
+                    className="absolute inset-0 bg-neu-accent/10 dark:bg-neu-accent/20 rounded-xl border border-neu-accent/20"
+                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  />
                 )}
-              />
-              <div className="absolute right-full mr-3 px-2.5 py-1.5 rounded-lg bg-black/90 dark:bg-neutral-900 text-white text-[10px] font-mono font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 shadow-lg border border-white/10">
-                {sec.label}
-              </div>
-            </button>
-          );
-        })}
+                <div
+                  className={cn(
+                    "relative z-10 transition-transform duration-300 group-hover:scale-110",
+                    active
+                      ? "text-neu-accent"
+                      : "text-neu-text-muted opacity-80 group-hover:opacity-100"
+                  )}
+                >
+                  {sec.icon}
+                </div>
+                <div className="absolute bottom-full mb-3 px-2.5 py-1.5 rounded-lg bg-black/90 dark:bg-neutral-900 text-white text-[10px] font-mono font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg border border-white/10 z-50">
+                  {sec.label}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 rotate-45 bg-black/90 dark:bg-neutral-900 border-r border-b border-white/10"></div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Header Section */}
@@ -1969,187 +2052,190 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Overview & Insights */}
-      <section className="max-w-7xl mx-auto mt-24 mb-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-        {/* Tech Proficiency */}
-        <div className="space-y-8">
-          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8">Technical Proficiency</h2>
-          <div className="grid grid-cols-1 gap-8">
-            {/* Backend */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-              <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Core Backend</h3>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Node.js / TypeScript</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[92%]"></div>
-                </div>
+      {/* Technical Proficiency Section */}
+      <section id="proficiency" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20">
+        <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8">Technical Proficiency</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Backend */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Core Backend</h3>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>Node.js / TypeScript</span>
+                <span className="text-neu-accent">Advanced</span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>NestJS / Express</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>REST API</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[90%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>GraphQL</span>
-                  <span className="text-neu-accent/70">Learning</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent/50 h-2 rounded-full w-[40%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Go</span>
-                  <span className="text-neu-accent">Intermediate</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Python</span>
-                  <span className="text-neu-accent">Intermediate</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
-                </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[92%]"></div>
               </div>
             </div>
 
-            {/* AI & Automation */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-              <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">AI & Automation</h3>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>LangGraph</span>
-                  <span className="text-neu-accent">Intermediate</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[72%]"></div>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>NestJS / Express</span>
+                <span className="text-neu-accent">Advanced</span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>LangChain</span>
-                  <span className="text-neu-accent">Intermediate</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>OpenAI / LLM APIs</span>
-                  <span className="text-neu-accent">Intermediate</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>RAG</span>
-                  <span className="text-neu-accent/70">Learning</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent/50 h-2 rounded-full w-[45%]"></div>
-                </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
               </div>
             </div>
 
-            {/* Infrastructure */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-              <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Infrastructure & Data</h3>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>PostgreSQL / SQL Server</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>REST API</span>
+                <span className="text-neu-accent">Advanced</span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted flex-wrap gap-x-2">
-                  <span>Message Queues (Azure Service Bus, BullMQ, Redis)</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[86%]"></div>
-                </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[90%]"></div>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Docker / Kubernetes</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[82%]"></div>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>GraphQL</span>
+                <span className="text-neu-accent/70">Learning</span>
               </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent/50 h-2 rounded-full w-[40%]"></div>
+              </div>
+            </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Azure</span>
-                  <span className="text-neu-accent">Advanced</span>
-                </div>
-                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[84%]"></div>
-                </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>Go</span>
+                <span className="text-neu-accent">Intermediate</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>Python</span>
+                <span className="text-neu-accent">Intermediate</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* AI & Automation */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">AI & Automation</h3>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>LangGraph</span>
+                <span className="text-neu-accent">Intermediate</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[72%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>LangChain</span>
+                <span className="text-neu-accent">Intermediate</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>OpenAI / LLM APIs</span>
+                <span className="text-neu-accent">Intermediate</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>RAG</span>
+                <span className="text-neu-accent/70">Learning</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent/50 h-2 rounded-full w-[45%]"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Infrastructure & Data */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Infrastructure & Data</h3>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>PostgreSQL / SQL Server</span>
+                <span className="text-neu-accent">Advanced</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted flex-wrap gap-x-2">
+                <span>Message Queues (Azure Service Bus, BullMQ, Redis)</span>
+                <span className="text-neu-accent">Advanced</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[86%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>Docker / Kubernetes</span>
+                <span className="text-neu-accent">Advanced</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[82%]"></div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                <span>Azure</span>
+                <span className="text-neu-accent">Advanced</span>
+              </div>
+              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                <div className="bg-neu-accent h-2 rounded-full w-[84%]"></div>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Currently Learning */}
-        <div className="space-y-8">
-          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8 opacity-0 hidden lg:block select-none">Activity</h2>
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
-                <PenTool size={20} />
+      {/* Professional Insights & Focus Section */}
+      <section id="insights" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20">
+        <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8">Professional Insights & Focus</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Writing Card */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                  <PenTool size={20} />
+                </div>
+                <h3 className="text-xl font-bold text-neu-text">Writing</h3>
               </div>
-              <h3 className="text-xl font-bold text-neu-text">Writing</h3>
+              <p className="text-neu-text-muted font-medium mb-4 leading-relaxed">
+                &quot;I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs&quot;
+              </p>
             </div>
-            <p className="text-neu-text-muted font-medium mb-2 leading-relaxed">
-              &quot;I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs&quot;
-            </p>
             <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-neu-accent hover:underline mt-2">
               Read on dev.to <ArrowRight size={16} />
             </a>
           </div>
 
+          {/* Current Work Card */}
           <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
@@ -2162,6 +2248,7 @@ export default function Portfolio() {
             </p>
           </div>
 
+          {/* Currently Learning Card */}
           <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
@@ -2182,8 +2269,8 @@ export default function Portfolio() {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20 overflow-hidden">
-        <div className="w-full space-y-8 max-w-full overflow-hidden">
+      <section id="experience" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20">
+        <div className="w-full space-y-8">
           <h2 className="text-3xl font-display font-bold text-neu-text mb-8 tracking-tight">Experience</h2>
             
             {/* Git Activity & Contribution Dashboard */}
@@ -2402,67 +2489,62 @@ export default function Portfolio() {
 
                 {/* Heatmap Grid Wrapper */}
                 <div className="relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                  <div className="min-w-[720px] flex flex-col">
-                    {/* Month labels */}
-                    <div className="flex pl-8 mb-2 h-4 relative">
-                      {monthLabels.map((lbl, i) => (
-                        <span 
-                          key={i} 
-                          className="absolute text-[10px] font-mono text-neu-text-muted"
-                          style={{ left: `${32 + lbl.index * 13}px` }}
-                        >
-                          {lbl.label}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex">
+                  <div className="min-w-[740px] w-full flex flex-col">
+                    <div className="flex w-full">
                       {/* Weekday labels */}
-                      <div className="flex flex-col justify-between text-[9px] font-mono text-neu-text-muted w-8 pr-2 py-0.5 select-none">
+                      <div className="flex flex-col justify-between text-[9px] font-mono text-neu-text-muted w-8 pr-2 pt-6 pb-1 h-[114px] select-none">
                         <span>Mon</span>
                         <span>Wed</span>
                         <span>Fri</span>
                       </div>
 
                       {/* Columns of weeks */}
-                      <div className="flex gap-[3px] flex-1">
-                        {weeks.map((week, wIdx) => (
-                          <div key={wIdx} className="flex flex-col gap-[3px]">
-                            {week.map((day, dIdx) => {
-                              // Define styles based on level & active theme
-                              const levelColors = isDark ? [
-                                'bg-zinc-800/60 hover:bg-zinc-700',
-                                'bg-emerald-950 hover:bg-emerald-900',
-                                'bg-emerald-800 hover:bg-emerald-700',
-                                'bg-emerald-500 hover:bg-emerald-400',
-                                'bg-emerald-400 hover:bg-emerald-300'
-                              ] : [
-                                'bg-gray-200 hover:bg-gray-300',
-                                'bg-indigo-100 hover:bg-indigo-200',
-                                'bg-indigo-300 hover:bg-indigo-400',
-                                'bg-indigo-500 hover:bg-indigo-600',
-                                'bg-indigo-600 hover:bg-indigo-700'
-                              ];
+                      <div className="flex-1 flex justify-between gap-[3px]">
+                        {weeks.map((week, wIdx) => {
+                          const monthLabel = monthLabels.find(lbl => lbl.index === wIdx);
+                          return (
+                            <div key={wIdx} className="flex flex-col gap-[3px] relative pt-6">
+                              {monthLabel && (
+                                <span className="absolute top-0 left-0 text-[10px] font-mono text-neu-text-muted whitespace-nowrap">
+                                  {monthLabel.label}
+                                </span>
+                              )}
+                              {week.map((day, dIdx) => {
+                                // Define styles based on level & active theme
+                                const levelColors = isDark ? [
+                                  'bg-zinc-800/60 hover:bg-zinc-700',
+                                  'bg-emerald-950 hover:bg-emerald-900',
+                                  'bg-emerald-800 hover:bg-emerald-700',
+                                  'bg-emerald-500 hover:bg-emerald-400',
+                                  'bg-emerald-400 hover:bg-emerald-300'
+                                ] : [
+                                  'bg-gray-200 hover:bg-gray-300',
+                                  'bg-indigo-100 hover:bg-indigo-200',
+                                  'bg-indigo-300 hover:bg-indigo-400',
+                                  'bg-indigo-500 hover:bg-indigo-600',
+                                  'bg-indigo-600 hover:bg-indigo-700'
+                                ];
 
-                              return (
-                                <div
-                                  key={dIdx}
-                                  className={cn(
-                                    "w-2.5 h-2.5 rounded-[2px] transition-all duration-150 cursor-pointer relative group/cell",
-                                    levelColors[day.level]
-                                  )}
-                                >
-                                  {/* Premium Mini Tooltip */}
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-black/90 dark:bg-neutral-900 text-white text-[9px] font-mono whitespace-nowrap opacity-0 pointer-events-none group-hover/cell:opacity-100 transition-opacity z-50 shadow-lg border border-white/10">
-                                    <span className="text-neu-accent font-bold">{day.count} {day.count === 1 ? 'contribution' : 'contributions'}</span>
-                                    <br />
-                                    <span className="text-gray-400">{day.date}</span>
+                                return (
+                                  <div
+                                    key={dIdx}
+                                    className={cn(
+                                      "w-2.5 h-2.5 rounded-[2px] transition-all duration-150 cursor-pointer relative group/cell",
+                                      levelColors[day.level]
+                                    )}
+                                  >
+                                    {/* Premium Mini Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-black/90 dark:bg-neutral-900 text-white text-[9px] font-mono whitespace-nowrap opacity-0 pointer-events-none group-hover/cell:opacity-100 transition-opacity z-50 shadow-lg border border-white/10">
+                                      <span className="text-neu-accent font-bold">{day.count} {day.count === 1 ? 'contribution' : 'contributions'}</span>
+                                      <br />
+                                      <span className="text-gray-400">{day.date}</span>
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ))}
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                     
@@ -2482,12 +2564,12 @@ export default function Portfolio() {
             </div>
 
             <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Backend Developer (Contract) / Current Work</h3>
                   <p className="text-neu-accent font-medium">PT Serasi Autoraya (SERA) — Astra Group</p>
                 </div>
-                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2025 - Present</div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2025 - Present</div>
               </div>
               <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Migrating legacy .NET Driver Management System to Node.js microservices.</li>
@@ -2496,12 +2578,12 @@ export default function Portfolio() {
             </div>
             
             <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Software Engineer</h3>
                   <p className="text-neu-accent font-medium">Telkomsel (Vendor)</p>
                 </div>
-                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2024 - 2025</div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2024 - 2025</div>
               </div>
               <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Built bare-metal Kubernetes + IoT monitoring system.</li>
@@ -2510,12 +2592,12 @@ export default function Portfolio() {
             </div>
             
             <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
                   <p className="text-neu-accent font-medium">PT Hensel Davest Indonesia / PT Doeku</p>
                 </div>
-                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2023 - 2024</div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2023 - 2024</div>
               </div>
               <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Solo OJK & BI compliance engineering.</li>
@@ -2524,12 +2606,12 @@ export default function Portfolio() {
             </div>
 
             <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
                   <p className="text-neu-accent font-medium">PT Maccon Generasi Mandiri</p>
                 </div>
-                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2022 - 2023</div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2022 - 2023</div>
               </div>
               <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Rebuilt vendor platform in-house, cutting operational software costs significantly.</li>
@@ -2624,49 +2706,31 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Contact & Resume Section */}
-      <section id="contact" className="max-w-7xl mx-auto mt-24 mb-16 scroll-mt-20">
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-          {/* Resume Card */}
-          <div className="flex-1 p-6 sm:p-8 md:p-10 rounded-3xl bg-neu-bg shadow-neu flex flex-col justify-between text-center lg:text-left relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
-            <div>
-              <div className="inline-flex items-center gap-2 text-neu-accent mb-4">
-                <FileText size={18} />
-                <span className="font-mono text-xs font-bold uppercase tracking-wider">Professional CV</span>
-              </div>
-              <h2 className="text-3xl font-display font-bold text-neu-text mb-4">Resume</h2>
-              <p className="text-neu-text-muted font-light mb-8 max-w-md leading-relaxed">
-                Download my full professional background and project history detailing my expertise in Node.js, Go, microservices, and AI integrations.
-              </p>
+      {/* Resume Section */}
+      <section id="resume" className="max-w-3xl mx-auto mt-24 mb-16 scroll-mt-20">
+        {/* Resume Card */}
+        <div className="p-8 sm:p-12 rounded-3xl bg-neu-bg shadow-neu text-center relative overflow-hidden border border-white/5">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 text-neu-accent mb-4 px-3 py-1 bg-neu-bg shadow-neu-inset rounded-full">
+              <FileText size={16} />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Professional CV</span>
             </div>
+            
+            <h2 className="text-3xl font-display font-bold text-neu-text mb-4">Download My Resume</h2>
+            
+            <p className="text-neu-text-muted font-light mb-8 max-w-lg leading-relaxed text-sm sm:text-base">
+              Get access to my full professional background, detailed project histories, microservice architectures, and credentials.
+            </p>
+
             <button 
-              className="w-full lg:w-fit px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 animate-bounce-subtle" 
+              className="px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2" 
               onClick={() => triggerToast('Professional CV download initiated!')}
             >
               Download CV <Download size={18} />
             </button>
-          </div>
-          
-          {/* Let's Connect Card */}
-          <div className="flex-1 p-6 sm:p-8 md:p-10 rounded-3xl bg-neu-bg shadow-neu border border-white/5">
-            <div className="inline-flex items-center gap-2 text-neu-accent mb-4">
-              <Mail size={18} className="animate-pulse" />
-              <span className="font-mono text-xs font-bold uppercase tracking-wider">Get In Touch</span>
-            </div>
-            <h2 className="text-3xl font-display font-bold text-neu-text mb-6">Let&apos;s Connect</h2>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); triggerToast('Message sent! I will get back to you shortly.'); }}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input type="text" placeholder="Your Name" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20" />
-                <input type="email" placeholder="Email Address" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20" />
-              </div>
-              <div>
-                <textarea rows={4} placeholder="Your Message" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20"></textarea>
-              </div>
-              <button type="submit" className="w-full py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm transition-all hover:scale-[1.01] active:scale-95">
-                Send Message
-              </button>
-            </form>
           </div>
         </div>
       </section>

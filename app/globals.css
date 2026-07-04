@@ -62,3 +62,56 @@ body {
   animation-play-state: paused;
 }
 
+@media print {
+  /* Hide interactive clutter: fixed dock, theme toggles, buttons, modals, and toasts */
+  .fixed,
+  button,
+  form,
+  .no-print,
+  [role="dialog"],
+  iframe {
+    display: none !important;
+  }
+
+  /* Standard page layout override for printing */
+  body, html, .min-h-screen {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 11pt !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure content sections expand correctly and don't break awkwardly across pages */
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0 !important;
+  }
+
+  /* Reset box shadows and replace with clean, simple borders */
+  .shadow-neu,
+  .shadow-neu-inset,
+  .shadow-neu-sm,
+  .shadow-neu-modal {
+    box-shadow: none !important;
+    border: 1px solid #e4e4e7 !important;
+    background: #ffffff !important;
+  }
+
+  /* Ensure high-contrast readable text styles */
+  .text-neu-text-muted,
+  .text-zinc-400,
+  .text-gray-400,
+  .text-neutral-400 {
+    color: #4b5563 !important;
+  }
+
+  .text-neu-accent {
+    color: #3b82f6 !important;
+  }
+}
+
+
