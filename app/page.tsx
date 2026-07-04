@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'motion/react';
+import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { projects, testimonials } from '@/lib/data';
@@ -355,19 +355,74 @@ const skillNodes: SkillNode[] = [
   }
 ];
 
-function SkillTree({ isDark }: { isDark: boolean }) {
+function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean }) {
   const [hoveredNode, setHoveredNode] = useState<SkillNode | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const getBezierPath = (x1: number, y1: number, x2: number, y2: number) => {
-    const dx = Math.abs(x2 - x1) * 0.5;
-    return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    if (isMobile) {
+      const dy = (y2 - y1) * 0.5;
+      return `M ${x1} ${y1} C ${x1} ${y1 + dy}, ${x2} ${y2 - dy}, ${x2} ${y2}`;
+    } else {
+      const dx = (x2 - x1) * 0.5;
+      return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    }
+  };
+
+  const getNodeCoords = (node: SkillNode) => {
+    if (!isMobile) {
+      return { x: node.x, y: node.y };
+    }
+    switch (node.id) {
+      case "nodejs": return { x: 75, y: 60 };
+      case "nestjs": return { x: 75, y: 140 };
+      case "microservices": return { x: 75, y: 220 };
+      case "apigateway": return { x: 245, y: 100 };
+      case "dist-systems": return { x: 245, y: 180 };
+      case "postgres": return { x: 75, y: 300 };
+      case "redis": return { x: 75, y: 380 };
+      case "azure": return { x: 75, y: 460 };
+      case "k8s": return { x: 245, y: 380 };
+      case "python": return { x: 75, y: 540 };
+      case "llm-orchestration": return { x: 75, y: 620 };
+      case "langgraph": return { x: 75, y: 700 };
+      case "vectordb": return { x: 245, y: 580 };
+      default: return { x: node.x, y: node.y };
+    }
+  };
+
+  const getShortTitle = (node: SkillNode) => {
+    switch (node.id) {
+      case "nodejs": return "Node.js";
+      case "nestjs": return "NestJS";
+      case "microservices": return "Go / Micro";
+      case "apigateway": return "API Gateway";
+      case "dist-systems": return "Dist. Systems";
+      case "postgres": return "PostgreSQL";
+      case "redis": return "Redis / Queues";
+      case "azure": return "Azure Cloud";
+      case "k8s": return "Kubernetes";
+      case "python": return "Python";
+      case "llm-orchestration": return "LLM Orchestr.";
+      case "langgraph": return "LangGraph";
+      case "vectordb": return "Vector DB";
+      default: return node.title.split(' ')[0];
+    }
   };
 
   const isConnected = (sourceId: string, targetId: string) => {
     if (!hoveredNode) return false;
     if (hoveredNode.id === sourceId && hoveredNode.connections.includes(targetId)) return true;
     
-    // Reverse connection mapping to show inputs too
     const sourceNode = skillNodes.find(n => n.id === sourceId);
     if (sourceNode && sourceNode.connections.includes(targetId) && (hoveredNode.id === targetId || hoveredNode.id === sourceId)) {
       return true;
@@ -400,6 +455,51 @@ function SkillTree({ isDark }: { isDark: boolean }) {
         };
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative overflow-hidden border border-white/5 animate-pulse">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6 mb-8">
+          <div className="space-y-2">
+            <div className="h-4 w-40 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+            <div className="h-7 w-64 bg-gray-300/40 dark:bg-zinc-700/50 rounded"></div>
+            <div className="h-3 w-80 bg-gray-300/20 dark:bg-zinc-700/30 rounded mt-2"></div>
+          </div>
+          <div className="flex gap-4">
+            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+          </div>
+        </div>
+        <div className="flex justify-center items-center py-10">
+          <div className="w-full max-w-4xl h-[300px] rounded-2xl bg-neu-bg shadow-neu-inset flex flex-col justify-between p-6 relative overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gray-300/20 dark:bg-zinc-700/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-gray-300/20 dark:bg-zinc-700/20 rounded-full blur-3xl"></div>
+            <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 1000 300">
+              <path d="M 100 150 C 250 150, 250 100, 400 100" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
+              <path d="M 400 100 C 550 100, 550 200, 700 200" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
+              <path d="M 100 150 C 250 150, 250 200, 400 200" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
+            </svg>
+            <div className="flex justify-between items-center relative z-10 w-full h-full px-12">
+              <div className="flex flex-col gap-12">
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+              </div>
+              <div className="flex flex-col gap-8">
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+              </div>
+              <div className="flex flex-col gap-12">
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 h-20 w-full bg-gray-300/20 dark:bg-zinc-700/25 rounded-2xl shadow-neu-inset"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative overflow-hidden border border-white/5">
@@ -435,9 +535,15 @@ function SkillTree({ isDark }: { isDark: boolean }) {
       </div>
 
       {/* Responsive SVG Container wrapping the interactive map */}
-      <div className="relative w-full overflow-x-auto custom-scrollbar select-none py-4">
-        <div className="min-w-[1000px] h-[400px] relative">
-          <svg viewBox="0 0 1000 400" className="w-full h-full absolute inset-0 z-0 overflow-visible">
+      <div className="relative w-full select-none py-4 flex justify-center">
+        <div className={cn(
+          "relative",
+          isMobile ? "w-full max-w-[320px] h-[760px]" : "w-full h-[400px]"
+        )}>
+          <svg 
+            viewBox={isMobile ? "0 0 320 760" : "0 0 1000 400"} 
+            className="w-full h-full absolute inset-0 z-0 overflow-visible"
+          >
             <defs>
               <linearGradient id="blue-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#3b82f6" />
@@ -456,15 +562,17 @@ function SkillTree({ isDark }: { isDark: boolean }) {
             {/* Render all curved connection paths */}
             {skillNodes.map(node => {
               const colors = getCategoryColor(node.category);
+              const coords = getNodeCoords(node);
               return node.connections.map(connId => {
                 const target = skillNodes.find(n => n.id === connId);
                 if (!target) return null;
+                const targetCoords = getNodeCoords(target);
                 const active = isConnected(node.id, target.id);
                 return (
                   <g key={`${node.id}-${connId}`}>
                     {/* Shadow / Base track path */}
                     <path
-                      d={getBezierPath(node.x, node.y, target.x, target.y)}
+                      d={getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y)}
                       fill="none"
                       stroke={isDark ? '#27272a' : '#e4e4e7'}
                       strokeWidth={3}
@@ -472,7 +580,7 @@ function SkillTree({ isDark }: { isDark: boolean }) {
                     />
                     {/* Glowing active path overlay */}
                     <path
-                      d={getBezierPath(node.x, node.y, target.x, target.y)}
+                      d={getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y)}
                       fill="none"
                       stroke={colors.stroke}
                       strokeWidth={active ? 4 : 1.5}
@@ -493,6 +601,7 @@ function SkillTree({ isDark }: { isDark: boolean }) {
               const connectedToActive = hoveredNode ? (hoveredNode.connections.includes(node.id) || node.connections.includes(hoveredNode.id) || hoveredNode.id === node.id) : false;
               
               const colors = getCategoryColor(node.category);
+              const coords = getNodeCoords(node);
               let fillGradient = "url(#blue-cyan)";
               if (node.category === "Infrastructure") fillGradient = "url(#emerald-teal)";
               if (node.category === "AI & Integrations") fillGradient = "url(#purple-pink)";
@@ -506,8 +615,8 @@ function SkillTree({ isDark }: { isDark: boolean }) {
                 >
                   {/* Subtle ambient pulse ring for unhovered active look */}
                   <circle
-                    cx={node.x}
-                    cy={node.y}
+                    cx={coords.x}
+                    cy={coords.y}
                     r={active ? 20 : 12}
                     className={cn(
                       "transition-all duration-300 fill-none",
@@ -518,40 +627,41 @@ function SkillTree({ isDark }: { isDark: boolean }) {
 
                   {/* Node fill circle */}
                   <circle
-                    cx={node.x}
-                    cy={node.y}
-                    r={active ? 10 : 8}
+                    cx={coords.x}
+                    cy={coords.y}
+                    r={active ? 12 : 7}
                     fill={fillGradient}
                     className={cn(
-                      "transition-all duration-300 shadow-lg transform-gpu",
-                      active ? "scale-125" : anyActive && !connectedToActive ? "opacity-40" : "opacity-100"
+                      "transition-all duration-300 shadow-lg",
+                      anyActive && !connectedToActive ? "opacity-40" : "opacity-100"
                     )}
                   />
 
                   {/* Interactive Larger Invisible Circle for generous hover target */}
                   <circle
-                    cx={node.x}
-                    cy={node.y}
+                    cx={coords.x}
+                    cy={coords.y}
                     r={24}
                     fill="transparent"
                   />
 
                   {/* Floating Node Label */}
                   <text
-                    x={node.x}
-                    y={node.y - 16}
+                    x={coords.x}
+                    y={coords.y - (isMobile ? 14 : 16)}
                     textAnchor="middle"
                     className={cn(
-                      "text-[10px] font-mono font-bold tracking-tight select-none pointer-events-none transition-all duration-300",
+                      "font-mono font-bold tracking-tight select-none pointer-events-none transition-all duration-300",
+                      isMobile ? "text-[8px]" : "text-[10px]",
                       active 
-                        ? "fill-current scale-110 " + colors.text
+                        ? "fill-current " + colors.text
                         : anyActive && !connectedToActive
                           ? "opacity-30 fill-current" 
                           : "fill-current opacity-90"
                     )}
                     fill={isDark ? '#f4f4f5' : '#18181b'}
                   >
-                    {node.title.split(' ')[0]}
+                    {getShortTitle(node)}
                   </text>
                 </g>
               );
@@ -1111,6 +1221,130 @@ const getRelatedProjects = (currentProj: typeof projects[0]) => {
     .map(x => x.project);
 };
 
+interface BookItemProps {
+  project: typeof projects[0];
+  setSelectedProject: (p: typeof projects[0]) => void;
+  setFocusedProject: (p: typeof projects[0] | null) => void;
+  isDark: boolean;
+  getTagProjectCount: (tag: string) => number;
+}
+
+function BookItem({
+  project,
+  setSelectedProject,
+  setFocusedProject,
+  isDark,
+  getTagProjectCount,
+}: BookItemProps) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Smooth out the motion values using useSpring
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
+
+  // Map mouse coordinate ratios to rotation degrees
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [15, -15]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-15, 15]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    // Calculate normalized mouse positions (-0.5 to 0.5)
+    const mouseX = (e.clientX - rect.left) / width - 0.5;
+    const mouseY = (e.clientY - rect.top) / height - 0.5;
+
+    x.set(mouseX);
+    y.set(mouseY);
+  };
+
+  const handleMouseLeave = () => {
+    // Reset back to center smoothly
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 50, rotate: -5 }}
+      animate={{ opacity: 1, y: 0, rotate: 0 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+      onClick={() => setSelectedProject(project)}
+      className="relative cursor-pointer group perspective-1000 flex-shrink-0 snap-start"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 3D tilt-able container wrapper */}
+      <motion.div
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
+        }}
+        className="relative transform-gpu transition-all duration-300 group-hover:-translate-y-4 group-hover:scale-105 group-hover:z-20 group-hover:shadow-neu-modal"
+      >
+
+
+        {/* The "Book Spine" */}
+        <div
+          style={{ transform: "translateZ(20px)" }}
+          className={cn(
+            "w-16 md:w-20 h-64 md:h-80 rounded-lg shadow-neu relative flex flex-col justify-between p-3 border border-white/40 overflow-hidden",
+            project.spineColor
+          )}
+        >
+          {/* Spine Details */}
+          <div className="w-full h-1 bg-black/10 rounded-full mb-2 shadow-inner"></div>
+          <div className="w-full h-1 bg-black/10 rounded-full mb-4 shadow-inner"></div>
+
+          <div className="flex-1 relative flex items-center justify-center">
+            <span className="absolute whitespace-pre-wrap transform -rotate-90 origin-center text-[10px] md:text-xs font-mono font-bold tracking-widest text-white drop-shadow-md w-[220px] text-center leading-tight">
+              {project.spineText}
+            </span>
+          </div>
+
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
+            <Code2 size={12} className="text-white drop-shadow-sm" />
+            <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
+          </div>
+
+          {/* 3D Page Edge Effect */}
+          <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-r from-transparent to-black/10 rounded-r-lg"></div>
+
+          {/* Hover Actions Overlay */}
+          <div className="absolute inset-0 bg-black/75 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-4 p-2.5 z-30">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setFocusedProject(project);
+              }}
+              className="p-2.5 rounded-xl bg-neu-accent hover:bg-neu-accent/90 text-white shadow-md active:scale-95 transition-all flex items-center justify-center hover:scale-110"
+              title="Focus / Spotlight"
+            >
+              <Sparkles size={16} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedProject(project);
+              }}
+              className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10 active:scale-95 transition-all flex items-center justify-center hover:scale-110"
+              title="Open Dev Log"
+            >
+              <BookOpen size={16} />
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -1121,6 +1355,61 @@ export default function Portfolio() {
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState<'temporal' | 'repository'>('temporal');
   const shelfRef = useRef<HTMLDivElement>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [portfolioStatus, setPortfolioStatus] = useState<'available' | 'busy'>('available');
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+  };
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const sections = ['hero', 'projects', 'skills', 'experience', 'contact'];
+    const observerOptions = {
+      root: null,
+      rootMargin: '-30% 0px -40% 0px',
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, []);
 
   const contributionData = useMemo(() => {
     const data = [];
@@ -1267,10 +1556,45 @@ export default function Portfolio() {
   };
 
   return (
-    <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300 relative">
       
+      {/* Sticky side navigation */}
+      <div className="fixed right-3 sm:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 sm:gap-4 p-2 sm:p-3 rounded-2xl bg-neu-bg/80 backdrop-blur-md shadow-neu border border-white/5 transition-all scale-90 sm:scale-100">
+        {[
+          { id: 'hero', label: 'Intro' },
+          { id: 'projects', label: 'Projects' },
+          { id: 'skills', label: 'Skills' },
+          { id: 'experience', label: 'Experience' },
+          { id: 'contact', label: 'Contact' }
+        ].map((sec) => {
+          const active = activeSection === sec.id;
+          return (
+            <button
+              key={sec.id}
+              onClick={() => {
+                document.getElementById(sec.id)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="group relative flex items-center justify-center w-8 h-8 rounded-xl bg-neu-bg shadow-neu hover:shadow-neu-sm hover:text-neu-accent active:scale-95 transition-all"
+              title={sec.label}
+            >
+              <div
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                  active
+                    ? "bg-neu-accent scale-125 shadow-sm"
+                    : "bg-neu-text-muted opacity-60 group-hover:opacity-100"
+                )}
+              />
+              <div className="absolute right-full mr-3 px-2.5 py-1.5 rounded-lg bg-black/90 dark:bg-neutral-900 text-white text-[10px] font-mono font-medium whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 shadow-lg border border-white/10">
+                {sec.label}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Header Section */}
-      <header className="max-w-7xl mx-auto mb-16 md:mb-24">
+      <header id="hero" className="max-w-7xl mx-auto mb-16 md:mb-24 scroll-mt-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gray-300/50 dark:border-gray-700/50 pb-8 transition-colors duration-300">
           <div>
             <motion.h1 
@@ -1296,12 +1620,67 @@ export default function Portfolio() {
               transition={{ delay: 0.2 }}
               className="flex flex-wrap items-center gap-4 text-sm font-mono text-neu-text-muted"
             >
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-neu-bg shadow-neu-inset text-neu-accent font-bold">
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-neu-bg shadow-neu-inset text-neu-accent font-bold">
                 <Globe size={14} /> Remote Only
               </span>
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-neu-bg shadow-neu-sm text-green-500 font-bold border border-green-500/20">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> AVAILABLE FOR NEW CONTRACTS
-              </span>
+              
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowInquiryModal(true)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-neu-bg shadow-neu hover:shadow-neu-sm cursor-pointer transition-all hover:scale-105 active:scale-95 border",
+                    portfolioStatus === 'available' 
+                      ? "text-green-500 border-green-500/20" 
+                      : "text-amber-500 border-amber-500/20"
+                  )}
+                  title="Click to send a quick availability inquiry"
+                >
+                  <div className={cn(
+                    "w-2 h-2 rounded-full animate-pulse",
+                    portfolioStatus === 'available' ? "bg-green-500" : "bg-amber-500"
+                  )}></div>
+                  <span className="font-bold text-xs uppercase tracking-wide">
+                    {portfolioStatus === 'available' ? 'Available for projects' : 'Currently busy'}
+                  </span>
+                  <span className="text-[9px] text-neu-text-muted font-normal ml-1 border-l border-gray-300/30 dark:border-gray-700/30 pl-1.5">
+                    Inquire
+                  </span>
+                </button>
+                
+                {/* Micro simulator buttons */}
+                <div className="flex bg-neu-bg p-0.5 rounded-lg shadow-neu-inset text-[9px] font-mono border border-white/5">
+                  <button 
+                    onClick={() => {
+                      setPortfolioStatus('available');
+                      triggerToast('Status set to: Available for Projects');
+                    }}
+                    className={cn(
+                      "px-1.5 py-0.5 rounded transition-all",
+                      portfolioStatus === 'available' 
+                        ? "bg-green-500/10 text-green-500 font-bold" 
+                        : "text-neu-text-muted hover:text-neu-text"
+                    )}
+                    title="Simulate Available Status"
+                  >
+                    Free
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setPortfolioStatus('busy');
+                      triggerToast('Status set to: Currently Busy');
+                    }}
+                    className={cn(
+                      "px-1.5 py-0.5 rounded transition-all",
+                      portfolioStatus === 'busy' 
+                        ? "bg-amber-500/10 text-amber-500 font-bold" 
+                        : "text-neu-text-muted hover:text-neu-text"
+                    )}
+                    title="Simulate Busy Status"
+                  >
+                    Busy
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
           
@@ -1335,16 +1714,22 @@ export default function Portfolio() {
               <a href="mailto:awal14h@gmail.com" className="flex items-center justify-start md:justify-end gap-2 hover:text-neu-accent transition-colors">
                 <span className="font-semibold text-neu-text">Email</span> <Mail size={16} className="text-neu-accent" />
               </a>
-              <span className="flex items-center justify-start md:justify-end gap-2 text-neu-text-muted pt-2 border-t border-gray-300/30 dark:border-gray-700/30 mt-1">
-                UTC+8 Makassar, Indonesia <MapPin size={16} className="text-neu-accent" />
-              </span>
+              <div className="flex flex-col items-start md:items-end text-neu-text-muted pt-2 border-t border-gray-300/30 dark:border-gray-700/30 mt-1" itemScope itemType="https://schema.org/PostalAddress">
+                <span className="flex items-center justify-start md:justify-end gap-1.5 font-bold text-neu-text text-xs tracking-tight">
+                  <MapPin size={13} className="text-neu-accent" />
+                  <span itemProp="addressLocality">Makassar</span>, <span itemProp="addressCountry">Indonesia</span>
+                </span>
+                <span className="text-[10px] text-neu-text-muted mt-0.5 font-mono">
+                  Timezone: UTC+8 (WITA)
+                </span>
+              </div>
             </div>
           </motion.div>
         </div>
       </header>
 
       {/* Controls: Search & Filter */}
-      <div className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+      <div id="projects" className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center scroll-mt-20">
         <div className="relative w-full md:w-96 group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
             <Search size={18} />
@@ -1399,12 +1784,12 @@ export default function Portfolio() {
 
       {/* Bookshelf Layout */}
       <div className="max-w-7xl mx-auto">
-        <div className="bg-neu-bg p-8 md:p-12 rounded-3xl shadow-neu-inset relative overflow-hidden">
+        <div className="bg-neu-bg p-4 sm:p-8 md:p-12 rounded-3xl shadow-neu-inset relative overflow-hidden">
           {/* Wooden Shelf Aesthetic Details */}
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent opacity-50 z-10"></div>
           
           {/* Scroll Buttons */}
-          {!focusedProject && filteredProjects.length > 0 && (
+          {!isLoading && !focusedProject && filteredProjects.length > 0 && (
             <>
               <button
                 onClick={() => scrollShelf('left')}
@@ -1423,7 +1808,25 @@ export default function Portfolio() {
             </>
           )}
 
-          {focusedProject ? (
+          {isLoading ? (
+            <div className="relative z-10 flex gap-6 overflow-hidden py-10 px-2 justify-center sm:justify-start">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="w-16 md:w-20 h-64 md:h-80 rounded-lg bg-gray-300/30 dark:bg-zinc-700/40 animate-pulse border border-white/5 relative shadow-neu flex flex-col justify-between p-3"
+                >
+                  <div className="space-y-1.5">
+                    <div className="w-full h-1 bg-black/5 rounded-full"></div>
+                    <div className="w-full h-1 bg-black/5 rounded-full"></div>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="w-2.5 h-32 bg-gray-300/40 dark:bg-zinc-700/50 rounded-full"></div>
+                  </div>
+                  <div className="w-full h-3 bg-gray-300/40 dark:bg-zinc-700/50 rounded-md"></div>
+                </div>
+              ))}
+            </div>
+          ) : focusedProject ? (
             <div className="relative py-8 md:py-12 px-4 md:px-8 z-20 flex flex-col lg:flex-row items-center justify-center gap-10 md:gap-16">
               {/* Blurred atmospheric background glow matching book color */}
               <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-md rounded-3xl z-0 pointer-events-none"></div>
@@ -1439,6 +1842,16 @@ export default function Portfolio() {
                   onClick={() => setSelectedProject(focusedProject)}
                 >
                   <div className={cn("w-28 md:w-36 h-80 md:h-[400px] rounded-xl shadow-neu-modal relative flex flex-col justify-between p-5 border border-white/30", focusedProject.spineColor)}>
+                    {/* Compact badge inside the top right corner of the spotlight book spine */}
+                    <div className="absolute top-2.5 right-2.5 z-40 bg-black/25 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 flex flex-col items-end gap-0.5 select-none pointer-events-none text-white">
+                      <span className="text-[8px] font-mono font-bold leading-none uppercase tracking-tight whitespace-nowrap text-neu-accent">
+                        {focusedProject.tags[0]}
+                      </span>
+                      <span className="text-[7px] font-mono text-white/70 leading-none whitespace-nowrap">
+                        {Math.max(1, Math.ceil((focusedProject.markdown || '').split(/\s+/).filter(Boolean).length / 150))}m read
+                      </span>
+                    </div>
+
                     <div className="w-full h-1.5 bg-black/10 rounded-full mb-2 shadow-inner"></div>
                     <div className="w-full h-1.5 bg-black/10 rounded-full mb-6 shadow-inner"></div>
                     
@@ -1537,74 +1950,15 @@ export default function Portfolio() {
               className="flex overflow-x-auto snap-x snap-mandatory gap-x-8 items-end justify-start min-h-[440px] pb-6 pt-16 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-6 md:px-10"
             >
               <AnimatePresence mode="popLayout">
-                {filteredProjects.map((project, index) => (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, y: 50, rotate: -5 }}
-                    animate={{ opacity: 1, y: 0, rotate: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+                {filteredProjects.map((project) => (
+                  <BookItem
                     key={project.id}
-                    onClick={() => setSelectedProject(project)}
-                    className="relative cursor-pointer group perspective-1000 flex-shrink-0 snap-start"
-                  >
-                    {/* The "Book Spine" */}
-                    <div className={cn("w-16 md:w-20 h-64 md:h-80 rounded-lg shadow-neu transform-gpu transition-all duration-300 group-hover:-translate-y-4 group-hover:scale-105 group-hover:z-20 group-hover:shadow-neu-modal relative flex flex-col justify-between p-3 border border-white/40 overflow-hidden", project.spineColor)}>
-                      
-                      {/* Floating badge for Time to Read & Tech Stack Summary */}
-                      <div className="absolute -top-3.5 -right-3.5 z-30 bg-neu-bg/95 dark:bg-black/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-white/10 shadow-neu-sm group-hover:shadow-neu transition-all flex flex-col items-end gap-1 select-none pointer-events-none">
-                        <span className="text-[9px] font-mono font-bold text-neu-accent leading-none uppercase tracking-tight whitespace-nowrap">
-                          {project.tags[0]} (+{getTagProjectCount(project.tags[0])} project experience)
-                        </span>
-                        <span className="text-[8px] font-mono text-neu-text-muted leading-none whitespace-nowrap">
-                          {Math.max(1, Math.ceil((project.markdown || '').split(/\s+/).filter(Boolean).length / 150))}m read
-                        </span>
-                      </div>
-
-                      {/* Spine Details */}
-                      <div className="w-full h-1 bg-black/10 rounded-full mb-2 shadow-inner"></div>
-                      <div className="w-full h-1 bg-black/10 rounded-full mb-4 shadow-inner"></div>
-                      
-                      <div className="flex-1 relative flex items-center justify-center">
-                        <span className="absolute whitespace-pre-wrap transform -rotate-90 origin-center text-[10px] md:text-xs font-mono font-bold tracking-widest text-white drop-shadow-md w-[220px] text-center leading-tight">
-                          {project.spineText}
-                        </span>
-                      </div>
-                      
-                      <div className="mt-4 flex flex-col items-center gap-2">
-                        <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-                        <Code2 size={12} className="text-white drop-shadow-sm" />
-                        <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-                      </div>
-                      
-                      {/* 3D Page Edge Effect */}
-                      <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-r from-transparent to-black/10 rounded-r-lg"></div>
-
-                      {/* Hover Actions Overlay */}
-                      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-4 p-2.5 z-30">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setFocusedProject(project);
-                          }}
-                          className="p-2.5 rounded-xl bg-neu-accent hover:bg-neu-accent/90 text-white shadow-md active:scale-95 transition-all flex items-center justify-center hover:scale-110"
-                          title="Focus / Spotlight"
-                        >
-                          <Sparkles size={16} />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedProject(project);
-                          }}
-                          className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10 active:scale-95 transition-all flex items-center justify-center hover:scale-110"
-                          title="Open Dev Log"
-                        >
-                          <BookOpen size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
+                    project={project}
+                    setSelectedProject={setSelectedProject}
+                    setFocusedProject={setFocusedProject}
+                    isDark={isDark}
+                    getTagProjectCount={getTagProjectCount}
+                  />
                 ))}
               </AnimatePresence>
             </motion.div>
@@ -1622,12 +1976,32 @@ export default function Portfolio() {
           <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8">Technical Proficiency</h2>
           <div className="grid grid-cols-1 gap-8">
             {/* Backend */}
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
               <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Core Backend</h3>
               
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Node.js</span>
+                  <span>Node.js / TypeScript</span>
+                  <span className="text-neu-accent">Advanced</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent h-2 rounded-full w-[92%]"></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                  <span>NestJS / Express</span>
+                  <span className="text-neu-accent">Advanced</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                  <span>REST API</span>
                   <span className="text-neu-accent">Advanced</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
@@ -1637,27 +2011,52 @@ export default function Portfolio() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>NestJS</span>
-                  <span className="text-neu-accent">Advanced</span>
+                  <span>GraphQL</span>
+                  <span className="text-neu-accent/70">Learning</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[85%]"></div>
+                  <div className="bg-neu-accent/50 h-2 rounded-full w-[40%]"></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Bun</span>
+                  <span>Go</span>
                   <span className="text-neu-accent">Intermediate</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[60%]"></div>
+                  <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Go / Microservices</span>
+                  <span>Python</span>
+                  <span className="text-neu-accent">Intermediate</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* AI & Automation */}
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+              <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">AI & Automation</h3>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                  <span>LangGraph</span>
+                  <span className="text-neu-accent">Intermediate</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent h-2 rounded-full w-[72%]"></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                  <span>LangChain</span>
                   <span className="text-neu-accent">Intermediate</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
@@ -1667,46 +2066,66 @@ export default function Portfolio() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Python / LLM Agents</span>
+                  <span>OpenAI / LLM APIs</span>
                   <span className="text-neu-accent">Intermediate</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[65%]"></div>
+                  <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted">
+                  <span>RAG</span>
+                  <span className="text-neu-accent/70">Learning</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent/50 h-2 rounded-full w-[45%]"></div>
                 </div>
               </div>
             </div>
 
             {/* Infrastructure */}
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
               <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Infrastructure & Data</h3>
               
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>SQL (PostgreSQL / SQL Server)</span>
+                  <span>PostgreSQL / SQL Server</span>
                   <span className="text-neu-accent">Advanced</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[85%]"></div>
+                  <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-mono text-neu-text-muted flex-wrap gap-x-2">
+                  <span>Message Queues (Azure Service Bus, BullMQ, Redis)</span>
+                  <span className="text-neu-accent">Advanced</span>
+                </div>
+                <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
+                  <div className="bg-neu-accent h-2 rounded-full w-[86%]"></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Redis / Message Queues</span>
+                  <span>Docker / Kubernetes</span>
                   <span className="text-neu-accent">Advanced</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[85%]"></div>
+                  <div className="bg-neu-accent h-2 rounded-full w-[82%]"></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                  <span>Azure / Kubernetes (K8s)</span>
+                  <span>Azure</span>
                   <span className="text-neu-accent">Advanced</span>
                 </div>
                 <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                  <div className="bg-neu-accent h-2 rounded-full w-[80%]"></div>
+                  <div className="bg-neu-accent h-2 rounded-full w-[84%]"></div>
                 </div>
               </div>
             </div>
@@ -1716,7 +2135,7 @@ export default function Portfolio() {
         {/* Currently Learning */}
         <div className="space-y-8">
           <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight mb-8 opacity-0 hidden lg:block select-none">Activity</h2>
-          <div className="p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
                 <PenTool size={20} />
@@ -1731,7 +2150,7 @@ export default function Portfolio() {
             </a>
           </div>
 
-          <div className="p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
                 <Briefcase size={20} />
@@ -1743,7 +2162,7 @@ export default function Portfolio() {
             </p>
           </div>
 
-          <div className="p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
                 <BrainCircuit size={20} />
@@ -1758,18 +2177,17 @@ export default function Portfolio() {
       </section>
 
       {/* Skill Tree Section */}
-      <section className="max-w-7xl mx-auto mt-24 mb-24 px-4 sm:px-6 lg:px-8">
-        <SkillTree isDark={isDark} />
+      <section id="skills" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20">
+        <SkillTree isDark={isDark} isLoading={isLoading} />
       </section>
 
       {/* Experience Section */}
-      <section className="max-w-7xl mx-auto mt-24 mb-24">
-        <div className="flex flex-col md:flex-row gap-12 items-start">
-          <div className="flex-1 space-y-8">
-            <h2 className="text-3xl font-display font-bold text-neu-text mb-8 tracking-tight">Experience</h2>
+      <section id="experience" className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20 overflow-hidden">
+        <div className="w-full space-y-8 max-w-full overflow-hidden">
+          <h2 className="text-3xl font-display font-bold text-neu-text mb-8 tracking-tight">Experience</h2>
             
             {/* Git Activity & Contribution Dashboard */}
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
+            <div className="p-4 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6 max-w-full overflow-hidden">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6">
                 <div>
                   <div className="flex items-center gap-2 text-neu-accent mb-1">
@@ -1808,7 +2226,44 @@ export default function Portfolio() {
 
               {/* Chart Display Area */}
               <div className="h-72 w-full flex items-center justify-center">
-                {!mounted ? (
+                {isLoading ? (
+                  <div className="w-full h-full flex flex-col justify-between p-4 animate-pulse">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="h-3 w-24 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+                      <div className="h-3 w-16 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
+                    </div>
+                    {/* Simulated Chart gridlines and wave path */}
+                    <div className="flex-1 w-full border-b border-l border-gray-300/30 dark:border-zinc-700/30 relative flex items-end">
+                      {/* Gridlines */}
+                      <div className="absolute inset-0 flex flex-col justify-between py-4 pointer-events-none">
+                        <div className="w-full h-[1px] bg-gray-300/10 dark:bg-zinc-700/10"></div>
+                        <div className="w-full h-[1px] bg-gray-300/10 dark:bg-zinc-700/10"></div>
+                        <div className="w-full h-[1px] bg-gray-300/10 dark:bg-zinc-700/10"></div>
+                        <div className="w-full h-[1px] bg-gray-300/10 dark:bg-zinc-700/10"></div>
+                      </div>
+                      {/* Pulsing simulated charts */}
+                      {chartType === 'temporal' ? (
+                        <svg className="absolute inset-0 w-full h-full opacity-20 text-neu-accent" viewBox="0 0 100 100" preserveAspectRatio="none">
+                          <path d="M0,80 Q20,40 40,60 T80,20 T100,50 L100,100 L0,100 Z" fill="currentColor" />
+                        </svg>
+                      ) : (
+                        <div className="absolute inset-0 flex items-end justify-around px-4 pt-10 gap-2">
+                          <div className="w-8 bg-neu-accent/20 rounded-t h-[40%]"></div>
+                          <div className="w-8 bg-neu-accent/20 rounded-t h-[75%]"></div>
+                          <div className="w-8 bg-neu-accent/20 rounded-t h-[55%]"></div>
+                          <div className="w-8 bg-neu-accent/20 rounded-t h-[90%]"></div>
+                          <div className="w-8 bg-neu-accent/20 rounded-t h-[30%]"></div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between mt-2 px-6">
+                      <div className="h-3 w-10 bg-gray-300/20 dark:bg-zinc-700/30 rounded"></div>
+                      <div className="h-3 w-10 bg-gray-300/20 dark:bg-zinc-700/30 rounded"></div>
+                      <div className="h-3 w-10 bg-gray-300/20 dark:bg-zinc-700/30 rounded"></div>
+                      <div className="h-3 w-10 bg-gray-300/20 dark:bg-zinc-700/30 rounded"></div>
+                    </div>
+                  </div>
+                ) : !mounted ? (
                   <div className="text-neu-text-muted font-mono text-xs">Initializing chart engine...</div>
                 ) : chartType === 'temporal' ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -1946,7 +2401,7 @@ export default function Portfolio() {
                 </div>
 
                 {/* Heatmap Grid Wrapper */}
-                <div className="relative p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <div className="min-w-[720px] flex flex-col">
                     {/* Month labels */}
                     <div className="flex pl-8 mb-2 h-4 relative">
@@ -2026,79 +2481,66 @@ export default function Portfolio() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="absolute top-8 right-8 text-neu-text-muted font-mono text-sm">2025 - Present</div>
-              <h3 className="text-xl font-bold text-neu-text mb-1 group-hover:text-neu-accent transition-colors">Backend Developer (Contract) / Current Work</h3>
-              <p className="text-neu-accent font-medium mb-4">PT Serasi Autoraya (SERA) — Astra Group</p>
-              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Backend Developer (Contract) / Current Work</h3>
+                  <p className="text-neu-accent font-medium">PT Serasi Autoraya (SERA) — Astra Group</p>
+                </div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2025 - Present</div>
+              </div>
+              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Migrating legacy .NET Driver Management System to Node.js microservices.</li>
                 <li>Integrating SAP, Mekari Talenta, FMS 2.0 via Azure Service Bus for payroll and logistics data.</li>
               </ul>
             </div>
             
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="absolute top-8 right-8 text-neu-text-muted font-mono text-sm">2024 - 2025</div>
-              <h3 className="text-xl font-bold text-neu-text mb-1 group-hover:text-neu-accent transition-colors">Software Engineer</h3>
-              <p className="text-neu-accent font-medium mb-4">Telkomsel (Vendor)</p>
-              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Software Engineer</h3>
+                  <p className="text-neu-accent font-medium">Telkomsel (Vendor)</p>
+                </div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2024 - 2025</div>
+              </div>
+              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Built bare-metal Kubernetes + IoT monitoring system.</li>
                 <li>Saved 1,800–2,500 USD/month by transitioning away from managed cloud.</li>
               </ul>
             </div>
             
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="absolute top-8 right-8 text-neu-text-muted font-mono text-sm">2023 - 2024</div>
-              <h3 className="text-xl font-bold text-neu-text mb-1 group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
-              <p className="text-neu-accent font-medium mb-4">PT Hensel Davest Indonesia / PT Doeku</p>
-              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
+                  <p className="text-neu-accent font-medium">PT Hensel Davest Indonesia / PT Doeku</p>
+                </div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2023 - 2024</div>
+              </div>
+              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Solo OJK & BI compliance engineering.</li>
                 <li>Rewrote P2P lending Laravel monolith to NestJS microservices.</li>
               </ul>
             </div>
 
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
-              <div className="absolute top-8 right-8 text-neu-text-muted font-mono text-sm">2022 - 2023</div>
-              <h3 className="text-xl font-bold text-neu-text mb-1 group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
-              <p className="text-neu-accent font-medium mb-4">PT Maccon Generasi Mandiri</p>
-              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
+                  <p className="text-neu-accent font-medium">PT Maccon Generasi Mandiri</p>
+                </div>
+                <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-2.5 py-1 rounded-lg w-fit">2022 - 2023</div>
+              </div>
+              <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
                 <li>Rebuilt vendor platform in-house, cutting operational software costs significantly.</li>
                 <li>Developed core business logic and database schemas for inventory and sales tracking.</li>
               </ul>
             </div>
           </div>
-          
-          <div className="w-full md:w-96 space-y-8 sticky top-12">
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu-inset text-center">
-              <h3 className="text-xl font-display font-bold text-neu-text mb-4">Resume</h3>
-              <p className="text-neu-text-muted font-light mb-8">Download my full professional background and project history.</p>
-              <button className="w-full py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm transition-all flex items-center justify-center gap-2" onClick={() => window.alert('This would trigger a CV download!')}>
-                Download CV <Download size={18} />
-              </button>
-            </div>
-            
-            <div className="p-8 rounded-3xl bg-neu-bg shadow-neu">
-              <h3 className="text-xl font-display font-bold text-neu-text mb-6">Let&apos;s Connect</h3>
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); window.alert('Form submitted!') }}>
-                <div>
-                  <input type="text" placeholder="Your Name" className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all" />
-                </div>
-                <div>
-                  <input type="email" placeholder="Email Address" className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all" />
-                </div>
-                <div>
-                  <textarea rows={4} placeholder="Your Message" className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none"></textarea>
-                </div>
-                <button type="submit" className="w-full py-4 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm transition-all hover:text-neu-accent">
-                  Send Message
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="max-w-7xl mx-auto mb-24 px-4 md:px-0 overflow-visible">
+      <section className="max-w-7xl mx-auto mb-24 overflow-visible">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
             <div className="flex items-center gap-2 text-neu-accent mb-2">
@@ -2122,7 +2564,7 @@ export default function Portfolio() {
               <div
                 key={`${t.id}-dup-${index}`}
                 className={cn(
-                  "flex-shrink-0 w-full sm:w-[440px] p-8 rounded-3xl bg-neu-bg shadow-neu relative flex flex-col justify-between group transition-all duration-500 ease-out border border-white/5",
+                  "flex-shrink-0 w-full sm:w-[440px] p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative flex flex-col justify-between group transition-all duration-500 ease-out border border-white/5",
                   "transform-gpu perspective-1000",
                   // Alternating rotation to create a natural 3D cylindrical rotation look
                   index % 2 === 0 ? "rotate-y-4 -rotate-1" : "-rotate-y-4 rotate-1",
@@ -2182,16 +2624,56 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* Contact & Resume Section */}
+      <section id="contact" className="max-w-7xl mx-auto mt-24 mb-16 scroll-mt-20">
+        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+          {/* Resume Card */}
+          <div className="flex-1 p-6 sm:p-8 md:p-10 rounded-3xl bg-neu-bg shadow-neu flex flex-col justify-between text-center lg:text-left relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div>
+              <div className="inline-flex items-center gap-2 text-neu-accent mb-4">
+                <FileText size={18} />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider">Professional CV</span>
+              </div>
+              <h2 className="text-3xl font-display font-bold text-neu-text mb-4">Resume</h2>
+              <p className="text-neu-text-muted font-light mb-8 max-w-md leading-relaxed">
+                Download my full professional background and project history detailing my expertise in Node.js, Go, microservices, and AI integrations.
+              </p>
+            </div>
+            <button 
+              className="w-full lg:w-fit px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 animate-bounce-subtle" 
+              onClick={() => triggerToast('Professional CV download initiated!')}
+            >
+              Download CV <Download size={18} />
+            </button>
+          </div>
+          
+          {/* Let's Connect Card */}
+          <div className="flex-1 p-6 sm:p-8 md:p-10 rounded-3xl bg-neu-bg shadow-neu border border-white/5">
+            <div className="inline-flex items-center gap-2 text-neu-accent mb-4">
+              <Mail size={18} className="animate-pulse" />
+              <span className="font-mono text-xs font-bold uppercase tracking-wider">Get In Touch</span>
+            </div>
+            <h2 className="text-3xl font-display font-bold text-neu-text mb-6">Let&apos;s Connect</h2>
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); triggerToast('Message sent! I will get back to you shortly.'); }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" placeholder="Your Name" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20" />
+                <input type="email" placeholder="Email Address" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20" />
+              </div>
+              <div>
+                <textarea rows={4} placeholder="Your Message" required className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20"></textarea>
+              </div>
+              <button type="submit" className="w-full py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm transition-all hover:scale-[1.01] active:scale-95">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto py-12 border-t border-gray-300/50 dark:border-gray-700/50 text-center">
-        <a 
-          href="https://github.com/awaluddin-dev/portfolio" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="inline-flex items-center gap-2 text-sm font-mono text-neu-text-muted hover:text-neu-accent transition-colors"
-        >
-          <Code2 size={16} /> View Source Code
-        </a>
+      <footer className="max-w-7xl mx-auto py-12 border-t border-gray-300/50 dark:border-gray-700/50 text-center text-xs font-mono text-neu-text-muted">
+        <p>© {new Date().getFullYear()} Awaluddin. All rights reserved.</p>
       </footer>
 
       {/* Project Modal */}
@@ -2405,6 +2887,122 @@ export default function Portfolio() {
                 </motion.div>
               </AnimatePresence>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Quick-Send Availability Inquiry Modal */}
+      <AnimatePresence>
+        {showInquiryModal && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowInquiryModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 160, damping: 22 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-neu-bg rounded-3xl shadow-neu-modal w-full max-w-lg p-6 sm:p-8 relative border border-white/5"
+            >
+              <button 
+                onClick={() => setShowInquiryModal(false)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-neu-text transition-colors"
+                title="Close"
+              >
+                <X size={16} />
+              </button>
+
+              <div className="flex items-center gap-2 text-neu-accent mb-3">
+                <Sparkles size={18} className="animate-pulse" />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider">Availability Inquiry</span>
+              </div>
+
+              <h3 className="text-2xl font-display font-bold text-neu-text mb-2">
+                Work with Awaluddin
+              </h3>
+              
+              <p className="text-sm text-neu-text-muted mb-6 leading-relaxed">
+                Awaluddin is currently <span className={cn("font-bold", portfolioStatus === 'available' ? "text-green-500" : "text-amber-500")}>
+                  {portfolioStatus === 'available' ? 'Available for projects' : 'Currently busy'}
+                </span>. Submit your inquiry below and get a reply within 24 hours.
+              </p>
+
+              <form 
+                className="space-y-4" 
+                onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  setShowInquiryModal(false); 
+                  triggerToast('Availability inquiry sent successfully! Thank you.'); 
+                }}
+              >
+                <div>
+                  <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Your Name</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="E.g., Sarah Jenkins" 
+                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Your Email</label>
+                  <input 
+                    type="email" 
+                    required 
+                    placeholder="E.g., sarah@company.com" 
+                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Project Type</label>
+                  <select 
+                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu text-neu-text focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm"
+                  >
+                    <option value="contract">Freelance / Contract Project</option>
+                    <option value="fulltime">Full-time Opportunity</option>
+                    <option value="consulting">Architecture Advisory / Consulting</option>
+                    <option value="other">Other Inquiry</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Message</label>
+                  <textarea 
+                    rows={4} 
+                    required 
+                    placeholder="Briefly describe your project goals, stack, or role details..." 
+                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20 text-sm"
+                  ></textarea>
+                </div>
+                
+                <button 
+                  type="submit" 
+                  className="w-full py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.01] active:scale-95 transition-all mt-2 text-sm"
+                >
+                  Send Inquiry
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Premium Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="fixed bottom-8 left-1/2 -translate-y-1/2 z-50 px-6 py-3.5 rounded-2xl bg-black/90 dark:bg-neutral-950 text-white font-mono text-xs shadow-neu border border-white/10 flex items-center gap-2.5 backdrop-blur-md"
+          >
+            <Sparkles className="text-neu-accent animate-pulse" size={14} />
+            <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
