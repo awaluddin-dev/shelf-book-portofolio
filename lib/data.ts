@@ -9,6 +9,7 @@ export const projects = [
     coverColor: 'bg-indigo-900',
     spineText: 'AURAFLOW-AI // DISTRIBUTED AGENT ECOSYSTEM',
     date: '2026',
+    github: 'https://github.com/awaluddin-dev/auraflow-ai',
     stats: [
       { label: 'System Latency', value: '-35%' },
       { label: 'Processing Speed', value: '2.5x' },
@@ -79,6 +80,7 @@ At SERA, I am tasked with migrating a legacy .NET Driver Management System to a 
     coverColor: 'bg-emerald-900',
     spineText: 'LEDGERFLOW // WALLET API & OCC',
     date: '2024',
+    github: 'https://github.com/awaluddin-dev/ledgerflow',
     stats: [
       { label: 'Concurrency Safety', value: '100%' },
       { label: 'Avg Endpoint Latency', value: '<15ms' },
@@ -109,6 +111,7 @@ The primary technical achievement is the robust handling of race conditions—a 
     coverColor: 'bg-orange-900',
     spineText: 'TELKOMSEL // BARE-METAL K8S & IOT',
     date: '2024',
+    github: 'https://github.com/awaluddin-dev/telkomsel-iot-monitor',
     stats: [
       { label: 'Monthly Cost Saved', value: '$1.8K-$2.5K' },
       { label: 'Server Cost Cut', value: '70%' },
@@ -136,6 +139,7 @@ Built and deployed an on-premise, bare-metal Kubernetes cluster tailored for an 
     coverColor: 'bg-rose-900',
     spineText: 'DOEKU // OJK COMPLIANCE & MICROSERVICES',
     date: '2023 - 2024',
+    github: 'https://github.com/awaluddin-dev/doeku-p2p-lending',
     stats: [
       { label: 'Endpoint Latency', value: '-45%' },
       { label: 'OJK Audit Findings', value: '0 Critical' },
