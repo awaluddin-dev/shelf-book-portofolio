@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --color-neu-bg: #e0e5ec;
+  --color-neu-text: #1a1a1a;
+  --color-neu-text-muted: #4b5563;
+  --color-neu-accent: #4f46e5;
+
+  --shadow-neu: 9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5);
+  --shadow-neu-inset: inset 6px 6px 10px 0 rgba(163,177,198,0.7), inset -6px -6px 10px 0 rgba(255,255,255,0.8);
+  --shadow-neu-sm: 4px 4px 8px rgba(163,177,198,0.5), -4px -4px 8px rgba(255,255,255,0.6);
+  --shadow-neu-modal: 20px 20px 40px rgba(163,177,198,0.7), -20px -20px 40px rgba(255,255,255,0.6);
+}
+
+.dark {
+  --color-neu-bg: #1a1b1e;
+  --color-neu-text: #27ec6f;
+  --color-neu-text-muted: #b2e4bc;
+  --color-neu-accent: #4ade80;
+
+  --shadow-neu: 7px 7px 15px rgba(0,0,0,0.6), -7px -7px 15px rgba(38,40,46,0.8);
+  --shadow-neu-inset: inset 5px 5px 10px rgba(0,0,0,0.6), inset -5px -5px 10px rgba(38,40,46,0.8);
+  --shadow-neu-sm: 4px 4px 8px rgba(0,0,0,0.6), -4px -4px 8px rgba(38,40,46,0.8);
+  --shadow-neu-modal: 15px 15px 35px rgba(0,0,0,0.7), -15px -15px 35px rgba(38,40,46,0.6);
+}
+
+@theme {
+  --color-neu-bg: var(--color-neu-bg);
+  --color-neu-text: var(--color-neu-text);
+  --color-neu-text-muted: var(--color-neu-text-muted);
+  --color-neu-accent: var(--color-neu-accent);
+  
+  --shadow-neu: var(--shadow-neu);
+  --shadow-neu-inset: var(--shadow-neu-inset);
+  --shadow-neu-sm: var(--shadow-neu-sm);
+  --shadow-neu-modal: var(--shadow-neu-modal);
+}
+
+body {
+  background-color: var(--color-neu-bg);
+  color: var(--color-neu-text);
+}

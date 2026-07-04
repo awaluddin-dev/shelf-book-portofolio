@@ -1,0 +1,6 @@
+{
+  "name": "Awaluddin Portfolio",
+  "description": "Backend Developer portfolio featuring system architecture and technical projects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
