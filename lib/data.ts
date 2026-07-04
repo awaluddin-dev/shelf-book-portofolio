@@ -165,3 +165,48 @@ The legacy Laravel monolith was suffering from performance bottlenecks and tight
 `
   }
 ];
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  photoUrl: string;
+  testimonial: string;
+  relationship: string;
+  tags: string[];
+}
+
+export const testimonials: Testimonial[] = [
+  {
+    id: 't1',
+    name: 'Andi Wijaya',
+    role: 'Chief Technology Officer',
+    company: 'PT Hensel Davest Indonesia',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200',
+    testimonial: 'Awaluddin is an exceptional backend engineer. As a solo developer, he navigated and executed the migration of our legacy Laravel P2P lending monolith to NestJS microservices. He ensured 100% compliance with strict OJK and Bank Indonesia regulations, successfully passing our regulatory audit with zero critical findings.',
+    relationship: 'Managed Awaluddin directly',
+    tags: ['NestJS', 'Microservices', 'Compliance']
+  },
+  {
+    id: 't2',
+    name: 'Siti Rahma',
+    role: 'Lead Systems Integrator',
+    company: 'PT Serasi Autoraya (Astra Group)',
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200',
+    testimonial: 'Awaluddin has been vital to our .NET to Node.js microservices migration. He possesses excellent knowledge of asynchronous processing and message brokers, setting up Azure Service Bus integration seamlessly for our payroll and logistics operations. He brings deep standards of code cleanliness and execution velocity.',
+    relationship: 'Worked together closely',
+    tags: ['Azure Service Bus', 'Node.js', 'Enterprise']
+  },
+  {
+    id: 't3',
+    name: 'Budi Santoso',
+    role: 'Head of IoT Solutions',
+    company: 'Telkomsel Vendor Division',
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200&h=200',
+    testimonial: 'Deploying our high-throughput IoT monitoring systems on bare-metal Kubernetes was a major challenge. Awaluddin tuned scheduling, configured reliable state mechanisms, and engineered the cluster perfectly. His solution saved the client over $1,800 to $2,500 in monthly managed cloud costs while maintaining a 99.99% ingestion uptime.',
+    relationship: 'Client/Technical Partner',
+    tags: ['Kubernetes', 'IoT', 'DevOps']
+  }
+];
+
