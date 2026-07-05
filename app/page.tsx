@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'motion/react';
-import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
+import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus, prism } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { projects, testimonials } from '@/lib/data';
 import { cn } from '@/lib/utils';
@@ -1422,13 +1424,68 @@ const legendLevels = [
   { level: 4, darkBg: 'bg-emerald-400', lightBg: 'bg-indigo-600', label: 'Very high (8+ contributions)' }
 ];
 
+const roadmapItems = [
+  {
+    quarter: 'Q3 2026',
+    title: 'Systems & High-Performance Services',
+    tech: 'Rust & WebAssembly',
+    icon: <Code2 size={20} />,
+    description: 'Transitioning performance-critical modules to memory-safe systems programming to design ultra-low latency WebAssembly edge services.',
+    status: 'Plan Formulated',
+    depth: 'Intermediate Focus',
+    color: 'from-purple-500 to-indigo-600',
+    darkColor: 'from-emerald-500 to-teal-500',
+    topics: ['Ownership & Borrow Checker', 'Tokio Async Runtime', 'WASM Edge Handlers', 'Zero-cost Abstractions'],
+    projects: ['WASM-based HTTP Request Filter', 'High-performance API Proxy in Rust']
+  },
+  {
+    quarter: 'Q4 2026',
+    title: 'Advanced Streaming & Event Architecture',
+    tech: 'Apache Kafka & Event Sourcing',
+    icon: <Database size={20} />,
+    description: 'Building robust, multi-region distributed streaming architectures with strict event ordering, transaction support, and message guarantees.',
+    status: 'Scheduled',
+    depth: 'Advanced Practice',
+    color: 'from-blue-500 to-cyan-500',
+    darkColor: 'from-emerald-400 to-emerald-600',
+    topics: ['Partitioning & Consumer Groups', 'Kafka Streams API', 'Schema Registry & Avro', 'Idempotent Producers'],
+    projects: ['Real-time Event Logging Pipeline', 'Transactional Event-Sourced Ledger']
+  },
+  {
+    quarter: 'Q1 2027',
+    title: 'Agentic Workflows & Cognitive Systems',
+    tech: 'LangGraph & Stateful Agents',
+    icon: <BrainCircuit size={20} />,
+    description: 'Evolving LLM integrations from standard RAG pipelines into autonomous stateful multi-agent systems that learn and adapt with memory.',
+    status: 'Research Phase',
+    depth: 'Architect Level',
+    color: 'from-pink-500 to-rose-500',
+    darkColor: 'from-green-400 to-emerald-500',
+    topics: ['Stateful Multi-Agent Graphs', 'Human-in-the-loop Workflows', 'Semantic Caching & Memory', 'Self-Correcting RAG'],
+    projects: ['Autonomous PR Reviewer Agent', 'Self-Improving Code Interpreter Engine']
+  },
+  {
+    quarter: 'Q2 2027',
+    title: 'Edge-Native WebAssembly Serverless',
+    tech: 'Wasmtime & Spin Runtime',
+    icon: <Globe size={20} />,
+    description: 'Leveraging WebAssembly System Interface (WASI) and modular compilation to deploy sandboxed, lightning-fast edge-native serverless functions.',
+    status: 'Exploration Phase',
+    depth: 'Intermediate Focus',
+    color: 'from-amber-500 to-orange-500',
+    darkColor: 'from-teal-400 to-emerald-400',
+    topics: ['WASI Preview 2', 'Component Model Architecture', 'Spin Serverless Framework', 'Secure Sandbox Environments'],
+    projects: ['Edge-Deployed GeoIP Middleware', 'Instant-boot Sandbox Function Orchestrator']
+  }
+];
+
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
   const [focusedProject, setFocusedProject] = useState<typeof projects[0] | null>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState<'temporal' | 'repository'>('temporal');
   const [hoveredMonth, setHoveredMonth] = useState<number | null>(null);
@@ -1439,9 +1496,17 @@ export default function Portfolio() {
   const shelfRef = useRef<HTMLDivElement>(null);
   const heatmapRef = useRef<HTMLDivElement>(null);
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('hero');
   const [hoveredDockId, setHoveredDockId] = useState<string | null>(null);
+  const [selectedRoadmapIndex, setSelectedRoadmapIndex] = useState(0);
   const [activeTooltipDate, setActiveTooltipDate] = useState<string | null>(null);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -1502,7 +1567,7 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
-    const sections = ['hero', 'projects', 'proficiency', 'insights', 'skills', 'experience', 'resume'];
+    const sections = ['hero', 'projects', 'proficiency', 'insights', 'skills', 'experience'];
     const observerOptions = {
       root: null,
       rootMargin: '-30% 0px -40% 0px',
@@ -1722,12 +1787,26 @@ export default function Portfolio() {
   };
 
   useEffect(() => {
-    setTimeout(() => setMounted(true), 0);
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTimeout(() => setIsDark(true), 0);
-      document.documentElement.classList.add('dark');
-    }
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          setIsDark(savedTheme === 'dark');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          setIsDark(true);
+        }
+      }
+      setMounted(true);
+    }, 0);
   }, []);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1756,29 +1835,78 @@ export default function Portfolio() {
   }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    localStorage.setItem('theme', nextDark ? 'dark' : 'light');
   };
 
   return (
     <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300 relative">
+      
+      {/* Animated Scroll Progress Bar */}
+      <motion.div
+        id="scroll-progress"
+        className="fixed top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-400 z-[100] origin-left"
+        style={{ scaleX }}
+      />
       
       {/* Sticky bottom dock navigation */}
       <motion.div
         initial={{ y: 100, x: "-50%", opacity: 0 }}
         animate={{ y: 0, x: "-50%", opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="fixed bottom-6 left-1/2 z-50 max-w-[95vw] sm:max-w-none p-1.5 rounded-2xl bg-white/70 dark:bg-black/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-neu-modal border border-indigo-200/50 dark:border-emerald-500/20 flex items-center transition-colors duration-300"
+        className="fixed bottom-6 left-1/2 z-50 max-w-[95vw] sm:max-w-none p-1.5 rounded-2xl bg-white/80 dark:bg-zinc-950/70 backdrop-blur-md shadow-[0_8px_30px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_30px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 flex items-center transition-all duration-300"
       >
         <div className="overflow-x-auto flex items-center gap-1 sm:gap-2 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] max-w-full sm:max-w-none">
+          <AnimatePresence>
+            {activeSection !== 'hero' && (
+              <motion.div 
+                key="backToTopContainer"
+                initial={{ opacity: 0, width: 0, scale: 0.5, marginRight: 0 }}
+                animate={{ opacity: 1, width: 'auto', scale: 1, marginRight: 8 }}
+                exit={{ opacity: 0, width: 0, scale: 0.5, marginRight: 0 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                className="flex items-center gap-1 sm:gap-2 overflow-hidden flex-shrink-0"
+              >
+                <button
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onMouseEnter={() => setHoveredDockId('scroll-top')}
+                  onMouseLeave={() => setHoveredDockId(null)}
+                  className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+                  aria-label="Scroll to Top"
+                >
+                  <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5 text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400">
+                    <ArrowUp size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  </div>
+                  <AnimatePresence>
+                    {hoveredDockId === 'scroll-top' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                        exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
+                        transition={{ type: 'spring', stiffness: 450, damping: 24 }}
+                        className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                      >
+                        Back to Top
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </button>
+                <div className="w-[1px] h-6 bg-purple-200/50 dark:bg-emerald-500/20 mx-1 flex-shrink-0" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {[
             { id: 'hero', label: 'Intro', icon: <Terminal size={16} className="sm:w-[18px] sm:h-[18px]" /> },
             { id: 'projects', label: 'Projects', icon: <BookOpen size={16} className="sm:w-[18px] sm:h-[18px]" /> },
             { id: 'proficiency', label: 'Proficiency', icon: <Cpu size={16} className="sm:w-[18px] sm:h-[18px]" /> },
             { id: 'insights', label: 'Insights', icon: <Layers size={16} className="sm:w-[18px] sm:h-[18px]" /> },
             { id: 'skills', label: 'Skills', icon: <BrainCircuit size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'experience', label: 'Experience', icon: <Briefcase size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'resume', label: 'Resume', icon: <FileText size={16} className="sm:w-[18px] sm:h-[18px]" /> }
+            { id: 'experience', label: 'Experience', icon: <Briefcase size={16} className="sm:w-[18px] sm:h-[18px]" /> }
           ].map((sec) => {
             const active = activeSection === sec.id;
             return (
@@ -1789,13 +1917,13 @@ export default function Portfolio() {
                 }}
                 onMouseEnter={() => setHoveredDockId(sec.id)}
                 onMouseLeave={() => setHoveredDockId(null)}
-                className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-indigo-50 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+                className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
                 aria-label={sec.label}
               >
                 {active && (
                   <motion.div
                     layoutId="activeDockButton"
-                    className="absolute inset-0 bg-indigo-50 dark:bg-emerald-950/45 rounded-xl border border-indigo-200/50 dark:border-emerald-500/30"
+                    className="absolute inset-0 bg-purple-100/60 dark:bg-emerald-950/45 rounded-xl border border-purple-200/40 dark:border-emerald-500/30"
                     transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                   />
                 )}
@@ -1803,8 +1931,8 @@ export default function Portfolio() {
                   className={cn(
                     "relative z-10 transition-transform duration-300 group-hover:scale-110",
                     active
-                      ? "text-indigo-600 dark:text-emerald-400"
-                      : "text-indigo-500/70 dark:text-emerald-500/75 group-hover:text-indigo-600 dark:group-hover:text-emerald-400"
+                      ? "text-purple-600 dark:text-emerald-400"
+                      : "text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400"
                   )}
                 >
                   {sec.icon}
@@ -1816,10 +1944,10 @@ export default function Portfolio() {
                       animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                       exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
                       transition={{ type: 'spring', stiffness: 450, damping: 24 }}
-                      className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-950/80 backdrop-blur-md text-indigo-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(99,102,241,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-indigo-500/20 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                      className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
                     >
                       {sec.label}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/90 dark:bg-zinc-950/80 border-r border-b border-indigo-500/20 dark:border-emerald-500/20"></div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1828,20 +1956,20 @@ export default function Portfolio() {
           })}
 
           {/* Vertical divider */}
-          <div className="w-[1px] h-6 bg-indigo-200/50 dark:bg-emerald-500/20 mx-1 flex-shrink-0" />
+          <div className="w-[1px] h-6 bg-purple-200/50 dark:bg-emerald-500/20 mx-1 flex-shrink-0" />
 
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             onMouseEnter={() => setHoveredDockId('theme')}
             onMouseLeave={() => setHoveredDockId(null)}
-            className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-indigo-50 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+            className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
             aria-label="Toggle Theme"
           >
             <div
               className={cn(
                 "relative z-10 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110",
-                "text-indigo-500/70 dark:text-emerald-500/75 group-hover:text-indigo-600 dark:group-hover:text-emerald-400"
+                "text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400"
               )}
             >
               {isDark ? (
@@ -1857,10 +1985,10 @@ export default function Portfolio() {
                   animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                   exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 24 }}
-                  className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-950/80 backdrop-blur-md text-indigo-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(99,102,241,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-indigo-500/20 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                  className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
                 >
                   {isDark ? 'Light Mode' : 'Dark Mode'}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/90 dark:bg-zinc-950/80 border-r border-b border-indigo-500/20 dark:border-emerald-500/20"></div>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1868,135 +1996,154 @@ export default function Portfolio() {
         </div>
       </motion.div>
 
-      {/* Header Section */}
-      <header id="hero" className="max-w-7xl mx-auto mb-16 md:mb-24 scroll-mt-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-gray-300/50 dark:border-gray-700/50 pb-8 transition-colors duration-300">
-          <div>
+      {/* Header Section - Full One Display */}
+      <header id="hero" className="max-w-7xl mx-auto min-h-[90vh] md:min-h-[85vh] flex flex-col justify-center scroll-mt-20 py-12 border-b border-gray-300/50 dark:border-gray-700/50">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-8 flex flex-col justify-center">
+            {/* Headline */}
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-display font-bold tracking-tight text-neu-text mb-4 drop-shadow-sm transition-colors duration-300"
+              className="text-5xl md:text-7xl font-display font-extrabold tracking-tight text-neu-text mb-4 drop-shadow-sm transition-colors duration-300"
             >
               Awaluddin
             </motion.h1>
+
+            {/* Subheadline */}
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-lg md:text-xl text-neu-text-muted max-w-2xl font-light mb-6 transition-colors duration-300"
+              className="text-lg md:text-xl font-display font-bold text-neu-accent mb-4 transition-colors duration-300"
             >
-              Backend Engineer & AI Integrator.<br className="hidden md:block"/>
-              Specializing in Node.js, Go, and AI-driven backend systems for enterprise & fintech.
+              Backend Engineer — Integrating LLMs into Production Systems
             </motion.p>
-            
+
+            {/* Body */}
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="text-sm md:text-base text-neu-text-muted max-w-3xl font-light mb-6 leading-relaxed transition-colors duration-300"
+            >
+              Node.js & Go engineer building async, event-driven backend systems for enterprise & fintech. I ship LLM integrations into production — not train models in notebooks.
+            </motion.p>
+
+            {/* Metric Strip */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap items-center gap-4 text-sm font-mono text-neu-text-muted"
+              className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-mono text-neu-text font-semibold mb-6 bg-neu-bg shadow-neu-inset px-4 py-3 rounded-2xl border border-white/5 w-fit"
             >
-              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-neu-bg shadow-neu-inset text-neu-accent font-bold">
-                <Globe size={14} /> Remote Only
-              </span>
+              <span className="flex items-center gap-1.5"><Code2 size={14} className="text-neu-accent" /> 5+ Years Engineering</span>
+              <span className="text-neu-text-muted/45 select-none">·</span>
+              <span className="flex items-center gap-1.5"><Briefcase size={14} className="text-neu-accent" /> Enterprise & Fintech</span>
+              <span className="text-neu-text-muted/45 select-none">·</span>
+              <span className="flex items-center gap-1.5 text-emerald-500 dark:text-emerald-400 font-bold"><TrendingUp size={14} /> $18K/yr Infra Savings</span>
+              <span className="text-neu-text-muted/45 select-none">·</span>
+              <span className="flex items-center gap-1.5"><MapPin size={14} className="text-neu-accent" /> Currently @ Astra Group</span>
+            </motion.div>
 
-              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-neu-bg shadow-neu-inset text-neu-accent font-bold">
-                <Activity size={14} className="text-emerald-500 dark:text-emerald-400 animate-pulse" /> Page Load: {loadTime ? `${loadTime}ms` : 'Measuring...'}
+            {/* Status Line */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs md:text-sm font-mono text-neu-text-muted mb-10"
+            >
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-neu-text">
+                <Globe size={14} className="text-neu-accent" /> Remote Only
               </span>
+              <span className="text-neu-text-muted/45 select-none">·</span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-neu-text">
+                <Calendar size={14} className="text-neu-accent" /> UTC+7 (Jakarta)
+              </span>
+              <span className="text-neu-text-muted/45 select-none">·</span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-emerald-500 dark:text-emerald-400">
+                <Sparkles size={14} className="animate-pulse" /> Open to Opportunities
+              </span>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap gap-4"
+            >
+              <button
+                onClick={() => {
+                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group"
+              >
+                <BookOpen size={16} className="group-hover:rotate-12 transition-transform" /> View Projects
+              </button>
               
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setShowInquiryModal(true)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-neu-bg shadow-neu hover:shadow-neu-sm cursor-pointer transition-all hover:scale-105 active:scale-95 border",
-                    portfolioStatus === 'available' 
-                      ? "text-green-500 border-green-500/20" 
-                      : "text-amber-500 border-amber-500/20"
-                  )}
-                  title="Click to send a quick availability inquiry"
-                >
-                  <div className={cn(
-                    "w-2 h-2 rounded-full animate-pulse",
-                    portfolioStatus === 'available' ? "bg-green-500" : "bg-amber-500"
-                  )}></div>
-                  <span className="font-bold text-xs uppercase tracking-wide">
-                    {portfolioStatus === 'available' ? 'Available for projects' : 'Currently busy'}
-                  </span>
-                  <span className="text-[9px] text-neu-text-muted font-normal ml-1 border-l border-gray-300/30 dark:border-gray-700/30 pl-1.5">
-                    Inquire
-                  </span>
-                </button>
-                
-                {/* Micro simulator buttons */}
-                <div className="flex bg-neu-bg p-0.5 rounded-lg shadow-neu-inset text-[9px] font-mono border border-white/5">
-                  <button 
-                    onClick={() => {
-                      setPortfolioStatus('available');
-                      triggerToast('Status set to: Available for Projects');
-                    }}
-                    className={cn(
-                      "px-1.5 py-0.5 rounded transition-all",
-                      portfolioStatus === 'available' 
-                        ? "bg-green-500/10 text-green-500 font-bold" 
-                        : "text-neu-text-muted hover:text-neu-text"
-                    )}
-                    title="Simulate Available Status"
-                  >
-                    Free
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setPortfolioStatus('busy');
-                      triggerToast('Status set to: Currently Busy');
-                    }}
-                    className={cn(
-                      "px-1.5 py-0.5 rounded transition-all",
-                      portfolioStatus === 'busy' 
-                        ? "bg-amber-500/10 text-amber-500 font-bold" 
-                        : "text-neu-text-muted hover:text-neu-text"
-                    )}
-                    title="Simulate Busy Status"
-                  >
-                    Busy
-                  </button>
-                </div>
+              <button
+                onClick={() => {
+                  triggerToast('Professional CV download initiated!');
+                }}
+                className="px-6 py-4 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-white/5 cursor-pointer"
+              >
+                <Download size={16} /> Download Resume
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowInquiryModal(true);
+                }}
+                className="px-6 py-4 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-white/5 cursor-pointer"
+              >
+                <Mail size={16} /> Contact Me
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Side Contact card for secondary visual hierarchy */}
+          <div className="lg:col-span-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col gap-4 w-full bg-neu-bg p-6 rounded-3xl shadow-neu border border-white/5"
+            >
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-neu-accent mb-2">
+                <Terminal size={14} /> Connection Terminal
+              </div>
+              <div className="flex flex-col gap-3 font-mono text-xs">
+                <a href="https://github.com/awaluddin-dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                  <span className="font-semibold text-neu-text">GitHub</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-neu-text-muted">awaluddin-dev</span>
+                    <Github size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                  </div>
+                </a>
+                <a href="https://linkedin.com/in/awaluddin0001" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                  <span className="font-semibold text-neu-text">LinkedIn</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-neu-text-muted">awaluddin0001</span>
+                    <Linkedin size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                  </div>
+                </a>
+                <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                  <span className="font-semibold text-neu-text">Dev.to</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-neu-text-muted">awaluddin</span>
+                    <PenTool size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                  </div>
+                </a>
+                <a href="mailto:awal14h@gmail.com" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                  <span className="font-semibold text-neu-text">Email</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-neu-text-muted">awal14h@gmail.com</span>
+                    <Mail size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                  </div>
+                </a>
               </div>
             </motion.div>
           </div>
-          
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-start md:items-end gap-3 text-xs md:text-sm font-mono text-neu-text-muted transition-colors duration-300 w-full md:w-auto mt-6 md:mt-0"
-          >
-            <div className="w-full md:w-auto flex justify-between md:justify-end items-center mb-4 md:hidden">
-              <span className="font-bold text-neu-text tracking-tight">Contact</span>
-            </div>
-            
-            <div className="flex flex-col gap-3 w-full md:w-auto md:text-right bg-neu-bg p-5 rounded-2xl shadow-neu-inset">
-              <a href="https://github.com/awaluddin-dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-start md:justify-end gap-2 hover:text-neu-accent transition-colors">
-                <span className="font-semibold text-neu-text">GitHub</span> <Github size={16} className="text-neu-accent" />
-              </a>
-              <a href="https://linkedin.com/in/awaluddin0001" target="_blank" rel="noopener noreferrer" className="flex items-center justify-start md:justify-end gap-2 hover:text-neu-accent transition-colors">
-                <span className="font-semibold text-neu-text">LinkedIn</span> <Linkedin size={16} className="text-neu-accent" />
-              </a>
-              <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="flex items-center justify-start md:justify-end gap-2 hover:text-neu-accent transition-colors">
-                <span className="font-semibold text-neu-text">Dev.to</span> <PenTool size={16} className="text-neu-accent" />
-              </a>
-              <a href="mailto:awal14h@gmail.com" className="flex items-center justify-start md:justify-end gap-2 hover:text-neu-accent transition-colors">
-                <span className="font-semibold text-neu-text">Email</span> <Mail size={16} className="text-neu-accent" />
-              </a>
-              <div className="flex flex-col items-start md:items-end text-neu-text-muted pt-2 mt-1" itemScope itemType="https://schema.org/PostalAddress">
-                <span className="flex items-center justify-start md:justify-end gap-1.5 font-bold text-neu-text text-xs tracking-tight">
-                  <MapPin size={13} className="text-neu-accent" />
-                  <span itemProp="addressLocality">Makassar</span>, <span itemProp="addressCountry">Indonesia</span>
-                </span>
-                <span className="text-[10px] text-neu-text-muted mt-0.5 font-mono">
-                  Timezone: UTC+8 (WITA)
-                </span>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </header>
 
@@ -2314,8 +2461,30 @@ export default function Portfolio() {
               </motion.div>
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="py-20 text-center text-neu-text-muted font-mono">
-              No volumes found matching your criteria.
+            <div className="py-16 px-4 text-center max-w-md mx-auto relative z-10">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-neu-bg shadow-neu text-neu-accent/60 mb-6 border border-white/5"
+              >
+                <Search size={28} />
+              </motion.div>
+              <h3 className="text-lg font-display font-bold text-neu-text tracking-tight mb-2">
+                No matching projects found
+              </h3>
+              <p className="text-xs md:text-sm text-neu-text-muted font-light mb-6 leading-relaxed">
+                We couldn&apos;t find any projects matching <span className="font-mono font-semibold text-neu-accent">&ldquo;{searchQuery}&rdquo;</span>{selectedCategory ? ` in category &ldquo;${selectedCategory}&rdquo;` : ''}. Try checking for typos or simplifying your search query.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory(null);
+                  triggerToast('Filters reset: Showing all projects');
+                }}
+                className="px-6 py-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+              >
+                Clear All Filters
+              </button>
             </div>
           ) : (
             <motion.div 
@@ -2515,6 +2684,199 @@ export default function Portfolio() {
                 <div className="bg-neu-accent h-2 rounded-full w-[84%]"></div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Learning Roadmap Sub-section */}
+        <div className="mt-20 border-t border-gray-300/40 dark:border-gray-800/40 pt-16">
+          <div className="mb-10 text-center md:text-left">
+            <div className="flex items-center gap-2 text-neu-accent mb-1 justify-center md:justify-start">
+              <Milestone size={18} />
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Learning Roadmap</span>
+            </div>
+            <h3 className="text-2xl font-display font-bold text-neu-text tracking-tight">Upcoming Tech & Specializations</h3>
+            <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Vision path for continuous learning and technology adoption over the upcoming quarters.</p>
+          </div>
+
+          {/* Timeline Graph Visualization */}
+          <div className="p-6 sm:p-10 rounded-3xl bg-neu-bg shadow-neu mb-10 overflow-hidden">
+            {/* Timeline track (Horizontal on desktop, vertical list on narrow screens) */}
+            <div className="relative my-8 px-4 hidden md:block">
+              {/* Connecting Line */}
+              <div className="absolute top-1/2 left-0 right-0 h-[3px] bg-gray-300 dark:bg-zinc-800/80 -translate-y-1/2 rounded-full" />
+              
+              {/* Dynamic filled progress track */}
+              <motion.div 
+                className="absolute top-1/2 left-0 h-[3px] bg-neu-accent -translate-y-1/2 rounded-full origin-left"
+                initial={{ width: '0%' }}
+                animate={{ width: `${(selectedRoadmapIndex / (roadmapItems.length - 1)) * 100}%` }}
+                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+              />
+
+              {/* Milestones wrapper */}
+              <div className="relative flex justify-between">
+                {roadmapItems.map((item, index) => {
+                  const isSelected = selectedRoadmapIndex === index;
+                  const isPast = index <= selectedRoadmapIndex;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedRoadmapIndex(index)}
+                      className="flex flex-col items-center group cursor-pointer relative z-10 focus:outline-none"
+                    >
+                      {/* Quarter Label */}
+                      <span className={cn(
+                        "font-mono text-[11px] font-bold tracking-wider mb-3 transition-colors duration-300 uppercase",
+                        isSelected ? "text-neu-accent font-extrabold" : "text-neu-text-muted group-hover:text-neu-text"
+                      )}>
+                        {item.quarter}
+                      </span>
+
+                      {/* Interactive Circle Node */}
+                      <div className="relative flex items-center justify-center">
+                        {/* Selected outer pulse ring */}
+                        {isSelected && (
+                          <motion.div 
+                            layoutId="activeRoadmapRing"
+                            className="absolute w-8 h-8 rounded-full border-2 border-neu-accent bg-neu-accent/10"
+                            transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+                          />
+                        )}
+                        <div className={cn(
+                          "w-4 h-4 rounded-full flex items-center justify-center border-2 transition-all duration-300 relative z-10",
+                          isSelected 
+                            ? "bg-neu-accent border-neu-accent scale-110 shadow-lg" 
+                            : isPast 
+                              ? "bg-neu-bg border-neu-accent" 
+                              : "bg-neu-bg border-gray-400 dark:border-zinc-700 group-hover:border-neu-text"
+                        )}>
+                          <div className={cn(
+                            "w-1.5 h-1.5 rounded-full",
+                            isSelected ? "bg-neu-bg" : isPast ? "bg-neu-accent" : "bg-transparent"
+                          )} />
+                        </div>
+                      </div>
+
+                      {/* Tech Badge name below */}
+                      <span className={cn(
+                        "mt-3 text-xs font-bold tracking-tight text-center max-w-[120px] transition-colors duration-300",
+                        isSelected ? "text-neu-text" : "text-neu-text-muted group-hover:text-neu-text"
+                      )}>
+                        {item.tech}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Mobile simplified timeline view */}
+            <div className="flex md:hidden flex-wrap gap-2 justify-center mb-6">
+              {roadmapItems.map((item, index) => {
+                const isSelected = selectedRoadmapIndex === index;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedRoadmapIndex(index)}
+                    className={cn(
+                      "px-3 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all flex items-center gap-1.5 border cursor-pointer",
+                      isSelected 
+                        ? "bg-neu-bg shadow-neu-inset text-neu-accent border-neu-accent/30" 
+                        : "bg-neu-bg shadow-neu border-transparent text-neu-text-muted hover:text-neu-text"
+                    )}
+                  >
+                    <span className="opacity-60">{item.quarter}:</span>
+                    <span>{item.tech}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Details panel for the selected roadmap item */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedRoadmapIndex}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.35, ease: 'easeInOut' }}
+                className="mt-6 p-6 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/30 dark:border-gray-800/40 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+              >
+                {/* Tech Info */}
+                <div className="lg:col-span-7 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3.5 rounded-2xl bg-neu-bg shadow-neu text-neu-accent">
+                      {roadmapItems[selectedRoadmapIndex].icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="font-mono text-xs font-bold tracking-widest text-neu-accent uppercase">
+                          {roadmapItems[selectedRoadmapIndex].quarter}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-white/50 dark:bg-black/30 border border-gray-300/40 dark:border-zinc-800 text-neu-accent/90">
+                          <span className="w-1.5 h-1.5 rounded-full bg-neu-accent mr-1.5" />
+                          {roadmapItems[selectedRoadmapIndex].status}
+                        </span>
+                      </div>
+                      <h4 className="text-xl font-bold text-neu-text mt-1">
+                        {roadmapItems[selectedRoadmapIndex].tech}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-neu-text-muted leading-relaxed">
+                    {roadmapItems[selectedRoadmapIndex].description}
+                  </p>
+
+                  <div className="flex items-center gap-6 pt-2">
+                    <div>
+                      <span className="block font-mono text-[10px] text-neu-text-muted uppercase tracking-wider">Estimated Depth</span>
+                      <span className="text-sm font-semibold text-neu-text">{roadmapItems[selectedRoadmapIndex].depth}</span>
+                    </div>
+                    <div className="w-[1px] h-8 bg-gray-300/60 dark:bg-zinc-800" />
+                    <div>
+                      <span className="block font-mono text-[10px] text-neu-text-muted uppercase tracking-wider">Direction</span>
+                      <span className="text-sm font-semibold text-neu-text inline-flex items-center gap-1">
+                        <TrendingUp size={14} className="text-neu-accent" /> Continuous Growth
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Topics & Target Projects */}
+                <div className="lg:col-span-5 space-y-6">
+                  {/* Core Topics */}
+                  <div className="p-5 rounded-2xl bg-white/20 dark:bg-black/10 border border-white/10">
+                    <span className="block font-mono text-[10px] text-neu-accent font-extrabold uppercase tracking-widest mb-3">
+                      Core Topics to Master
+                    </span>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-neu-text-muted">
+                      {roadmapItems[selectedRoadmapIndex].topics.map((topic, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-neu-accent/80 flex-shrink-0" />
+                          <span>{topic}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Target Projects */}
+                  <div className="p-5 rounded-2xl bg-white/20 dark:bg-black/10 border border-white/10">
+                    <span className="block font-mono text-[10px] text-neu-accent font-extrabold uppercase tracking-widest mb-3">
+                      Planned Prototype Projects
+                    </span>
+                    <ul className="space-y-2 text-xs text-neu-text-muted font-mono">
+                      {roadmapItems[selectedRoadmapIndex].projects.map((proj, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <span className="mt-0.5 text-neu-accent">✦</span>
+                          <span className="text-neu-text">{proj}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </motion.section>
@@ -3244,41 +3606,7 @@ export default function Portfolio() {
         </div>
       </motion.section>
 
-      {/* Resume Section */}
-      <motion.section
-        id="resume"
-        className="max-w-3xl mx-auto mt-24 mb-16 scroll-mt-20"
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        {/* Resume Card */}
-        <div className="p-8 sm:p-12 rounded-3xl bg-neu-bg shadow-neu text-center relative overflow-hidden border border-white/5">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-3xl pointer-events-none"></div>
-          
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 text-neu-accent mb-4 px-3 py-1 bg-neu-bg shadow-neu-inset rounded-full">
-              <FileText size={16} />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Professional CV</span>
-            </div>
-            
-            <h2 className="text-3xl font-display font-bold text-neu-text mb-4">Download My Resume</h2>
-            
-            <p className="text-neu-text-muted font-light mb-8 max-w-lg leading-relaxed text-sm sm:text-base">
-              Get access to my full professional background, detailed project histories, microservice architectures, and credentials.
-            </p>
 
-            <button 
-              className="px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2" 
-              onClick={() => triggerToast('Professional CV download initiated!')}
-            >
-              Download CV <Download size={18} />
-            </button>
-          </div>
-        </div>
-      </motion.section>
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto py-12 border-t border-gray-300/50 dark:border-gray-700/50 text-center text-xs font-mono text-neu-text-muted">
@@ -3445,6 +3773,36 @@ export default function Portfolio() {
                     {/* Interactive Architecture Diagram */}
                     <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
 
+                    {/* Vertical timeline view for each project's development phase */}
+                    {selectedProject.phases && selectedProject.phases.length > 0 && (
+                      <div className="mb-10 mt-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-white/5">
+                        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
+                          <Milestone size={14} className="text-neu-accent" /> Development Phases & Timeline
+                        </h4>
+                        <div className="relative pl-6 sm:pl-8 border-l-2 border-gray-300 dark:border-zinc-800 space-y-8 ml-3">
+                          {selectedProject.phases.map((phase: any, idx: number) => (
+                            <div key={idx} className="relative group/phase">
+                              {/* Dot indicator */}
+                              <div className="absolute -left-[35px] sm:-left-[43px] top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-neu-bg border-2 border-neu-accent flex items-center justify-center shadow-neu-inset group-hover/phase:scale-110 transition-transform">
+                                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neu-accent" />
+                              </div>
+                              <div>
+                                <span className="inline-block text-[9px] font-mono uppercase tracking-wider bg-neu-bg shadow-neu px-2.5 py-1 rounded-md text-neu-accent font-semibold border border-white/5">
+                                  {phase.date}
+                                </span>
+                                <h5 className="text-sm md:text-base font-display font-bold text-neu-text mt-2.5">
+                                  {phase.title}
+                                </h5>
+                                <p className="text-xs md:text-sm text-neu-text-muted mt-1 font-light leading-relaxed">
+                                  {phase.description}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="prose prose-slate max-w-none font-sans
                         prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neu-text
                         prose-h1:text-3xl prose-h2:text-2xl prose-h2:border-b prose-h2:border-neu-text/10 prose-h2:pb-2
@@ -3452,7 +3810,47 @@ export default function Portfolio() {
                         prose-a:text-neu-accent prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
                         prose-li:text-neu-text-muted prose-strong:text-neu-text"
                     >
-                      <ReactMarkdown>
+                      <ReactMarkdown
+                        components={{
+                          code({ className, children, ...props }: any) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return match ? (
+                              <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
+                                <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                                  <span>{match[1]}</span>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(String(children));
+                                    }}
+                                    className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
+                                <SyntaxHighlighter
+                                  style={isDark ? vscDarkPlus : prism}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  customStyle={{
+                                    margin: 0,
+                                    padding: '1.25rem',
+                                    background: 'transparent',
+                                    fontSize: '0.85rem',
+                                    lineHeight: '1.6',
+                                  }}
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
+                              </div>
+                            ) : (
+                              <code className={cn("bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium", className)} {...props}>
+                                {children}
+                              </code>
+                            );
+                          }
+                        }}
+                      >
                         {selectedProject.markdown}
                       </ReactMarkdown>
                     </div>

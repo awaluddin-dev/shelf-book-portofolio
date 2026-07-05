@@ -15,6 +15,28 @@ export const projects = [
       { label: 'Processing Speed', value: '2.5x' },
       { label: 'Accuracy', value: '99.2%' }
     ],
+    phases: [
+      {
+        date: 'Jan 2026',
+        title: 'Requirements & Pipeline Architecture',
+        description: 'Designed the asynchronous event loop pipeline, BullMQ task orchestrator, and LangGraph multi-agent flow charts to map distributed roles.'
+      },
+      {
+        date: 'Feb 2026',
+        title: 'Gateway API & Redis Worker Setup',
+        description: 'Engineered high-performance Express API gateways in TypeScript and built scalable, fault-tolerant Redis queue consumers.'
+      },
+      {
+        date: 'Mar 2026',
+        title: 'Python AI Worker Integration',
+        description: 'Developed Python-based LangGraph micro-agents with strict input sanitization, parsing loops, and secure HTTP callback endpoints.'
+      },
+      {
+        date: 'Apr 2026',
+        title: 'PostgreSQL Sink & Load Testing',
+        description: 'Implemented transaction-safe PostgreSQL persistence layer with optimistic locking, and validated system integrity under stress testing.'
+      }
+    ],
     markdown: `
 # AuraFlow AI
 **Distributed Asynchronous Enterprise Agent & Worker Ecosystem**
@@ -52,6 +74,28 @@ AuraFlow AI is an active portfolio project that mirrors real enterprise problems
       { label: 'Sync Reliability', value: '100%' },
       { label: 'Migration Cost Saved', value: 'Significant' }
     ],
+    phases: [
+      {
+        date: 'Aug 2025',
+        title: 'Legacy Domain Analysis',
+        description: 'Audited the monolithic legacy C# .NET codebase, mapped out subdomain contexts, and defined strict interface boundaries for the new NestJS apps.'
+      },
+      {
+        date: 'Oct 2025',
+        title: 'Azure Infrastructure Setup',
+        description: 'Configured secure environments using Azure APIM, Azure Key Vault, and set up the Azure Service Bus queues for event-driven message dispatching.'
+      },
+      {
+        date: 'Dec 2025',
+        title: 'NestJS Microservices Re-platforming',
+        description: 'Developed Driver, Trips, and Payroll independent microservices in NestJS with robust schema validations and MongoDB/SQL Server interfaces.'
+      },
+      {
+        date: 'Feb 2026',
+        title: 'Enterprise Integration & ArgoCD CI/CD',
+        description: 'Successfully integrated payroll channels with SAP and Mekari Talenta systems. Provisioned production pods in Kubernetes with automated ArgoCD pipelines.'
+      }
+    ],
     markdown: `
 # PT Serasi Autoraya (SERA) - Astra Group
 **Legacy Migration & Microservices Architecture**
@@ -86,6 +130,28 @@ At SERA, I am tasked with migrating a legacy .NET Driver Management System to a 
       { label: 'Avg Endpoint Latency', value: '<15ms' },
       { label: 'Peak Capacity', value: '5K+ tx/s' }
     ],
+    phases: [
+      {
+        date: 'May 2024',
+        title: 'Transaction Engine Spec',
+        description: 'Designed concurrent ledger architectures, mapped database constraints, and evaluated transaction isolation strategies (Pessimistic vs. Optimistic OCC).'
+      },
+      {
+        date: 'Jun 2024',
+        title: 'Go Ledger Core Implementation',
+        description: 'Wrote the core financial ledger service in Go, implementing thread-safe balance operations, optimistic concurrency checks, and atomic mutations.'
+      },
+      {
+        date: 'Aug 2024',
+        title: 'Redis Distributed Lock Setup',
+        description: 'Integrated Redis caching layers for instant wallet session authentication, anti-replay token validation, and distributed locks.'
+      },
+      {
+        date: 'Oct 2024',
+        title: 'High-Load Benchmarking',
+        description: 'Stress-tested core transaction pathways up to 5,000 requests per second, achieving sub-15ms endpoint latency while maintaining absolute race-condition safety.'
+      }
+    ],
     markdown: `
 # LedgerFlow
 **Digital Wallet API with Race Condition Prevention**
@@ -117,6 +183,28 @@ The primary technical achievement is the robust handling of race conditions—a 
       { label: 'Server Cost Cut', value: '70%' },
       { label: 'Ingestion Uptime', value: '99.99%' }
     ],
+    phases: [
+      {
+        date: 'Jan 2024',
+        title: 'Bare-Metal Cluster Planning',
+        description: 'Drafted physical network layout, mapped CPU/RAM limits, and developed custom scheduling requirements for continuous, high-volume IoT signals.'
+      },
+      {
+        date: 'Mar 2024',
+        title: 'Kubernetes Cluster Provisioning',
+        description: 'Orchestrated on-premise physical servers into a reliable, self-managed Kubernetes cluster, tuning container runtimes and node allocations.'
+      },
+      {
+        date: 'May 2024',
+        title: 'Fault-Tolerance & PV Setup',
+        description: 'Configured resilient local Persistent Volume provisions, data ingestion retry buffers, and automated scheduling failover rules.'
+      },
+      {
+        date: 'Jul 2024',
+        title: 'Optimized Ingestion Migration',
+        description: 'Successfully migrated live IoT metric pipelines to bare-metal pods, maintaining 99.99% uptime while slashing cloud infrastructure costs by up to 70%.'
+      }
+    ],
     markdown: `
 # Telkomsel IoT Monitoring
 **Bare-metal Kubernetes Deployment**
@@ -144,6 +232,28 @@ Built and deployed an on-premise, bare-metal Kubernetes cluster tailored for an 
       { label: 'Endpoint Latency', value: '-45%' },
       { label: 'OJK Audit Findings', value: '0 Critical' },
       { label: 'Disbursement Queue', value: 'BullMQ' }
+    ],
+    phases: [
+      {
+        date: 'Mar 2023',
+        title: 'Laravel Monolith Audit',
+        description: 'Dissected legacy PHP modules, extracted accounting and identity scopes, and laid down OJK regulatory database schema blueprints.'
+      },
+      {
+        date: 'Jun 2023',
+        title: 'NestJS Microservices Setup',
+        description: 'Re-platformed central accounting ledger, disbursement mechanisms, and user profile domains as independent NestJS services.'
+      },
+      {
+        date: 'Sep 2023',
+        title: 'BullMQ & Redis Background Workers',
+        description: 'Set up resilient background queues in Redis with BullMQ to asynchronously process OJK report compiles and multi-party loan disbursement payouts.'
+      },
+      {
+        date: 'Dec 2023',
+        title: 'OJK Compliance & Audit Success',
+        description: 'Engineered strict schema DTO validations and automated auditing ledger logging. Passed the comprehensive regulatory audits with zero findings.'
+      }
     ],
     markdown: `
 # Doeku P2P Lending
@@ -213,4 +323,3 @@ export const testimonials: Testimonial[] = [
     tags: ['Kubernetes', 'IoT', 'DevOps']
   }
 ];
-

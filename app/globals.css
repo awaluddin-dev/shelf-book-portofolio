@@ -44,6 +44,16 @@ body {
   color: var(--color-neu-text);
 }
 
+/* Smooth global transition for light/dark theme properties */
+body, 
+body *,
+.min-h-screen,
+.min-h-screen * {
+  transition-property: background-color, color, border-color, text-decoration-color, fill, stroke, box-shadow;
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
