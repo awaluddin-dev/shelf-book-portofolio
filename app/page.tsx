@@ -1292,6 +1292,325 @@ const getRelatedProjects = (currentProj: typeof projects[0]) => {
     .map(x => x.project);
 };
 
+const TECHNICAL_IMAGERY: Record<string, {
+  featured: string;
+  blueprint: string;
+  metrics: string;
+  featuredCaption: string;
+  blueprintCaption: string;
+  metricsCaption: string;
+}> = {
+  'auraflow-ai': {
+    featured: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800',
+    blueprint: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800',
+    metrics: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=800',
+    featuredCaption: 'Enterprise multi-agent scheduler nodes',
+    blueprintCaption: 'LangGraph state transition graph mapping',
+    metricsCaption: 'Distributed Redis queue latency tracker'
+  },
+  'sera-migration': {
+    featured: 'https://images.unsplash.com/photo-1597852074816-d933c7d2b988?auto=format&fit=crop&q=80&w=800',
+    blueprint: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&q=80&w=800',
+    metrics: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
+    featuredCaption: 'Kubernetes container fleet nodes',
+    blueprintCaption: 'Azure Service Bus topic exchange pipelines',
+    metricsCaption: 'Microservice domain isolation telemetry'
+  },
+  'ledgerflow': {
+    featured: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&q=80&w=800',
+    blueprint: 'https://images.unsplash.com/photo-1642156814441-ab8994f46e3e?auto=format&fit=crop&q=80&w=800',
+    metrics: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
+    featuredCaption: 'Atomic ledger thread orchestration engine',
+    blueprintCaption: 'Optimistic Concurrency Control pipeline checks',
+    metricsCaption: 'Redis balance cache transaction logs'
+  },
+  'telkomsel-iot': {
+    featured: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800',
+    blueprint: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800',
+    metrics: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&q=80&w=800',
+    featuredCaption: 'Physical server hardware provisioning',
+    blueprintCaption: 'Bare-metal Kubernetes cluster configurations',
+    metricsCaption: 'IoT streaming metric ingestion logs'
+  },
+  'doeku-p2p': {
+    featured: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
+    blueprint: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&q=80&w=800',
+    metrics: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800',
+    featuredCaption: 'Transaction registry & database architecture',
+    blueprintCaption: 'Asynchronous payout queues & background workers',
+    metricsCaption: 'Automated auditing ledger security telemetry'
+  }
+};
+
+function ProjectGalleryShowcase({ projectId }: { projectId: string }) {
+  const [activeTab, setActiveTab] = useState<'featured' | 'blueprint' | 'metrics'>('featured');
+  const [isZoomed, setIsZoomed] = useState(false);
+  const data = TECHNICAL_IMAGERY[projectId] || TECHNICAL_IMAGERY['auraflow-ai'];
+
+  const getActiveDetails = () => {
+    switch (activeTab) {
+      case 'blueprint':
+        return {
+          url: data.blueprint,
+          caption: data.blueprintCaption,
+          tag: 'SYSTEM BLUEPRINT'
+        };
+      case 'metrics':
+        return {
+          url: data.metrics,
+          caption: data.metricsCaption,
+          tag: 'TELEMETRY & LOGS'
+        };
+      case 'featured':
+      default:
+        return {
+          url: data.featured,
+          caption: data.featuredCaption,
+          tag: 'SYSTEM OVERVIEW'
+        };
+    }
+  };
+
+  const current = getActiveDetails();
+
+  return (
+    <div className="p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+        <div>
+          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
+            <PenTool size={14} className="text-neu-accent" /> Technical Blueprints & Systems
+          </h4>
+          <p className="text-[10px] font-mono text-neu-text-muted mt-0.5">High-fidelity imagery mapped to system modules</p>
+        </div>
+        
+        <div className="flex gap-1 bg-neu-bg p-1 rounded-xl shadow-neu-inset border border-white/5 text-[10px] font-mono">
+          {(['featured', 'blueprint', 'metrics'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "px-2.5 py-1.5 rounded-lg capitalize transition-all duration-200 cursor-pointer",
+                activeTab === tab
+                  ? "bg-white dark:bg-zinc-900 text-neu-accent font-bold shadow-sm"
+                  : "text-neu-text-muted hover:text-neu-text"
+              )}
+            >
+              {tab === 'featured' ? 'overview' : tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative rounded-2xl overflow-hidden aspect-video shadow-neu-inset border border-black/5 bg-zinc-950 flex items-center justify-center group/frame">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="w-full h-full relative"
+          >
+            <img
+              src={current.url}
+              alt={current.caption}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover transition-all duration-700 group-hover/frame:scale-105 filter brightness-95"
+            />
+            
+            <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[8px] font-mono font-bold text-emerald-400 tracking-wider border border-white/10 select-none">
+              {current.tag}
+            </span>
+
+            <button
+              onClick={() => setIsZoomed(true)}
+              className="absolute top-3 right-3 p-1.5 rounded bg-black/60 backdrop-blur-md text-white/80 hover:text-white transition-colors border border-white/10 opacity-0 group-hover/frame:opacity-100 transition-opacity duration-300"
+              title="Expand Imagery"
+            >
+              <Eye size={12} />
+            </button>
+
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-8 text-left">
+              <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                Technical Blueprint Capture
+              </span>
+              <p className="text-xs text-white font-medium mt-0.5 leading-tight">
+                {current.caption}
+              </p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <AnimatePresence>
+        {isZoomed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsZoomed(false)}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4 cursor-zoom-out"
+          >
+            <button 
+              onClick={() => setIsZoomed(false)}
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/25 transition-colors border border-white/10"
+            >
+              <X size={20} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className="relative max-w-4xl max-h-[85vh] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-950"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={current.url}
+                alt={current.caption}
+                referrerPolicy="no-referrer"
+                className="w-full h-auto max-h-[75vh] object-contain mx-auto"
+              />
+              <div className="bg-zinc-900/90 p-5 border-t border-white/10 text-left">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block">
+                  {current.tag}
+                </span>
+                <p className="text-sm text-zinc-100 font-display font-medium mt-1">
+                  {current.caption}
+                </p>
+                <p className="text-[10px] text-zinc-400 font-mono mt-1.5 leading-normal">
+                  * Dynamic system snapshot generated in sandbox telemetry. Highly correlated with production workload cycles.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function ProjectLifecycleTracker({ phases, spineColor }: { phases: any[]; spineColor: string }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const getPhaseMeta = (index: number) => {
+    switch (index) {
+      case 0:
+        return {
+          stage: "Planning & Spec",
+          icon: <Compass size={16} className="text-purple-500" />,
+          borderColor: "group-hover:border-purple-500",
+          glowColor: "rgba(168,85,247,0.15)",
+          colorClass: "text-purple-500 bg-purple-500/10 border-purple-500/20"
+        };
+      case 1:
+        return {
+          stage: "Architecture & Design",
+          icon: <Layers size={16} className="text-blue-500" />,
+          borderColor: "group-hover:border-blue-500",
+          glowColor: "rgba(59,130,246,0.15)",
+          colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20"
+        };
+      case 2:
+        return {
+          stage: "Execution & Code",
+          icon: <Code2 size={16} className="text-emerald-500" />,
+          borderColor: "group-hover:border-emerald-500",
+          glowColor: "rgba(16,185,129,0.15)",
+          colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
+        };
+      case 3:
+      default:
+        return {
+          stage: "Testing & Launch",
+          icon: <Activity size={16} className="text-rose-500" />,
+          borderColor: "group-hover:border-rose-500",
+          glowColor: "rgba(244,63,94,0.15)",
+          colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/20"
+        };
+    }
+  };
+
+  return (
+    <div className="p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
+      <div className="flex items-center justify-between mb-6">
+        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
+          <Milestone size={14} className="text-neu-accent" /> Lifecycle & Milestones
+        </h4>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold uppercase tracking-wider animate-pulse">
+          Active Production
+        </span>
+      </div>
+
+      <div className="relative pl-6 sm:pl-8 border-l-2 border-gray-200 dark:border-zinc-800 space-y-6 ml-3">
+        {phases.map((phase, idx) => {
+          const meta = getPhaseMeta(idx);
+          const isHovered = hoveredIndex === idx;
+
+          return (
+            <motion.div
+              key={idx}
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="relative group cursor-default transition-all duration-300"
+            >
+              <div 
+                className={cn(
+                  "absolute -left-[35px] sm:-left-[43px] top-1.5 w-5 h-5 rounded-full bg-neu-bg border-2 flex items-center justify-center shadow-neu transition-all duration-300 z-10",
+                  isHovered ? "scale-125 border-neu-accent" : "border-gray-300 dark:border-zinc-700"
+                )}
+                style={{
+                  boxShadow: isHovered ? `0 0 12px ${meta.glowColor}` : undefined
+                }}
+              >
+                <div className={cn(
+                  "w-2 h-2 rounded-full transition-colors duration-300",
+                  isHovered ? "bg-neu-accent" : "bg-gray-400 dark:bg-zinc-600"
+                )} />
+              </div>
+
+              <div 
+                className={cn(
+                  "p-4 rounded-2xl bg-neu-bg border border-transparent transition-all duration-300 text-left",
+                  isHovered ? "shadow-neu-sm border-gray-200 dark:border-zinc-800 scale-[1.02]" : "shadow-none"
+                )}
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={cn("text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border flex items-center gap-1", meta.colorClass)}>
+                    {meta.icon}
+                    {meta.stage}
+                  </span>
+                  
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-neu-text-muted">
+                    • {phase.date}
+                  </span>
+                </div>
+
+                <h5 className="text-sm font-display font-bold text-neu-text mt-2 group-hover:text-neu-accent transition-colors">
+                  {phase.title}
+                </h5>
+
+                <p className="text-xs text-neu-text-muted mt-1.5 leading-relaxed font-light">
+                  {phase.description}
+                </p>
+
+                <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-zinc-800/40 flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-emerald-500 font-bold flex items-center gap-1">
+                    ✓ Verified Quality Gate
+                  </span>
+                  <span className="text-neu-text-muted font-medium">
+                    Gate {idx + 1}/4 Complete
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 interface BookItemProps {
   project: typeof projects[0];
   setSelectedProject: (p: typeof projects[0]) => void;
@@ -3677,7 +3996,17 @@ export default function Portfolio() {
                 >
                   {/* Modal Header */}
                   <div className={cn("p-8 md:p-12 relative overflow-hidden flex-shrink-0", selectedProject.coverColor)}>
-                    <div className="absolute inset-0 bg-black/40 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-30"></div>
+                    {/* The High-Quality Unsplash Background Image */}
+                    <div className="absolute inset-0 z-0">
+                      <img 
+                        src={TECHNICAL_IMAGERY[selectedProject.id]?.featured || TECHNICAL_IMAGERY['auraflow-ai'].featured} 
+                        alt="Background Tech Grid" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover opacity-20 filter blur-[1px] scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/25"></div>
+                    </div>
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-15"></div>
                     <button 
                       onClick={() => setSelectedProject(null)}
                       className="absolute top-6 right-6 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors z-10"
@@ -3742,7 +4071,7 @@ export default function Portfolio() {
                   </div>
 
                   {/* Modal Content */}
-                  <div className="p-8 md:p-12 overflow-y-auto flex-1 custom-scrollbar">
+                  <div className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar">
                     <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-neu-text/10">
                       {selectedProject.tags.map(tag => {
                         const count = getTagProjectCount(tag);
@@ -3754,105 +4083,94 @@ export default function Portfolio() {
                       })}
                     </div>
 
-                    {selectedProject.stats && selectedProject.stats.length > 0 && (
-                      <div className="mb-10 p-6 rounded-3xl bg-neu-bg shadow-neu-inset">
-                        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
-                          <Terminal size={14} /> Project Impact & Metrics
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                          {selectedProject.stats.map((stat, idx) => (
-                            <div key={idx} className="p-4 rounded-2xl bg-neu-bg shadow-neu flex flex-col justify-center items-center text-center">
-                              <span className="text-2xl font-bold font-display text-neu-text tracking-tight">{stat.value}</span>
-                              <span className="text-xs font-mono text-neu-text-muted mt-1">{stat.label}</span>
-                            </div>
-                          ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      {/* Left Column (Main documentation and systems architecture) */}
+                      <div className="lg:col-span-7 space-y-8">
+                        {/* Interactive Architecture Diagram */}
+                        <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
+
+                        {/* System Specifications Markdown block */}
+                        <div className="prose prose-slate max-w-none font-sans
+                            prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neu-text
+                            prose-h1:text-3xl prose-h2:text-2xl prose-h2:border-b prose-h2:border-neu-text/10 prose-h2:pb-2
+                            prose-p:text-neu-text-muted prose-p:leading-relaxed
+                            prose-a:text-neu-accent prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
+                            prose-li:text-neu-text-muted prose-strong:text-neu-text"
+                        >
+                          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <FileText size={14} className="text-neu-accent" /> System Specifications & In-depth Overview
+                          </h4>
+                          <ReactMarkdown
+                            components={{
+                              code({ className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || '');
+                                return match ? (
+                                  <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
+                                    <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                                      <span>{match[1]}</span>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(String(children));
+                                        }}
+                                        className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
+                                      >
+                                        Copy
+                                      </button>
+                                    </div>
+                                    <SyntaxHighlighter
+                                      style={isDark ? vscDarkPlus : prism}
+                                      language={match[1]}
+                                      PreTag="div"
+                                      customStyle={{
+                                        margin: 0,
+                                        padding: '1.25rem',
+                                        background: 'transparent',
+                                        fontSize: '0.85rem',
+                                        lineHeight: '1.6',
+                                      }}
+                                      {...props}
+                                    >
+                                      {String(children).replace(/\n$/, '')}
+                                    </SyntaxHighlighter>
+                                  </div>
+                                ) : (
+                                  <code className={cn("bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium", className)} {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              }
+                            }}
+                          >
+                            {selectedProject.markdown}
+                          </ReactMarkdown>
                         </div>
                       </div>
-                    )}
 
-                    {/* Interactive Architecture Diagram */}
-                    <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
-
-                    {/* Vertical timeline view for each project's development phase */}
-                    {selectedProject.phases && selectedProject.phases.length > 0 && (
-                      <div className="mb-10 mt-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-white/5">
-                        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
-                          <Milestone size={14} className="text-neu-accent" /> Development Phases & Timeline
-                        </h4>
-                        <div className="relative pl-6 sm:pl-8 border-l-2 border-gray-300 dark:border-zinc-800 space-y-8 ml-3">
-                          {selectedProject.phases.map((phase: any, idx: number) => (
-                            <div key={idx} className="relative group/phase">
-                              {/* Dot indicator */}
-                              <div className="absolute -left-[35px] sm:-left-[43px] top-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-neu-bg border-2 border-neu-accent flex items-center justify-center shadow-neu-inset group-hover/phase:scale-110 transition-transform">
-                                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-neu-accent" />
-                              </div>
-                              <div>
-                                <span className="inline-block text-[9px] font-mono uppercase tracking-wider bg-neu-bg shadow-neu px-2.5 py-1 rounded-md text-neu-accent font-semibold border border-white/5">
-                                  {phase.date}
-                                </span>
-                                <h5 className="text-sm md:text-base font-display font-bold text-neu-text mt-2.5">
-                                  {phase.title}
-                                </h5>
-                                <p className="text-xs md:text-sm text-neu-text-muted mt-1 font-light leading-relaxed">
-                                  {phase.description}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="prose prose-slate max-w-none font-sans
-                        prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neu-text
-                        prose-h1:text-3xl prose-h2:text-2xl prose-h2:border-b prose-h2:border-neu-text/10 prose-h2:pb-2
-                        prose-p:text-neu-text-muted prose-p:leading-relaxed
-                        prose-a:text-neu-accent prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
-                        prose-li:text-neu-text-muted prose-strong:text-neu-text"
-                    >
-                      <ReactMarkdown
-                        components={{
-                          code({ className, children, ...props }: any) {
-                            const match = /language-(\w+)/.exec(className || '');
-                            return match ? (
-                              <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
-                                <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                                  <span>{match[1]}</span>
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(String(children));
-                                    }}
-                                    className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
-                                  >
-                                    Copy
-                                  </button>
+                      {/* Right Column (Sidebar with Key metrics, visual blueprints, lifecycle tracker) */}
+                      <div className="lg:col-span-5 space-y-8">
+                        {/* Project Impact & Metrics */}
+                        {selectedProject.stats && selectedProject.stats.length > 0 && (
+                          <div className="p-6 rounded-3xl bg-neu-bg shadow-neu-inset">
+                            <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                              <Terminal size={14} /> Impact Metrics
+                            </h4>
+                            <div className="grid grid-cols-1 gap-4">
+                              {selectedProject.stats.map((stat, idx) => (
+                                <div key={idx} className="p-4 rounded-2xl bg-neu-bg shadow-neu flex justify-between items-center text-left border border-white/5">
+                                  <span className="text-xs font-mono text-neu-text-muted">{stat.label}</span>
+                                  <span className="text-lg font-bold font-display text-neu-text tracking-tight">{stat.value}</span>
                                 </div>
-                                <SyntaxHighlighter
-                                  style={isDark ? vscDarkPlus : prism}
-                                  language={match[1]}
-                                  PreTag="div"
-                                  customStyle={{
-                                    margin: 0,
-                                    padding: '1.25rem',
-                                    background: 'transparent',
-                                    fontSize: '0.85rem',
-                                    lineHeight: '1.6',
-                                  }}
-                                  {...props}
-                                >
-                                  {String(children).replace(/\n$/, '')}
-                                </SyntaxHighlighter>
-                              </div>
-                            ) : (
-                              <code className={cn("bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium", className)} {...props}>
-                                {children}
-                              </code>
-                            );
-                          }
-                        }}
-                      >
-                        {selectedProject.markdown}
-                      </ReactMarkdown>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
+                        <ProjectGalleryShowcase projectId={selectedProject.id} />
+
+                        {/* Vertical Project Lifecycle Tracker (Planning, Architecture, Execution, Launch) */}
+                        <ProjectLifecycleTracker phases={selectedProject.phases} spineColor={selectedProject.spineColor} />
+                      </div>
                     </div>
 
                     {/* Related Projects Section */}
