@@ -1,16 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'motion/react';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white p-4 font-sans">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
         className="max-w-md w-full text-center space-y-6 p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800/80 backdrop-blur-sm"
       >
         <div className="flex justify-center">
@@ -32,7 +28,7 @@ export default function NotFound() {
             <ArrowLeft size={14} /> Back to Dashboard
           </Link>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

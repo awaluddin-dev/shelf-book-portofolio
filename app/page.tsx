@@ -1850,7 +1850,7 @@ export default function Portfolio() {
                   ref={heatmapRef}
                   className="relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
-                  <div className="min-w-[740px] flex flex-col">
+                  <div className="min-w-[740px] flex flex-col pt-6">
                     <div className="flex w-full">
                       {/* Weekday labels */}
                       <div className="flex flex-col justify-between text-[9px] font-mono text-neu-text-muted w-8 pr-2 pt-6 pb-1 h-[114px] select-none">
@@ -1949,9 +1949,11 @@ export default function Portfolio() {
                         ))}
                       </div>
                     </div>
+                  </div>
+                </div>
                     
-                    {/* Legend */}
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mt-6 pt-4 border-t border-gray-300/10 dark:border-gray-700/10 select-none">
+                {/* Legend */}
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mt-6 pt-4 border-t border-gray-300/10 dark:border-gray-700/10 select-none">
                       <div className="relative group/legend-info flex flex-col gap-1 text-[10px] font-mono text-neu-text-muted max-w-xl">
                         <span className="font-bold text-neu-text text-[11px] mb-0.5 flex items-center gap-1.5 cursor-help">
                           ℹ Understanding Activity Levels
@@ -2045,8 +2047,6 @@ export default function Portfolio() {
                         <span>More</span>
                       </div>
                     </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -2432,7 +2432,7 @@ export default function Portfolio() {
                     </AnimatePresence>
                   </motion.div>
                   {/* Modal Content */}
-                  <div className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar">
+                  <div tabIndex={0} className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neu-accent focus-visible:ring-inset">
                     <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-neu-text/10">
                       {selectedProject.tags.map(tag => {
                         const count = getTagProjectCount(tag);
@@ -2445,20 +2445,22 @@ export default function Portfolio() {
                     </div>
 
                     <div className="space-y-12">
-                      {/* Interactive Architecture Diagram */}
-                      <div className="w-full">
-                        <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
-                      </div>
-
-                      {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
-                      <div className="w-full">
-                        <ProjectGalleryShowcase projectId={selectedProject.id} />
-                      </div>
-
-                      {/* Vertical Project Lifecycle Tracker (Planning, Architecture, Execution, Launch) */}
-                      <div className="w-full">
-                        <ProjectLifecycleTracker phases={selectedProject.phases} spineColor={selectedProject.spineColor} />
-                      </div>
+                      {/* Project Impact & Metrics (Moved to top for high visibility) */}
+                      {selectedProject.stats && selectedProject.stats.length > 0 && (
+                        <div className="w-full">
+                          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Terminal size={14} /> Key Impact & Metrics
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {selectedProject.stats.map((stat, idx) => (
+                              <div key={idx} className="p-5 rounded-2xl bg-neu-bg shadow-neu flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1">
+                                <span className="text-2xl sm:text-3xl font-bold font-display text-neu-text tracking-tight mb-1">{stat.value}</span>
+                                <span className="text-xs font-mono text-neu-text-muted">{stat.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                         {/* Left Column (System Specifications Markdown block) */}
@@ -2544,23 +2546,30 @@ export default function Portfolio() {
 
                       {/* Right Column (Sidebar with Key metrics, visual blueprints, lifecycle tracker) */}
                       <div className="lg:col-span-5 space-y-8">
-                        {/* Project Impact & Metrics */}
-                        {selectedProject.stats && selectedProject.stats.length > 0 && (
-                          <div className="p-6 rounded-3xl bg-neu-bg shadow-neu-inset">
-                            <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
-                              <Terminal size={14} /> Impact Metrics
-                            </h4>
-                            <div className="grid grid-cols-1 gap-4">
-                              {selectedProject.stats.map((stat, idx) => (
-                                <div key={idx} className="p-4 rounded-2xl bg-neu-bg shadow-neu flex justify-between items-center text-left border border-white/5">
-                                  <span className="text-xs font-mono text-neu-text-muted">{stat.label}</span>
-                                  <span className="text-lg font-bold font-display text-neu-text tracking-tight">{stat.value}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        {/* Vertical Project Lifecycle Tracker */}
+                        <div className="w-full bg-neu-bg p-6 md:p-8 rounded-3xl shadow-neu-inset">
+                          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
+                            <Network size={14} /> Project Lifecycle
+                          </h4>
+                          <ProjectLifecycleTracker phases={selectedProject.phases} spineColor={selectedProject.spineColor} />
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Interactive Architecture Diagram */}
+                    <div className="w-full pt-8">
+                      <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
+                        <Layers size={14} /> System Architecture
+                      </h4>
+                      <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
+                    </div>
+
+                    {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
+                    <div className="w-full pt-8 pb-4">
+                      <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
+                        <Eye size={14} /> Visual Showcase
+                      </h4>
+                      <ProjectGalleryShowcase projectId={selectedProject.id} />
                     </div>
                     </div>
 

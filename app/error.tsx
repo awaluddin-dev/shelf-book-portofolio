@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { motion } from 'motion/react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 export default function Error({
@@ -17,10 +16,7 @@ export default function Error({
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white p-4 font-sans">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
         className="max-w-md w-full text-center space-y-6 p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800/80 backdrop-blur-sm"
       >
         <div className="flex justify-center">
@@ -45,7 +41,7 @@ export default function Error({
             <RefreshCw size={14} /> Retry Process
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
