@@ -3,1809 +3,27 @@
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
-import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
+import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { projects, testimonials } from '@/lib/data';
 import { cn } from '@/lib/utils';
 
-const commitActivityData = [
-  { month: 'Jul 25', commits: 145, pullRequests: 24, issues: 12 },
-  { month: 'Aug 25', commits: 168, pullRequests: 32, issues: 18 },
-  { month: 'Sep 25', commits: 195, pullRequests: 40, issues: 15 },
-  { month: 'Oct 25', commits: 120, pullRequests: 18, issues: 8 },
-  { month: 'Nov 25', commits: 210, pullRequests: 45, issues: 22 },
-  { month: 'Dec 25', commits: 140, pullRequests: 28, issues: 14 },
-  { month: 'Jan 26', commits: 185, pullRequests: 38, issues: 19 },
-  { month: 'Feb 26', commits: 220, pullRequests: 50, issues: 25 },
-  { month: 'Mar 26', commits: 245, pullRequests: 55, issues: 30 },
-  { month: 'Apr 26', commits: 190, pullRequests: 42, issues: 16 },
-  { month: 'May 26', commits: 215, pullRequests: 48, issues: 20 },
-  { month: 'Jun 26', commits: 260, pullRequests: 58, issues: 28 },
-];
-
-const repositoryBreakdownData = [
-  { name: 'SERA Driver Mgmt', commits: 480, pullRequests: 95 },
-  { name: 'AuraFlow AI', commits: 350, pullRequests: 78 },
-  { name: 'LedgerFlow API', commits: 290, pullRequests: 45 },
-  { name: 'Telkomsel IoT', commits: 220, pullRequests: 30 },
-  { name: 'Doeku P2P', commits: 410, pullRequests: 88 },
-];
-
-const getTechIconAndColor = (tag: string) => {
-  const t = tag.toLowerCase();
-  
-  if (t.includes('node.js') || t.includes('node')) {
-    return {
-      color: 'text-[#68a063]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L3.5 7v10L12 22l8.5-5V7L12 2zm6.5 14.25l-6.5 3.75-6.5-3.75V8.75l6.5-3.75 6.5 3.75v7.5zM12 6.5l5 2.88v5.77l-5 2.88-5-2.88V9.38l5-2.88z" />
-        </svg>
-      )
-    };
-  }
-  
-  if (t.includes('python')) {
-    return {
-      color: 'text-[#3776AB]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 2.5c.83 0 1.5.67 1.5 1.5S11.83 7.5 11 7.5 9.5 6.83 9.5 6s.67-1.5 1.5-1.5zm1 14.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4.5-5.5h-9v-2h9v2z" />
-        </svg>
-      )
-    };
-  }
-  
-  if (t.includes('redis')) {
-    return {
-      color: 'text-[#DC382D]',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 7l10 5 10-5-10-5zm0 6L3.8 5 12 9.1l8.2-4.1L12 8zm10 5l-10 5-10-5M2 12l10 5 10-5" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('postgresql')) {
-    return {
-      color: 'text-[#4169E1]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.5h-2v-6h2v6zm0-8h-2V7.5h2V9.5z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('nestjs') || t.includes('nest')) {
-    return {
-      color: 'text-[#E0234E]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 7l10 5 10-5-10-5zm-8 7.3v5.4l8 4 8-4V9.3l-8 4-8-4z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('kubernetes')) {
-    return {
-      color: 'text-[#326CE5]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L3 5.5v13L12 22l9-3.5v-13L12 2zm0 3.5l6 2.3v8.4l-6 2.3-6-2.3V7.8l6-2.3z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('mongodb')) {
-    return {
-      color: 'text-[#47A248]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 11c0 2.5-3.5 5.5-3.5 5.5s-3.5-3-3.5-5.5c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('go') || t.includes('golang')) {
-    return {
-      color: 'text-[#00ADD8]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.5h-2v-5h2v5zm-1-7.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('azure')) {
-    return {
-      color: 'text-[#0089D6]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 19.5h7.5L12 14l2.5 5.5H22L12 2z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('laravel')) {
-    return {
-      color: 'text-[#FF2D20]',
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm7 14.5l-7 3.9-7-3.9V8.5l7-3.9 7 3.9v8z" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('concurrency') || t.includes('async') || t.includes('queue') || t.includes('bullmq')) {
-    return {
-      color: 'text-[#FFA500]',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3v18M3 12h18M12 3l3 3M12 21l-3-3M3 12l3 3M21 12l-3-3" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('microservices') || t.includes('architecture') || t.includes('langgraph')) {
-    return {
-      color: 'text-sky-400',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('sql') || t.includes('database')) {
-    return {
-      color: 'text-indigo-400',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="12" cy="5" rx="9" ry="3" />
-          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-          <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('iot')) {
-    return {
-      color: 'text-teal-400',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <rect width="16" height="16" x="4" y="4" rx="2" />
-          <rect width="6" height="6" x="9" y="9" rx="1" />
-          <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
-        </svg>
-      )
-    };
-  }
-
-  if (t.includes('compliance')) {
-    return {
-      color: 'text-emerald-400',
-      icon: (
-        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <path d="m9 12 2 2 4-4" />
-        </svg>
-      )
-    };
-  }
-
-  return {
-    color: 'text-white/80',
-    icon: (
-      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    )
-  };
-};
-
-interface SkillNode {
-  id: string;
-  title: string;
-  category: string;
-  level: string;
-  x: number;
-  y: number;
-  details: string;
-  connections: string[];
-}
-
-const skillNodes: SkillNode[] = [
-  // Core Backend
-  {
-    id: "nodejs",
-    title: "Node.js (Core & Runtime)",
-    category: "Core Backend",
-    level: "Advanced (92%)",
-    x: 100, y: 80,
-    details: "High-concurrency event-driven architecture, event loop optimization, stream/buffer piping, clustering, and ESM module resolution.",
-    connections: ["nestjs", "redis"]
-  },
-  {
-    id: "nestjs",
-    title: "NestJS Framework",
-    category: "Core Backend",
-    level: "Advanced (88%)",
-    x: 100, y: 200,
-    details: "Enterprise architecture (DI, Guards, Interceptors, custom decorators), monorepo management, and native microservice transporters.",
-    connections: ["microservices", "apigateway"]
-  },
-  {
-    id: "microservices",
-    title: "Go & Microservices",
-    category: "Core Backend",
-    level: "Intermediate (75%)",
-    x: 100, y: 320,
-    details: "Scalable gRPC endpoints, concurrent channel patterns, lightweight routine execution, and reliable eventual consistency handlers.",
-    connections: ["dist-systems"]
-  },
-  {
-    id: "apigateway",
-    title: "API Gateways",
-    category: "Core Backend",
-    level: "Advanced (85%)",
-    x: 280, y: 140,
-    details: "Dynamic reverse proxying, token verification, route routing, header injection, request-response transformations, and rate-limiting.",
-    connections: ["dist-systems"]
-  },
-  {
-    id: "dist-systems",
-    title: "Distributed Systems",
-    category: "Core Backend",
-    level: "Intermediate (80%)",
-    x: 280, y: 260,
-    details: "Fault-tolerant messaging queues, circuit breakers, distributed tracing (OpenTelemetry), consensus-aware routing, and dynamic discovery.",
-    connections: ["k8s"]
-  },
-
-  // Infrastructure & Data
-  {
-    id: "postgres",
-    title: "PostgreSQL & SQL Systems",
-    category: "Infrastructure",
-    level: "Advanced (88%)",
-    x: 500, y: 80,
-    details: "Advanced indexing (B-Tree, GIN, BRIN), JSONB storage optimization, database partition models, recursive CTE queries, and transactional locking.",
-    connections: ["redis", "vectordb"]
-  },
-  {
-    id: "redis",
-    title: "Redis & Message Queues",
-    category: "Infrastructure",
-    level: "Advanced (90%)",
-    x: 500, y: 200,
-    details: "Distributed in-memory caching, Redlock algorithms, high-throughput BullMQ queue managers, Pub/Sub channels, and cluster state caching.",
-    connections: ["azure"]
-  },
-  {
-    id: "azure",
-    title: "Azure Cloud Systems",
-    category: "Infrastructure",
-    level: "Advanced (82%)",
-    x: 500, y: 320,
-    details: "App Services, Key Vault secure secret rotation, Blob storage hierarchies, Service Bus pub/sub topics, and Entra ID integration.",
-    connections: ["k8s"]
-  },
-  {
-    id: "k8s",
-    title: "Kubernetes & Containers",
-    category: "Infrastructure",
-    level: "Advanced (80%)",
-    x: 660, y: 260,
-    details: "Container design, Helm charts orchestration, Ingress routing rules, ConfigMaps/Secrets management, and stateful/stateless deployments.",
-    connections: []
-  },
-
-  // AI & Integrations
-  {
-    id: "python",
-    title: "Python & FastAPI",
-    category: "AI & Integrations",
-    level: "Intermediate (78%)",
-    x: 900, y: 80,
-    details: "Asynchronous backend API development using FastAPI, strict Pydantic parsing schemas, multi-threaded worker scripts, and script orchestration.",
-    connections: ["llm-orchestration"]
-  },
-  {
-    id: "llm-orchestration",
-    title: "LLM Orchestration",
-    category: "AI & Integrations",
-    level: "Advanced (85%)",
-    x: 900, y: 200,
-    details: "Structured JSON response parsing with Gemini SDK, multi-modal ingestion, automated prompt generation, and contextual system rules.",
-    connections: ["langgraph", "vectordb"]
-  },
-  {
-    id: "langgraph",
-    title: "LangGraph & AI Agents",
-    category: "AI & Integrations",
-    level: "Intermediate (70%)",
-    x: 900, y: 320,
-    details: "Stateful agent graphs, cyclical agent-tool loops, dynamic branch conditions, multi-agent hierarchies, and custom human approval validation gates.",
-    connections: ["k8s"]
-  },
-  {
-    id: "vectordb",
-    title: "Vector Databases",
-    category: "AI & Integrations",
-    level: "Intermediate (75%)",
-    x: 720, y: 140,
-    details: "Semantic similarity search algorithms, Pinecone/pgvector high-dimensional embeddings, Cosine distance scaling, and semantic hybrid search.",
-    connections: ["k8s"]
-  }
-];
-
-interface SkillNodeProps {
-  node: SkillNode;
-  active: boolean;
-  anyActive: boolean;
-  connectedToActive: boolean;
-  isDark: boolean;
-  isMobile: boolean;
-  coords: { x: number; y: number };
-  colors: { bg: string; text: string; stroke: string; gradient: string };
-  shortTitle: string;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}
-
-const SkillTreeNode = memo(function SkillTreeNode({
-  node,
-  active,
-  anyActive,
-  connectedToActive,
-  isDark,
-  isMobile,
-  coords,
-  colors,
-  shortTitle,
-  onMouseEnter,
-  onMouseLeave
-}: SkillNodeProps) {
-  let fillGradient = "url(#blue-cyan)";
-  if (node.category === "Infrastructure") fillGradient = "url(#emerald-teal)";
-  if (node.category === "AI & Integrations") fillGradient = "url(#purple-pink)";
-
-  return (
-    <g
-      className="cursor-pointer group"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {/* Subtle ambient pulse ring for unhovered active look */}
-      <circle
-        cx={coords.x}
-        cy={coords.y}
-        r={active ? 20 : 12}
-        className={cn(
-          "transition-all duration-300 fill-none",
-          active ? "stroke-2 opacity-100" : "stroke-1 opacity-0 group-hover:opacity-50"
-        )}
-        stroke={colors.stroke}
-      />
-
-      {/* Node fill circle */}
-      <circle
-        cx={coords.x}
-        cy={coords.y}
-        r={active ? 12 : 7}
-        fill={fillGradient}
-        className={cn(
-          "transition-all duration-300 shadow-lg",
-          anyActive && !connectedToActive ? "opacity-40" : "opacity-100"
-        )}
-      />
-
-      {/* Interactive Larger Invisible Circle for generous hover target */}
-      <circle
-        cx={coords.x}
-        cy={coords.y}
-        r={24}
-        fill="transparent"
-      />
-
-      {/* Floating Node Label */}
-      <text
-        x={coords.x}
-        y={coords.y - (isMobile ? 14 : 16)}
-        textAnchor="middle"
-        className={cn(
-          "font-mono font-bold tracking-tight select-none pointer-events-none transition-all duration-300",
-          isMobile ? "text-[8px]" : "text-[10px]",
-          active 
-            ? "fill-current " + colors.text
-            : anyActive && !connectedToActive
-              ? "opacity-30 fill-current" 
-              : "fill-current opacity-90"
-        )}
-        fill={isDark ? '#f4f4f5' : '#18181b'}
-      >
-        {shortTitle}
-      </text>
-    </g>
-  );
-});
-
-function SkillTree({ isDark, isLoading }: { isDark: boolean; isLoading?: boolean }) {
-  const [hoveredNode, setHoveredNode] = useState<SkillNode | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const getBezierPath = useCallback((x1: number, y1: number, x2: number, y2: number) => {
-    if (isMobile) {
-      const dy = (y2 - y1) * 0.5;
-      return `M ${x1} ${y1} C ${x1} ${y1 + dy}, ${x2} ${y2 - dy}, ${x2} ${y2}`;
-    } else {
-      const dx = (x2 - x1) * 0.5;
-      return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
-    }
-  }, [isMobile]);
-
-  const getNodeCoords = useCallback((node: SkillNode) => {
-    if (!isMobile) {
-      return { x: node.x, y: node.y };
-    }
-    switch (node.id) {
-      case "nodejs": return { x: 75, y: 60 };
-      case "nestjs": return { x: 75, y: 140 };
-      case "microservices": return { x: 75, y: 220 };
-      case "apigateway": return { x: 245, y: 100 };
-      case "dist-systems": return { x: 245, y: 180 };
-      case "postgres": return { x: 75, y: 300 };
-      case "redis": return { x: 75, y: 380 };
-      case "azure": return { x: 75, y: 460 };
-      case "k8s": return { x: 245, y: 380 };
-      case "python": return { x: 75, y: 540 };
-      case "llm-orchestration": return { x: 75, y: 620 };
-      case "langgraph": return { x: 75, y: 700 };
-      case "vectordb": return { x: 245, y: 580 };
-      default: return { x: node.x, y: node.y };
-    }
-  }, [isMobile]);
-
-  const getShortTitle = (node: SkillNode) => {
-    switch (node.id) {
-      case "nodejs": return "Node.js";
-      case "nestjs": return "NestJS";
-      case "microservices": return "Go / Micro";
-      case "apigateway": return "API Gateway";
-      case "dist-systems": return "Dist. Systems";
-      case "postgres": return "PostgreSQL";
-      case "redis": return "Redis / Queues";
-      case "azure": return "Azure Cloud";
-      case "k8s": return "Kubernetes";
-      case "python": return "Python";
-      case "llm-orchestration": return "LLM Orchestr.";
-      case "langgraph": return "LangGraph";
-      case "vectordb": return "Vector DB";
-      default: return node.title.split(' ')[0];
-    }
-  };
-
-  const isConnected = (sourceId: string, targetId: string) => {
-    if (!hoveredNode) return false;
-    if (hoveredNode.id === sourceId && hoveredNode.connections.includes(targetId)) return true;
-    
-    const sourceNode = skillNodes.find(n => n.id === sourceId);
-    if (sourceNode && sourceNode.connections.includes(targetId) && (hoveredNode.id === targetId || hoveredNode.id === sourceId)) {
-      return true;
-    }
-    return false;
-  };
-
-  const getCategoryColor = useCallback((category: string) => {
-    switch (category) {
-      case "Core Backend":
-        return {
-          bg: "bg-blue-500/10 border-blue-500/30",
-          text: "text-blue-500 dark:text-blue-400",
-          stroke: "#3b82f6",
-          gradient: "from-blue-500 to-cyan-400"
-        };
-      case "Infrastructure":
-        return {
-          bg: "bg-emerald-500/10 border-emerald-500/30",
-          text: "text-emerald-500 dark:text-emerald-400",
-          stroke: "#10b981",
-          gradient: "from-emerald-500 to-teal-400"
-        };
-      default:
-        return {
-          bg: "bg-purple-500/10 border-purple-500/30",
-          text: "text-purple-500 dark:text-purple-400",
-          stroke: "#a855f7",
-          gradient: "from-purple-500 to-pink-400"
-        };
-    }
-  }, []);
-
-  const handleNodeMouseEnter = useCallback((node: SkillNode) => {
-    setHoveredNode(node);
-  }, []);
-
-  const handleNodeMouseLeave = useCallback(() => {
-    setHoveredNode(null);
-  }, []);
-
-  // Pre-calculate and memoize connection paths to optimize rendering
-  const connectionPaths = useMemo(() => {
-    return skillNodes.flatMap(node => {
-      const colors = getCategoryColor(node.category);
-      const coords = getNodeCoords(node);
-      return node.connections.map(connId => {
-        const target = skillNodes.find(n => n.id === connId);
-        if (!target) return null;
-        const targetCoords = getNodeCoords(target);
-        const path = getBezierPath(coords.x, coords.y, targetCoords.x, targetCoords.y);
-        
-        return {
-          id: `${node.id}-${connId}`,
-          sourceId: node.id,
-          targetId: connId,
-          colors,
-          path
-        };
-      }).filter((item): item is NonNullable<typeof item> => item !== null);
-    });
-  }, [getBezierPath, getCategoryColor, getNodeCoords]);
-
-  if (isLoading) {
-    return (
-      <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative overflow-hidden border border-white/5 animate-pulse">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6 mb-8">
-          <div className="space-y-2">
-            <div className="h-4 w-40 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
-            <div className="h-7 w-64 bg-gray-300/40 dark:bg-zinc-700/50 rounded"></div>
-            <div className="h-3 w-80 bg-gray-300/20 dark:bg-zinc-700/30 rounded mt-2"></div>
-          </div>
-          <div className="flex gap-4">
-            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
-            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
-            <div className="h-5 w-20 bg-gray-300/30 dark:bg-zinc-700/40 rounded"></div>
-          </div>
-        </div>
-        <div className="flex justify-center items-center py-10">
-          <div className="w-full max-w-4xl h-[300px] rounded-2xl bg-neu-bg shadow-neu-inset flex flex-col justify-between p-6 relative overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gray-300/20 dark:bg-zinc-700/20 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-gray-300/20 dark:bg-zinc-700/20 rounded-full blur-3xl"></div>
-            <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 1000 300">
-              <path d="M 100 150 C 250 150, 250 100, 400 100" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
-              <path d="M 400 100 C 550 100, 550 200, 700 200" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
-              <path d="M 100 150 C 250 150, 250 200, 400 200" fill="none" stroke="currentColor" strokeWidth={2} className="text-gray-300 dark:text-zinc-700" />
-            </svg>
-            <div className="flex justify-between items-center relative z-10 w-full h-full px-12">
-              <div className="flex flex-col gap-12">
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-              </div>
-              <div className="flex flex-col gap-8">
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-              </div>
-              <div className="flex flex-col gap-12">
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-                <div className="w-10 h-10 rounded-full bg-gray-300/40 dark:bg-zinc-700/50"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="mt-6 h-20 w-full bg-gray-300/20 dark:bg-zinc-700/25 rounded-2xl shadow-neu-inset"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative overflow-hidden border border-white/5">
-      {/* Background decoration elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6 mb-8">
-        <div>
-          <div className="flex items-center gap-2 text-neu-accent mb-1">
-            <Network size={18} />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Career Map & Blueprint</span>
-          </div>
-          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Interactive Skill Tree</h2>
-          <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Hover over individual nodes to inspect connections, production usages, and metrics.</p>
-        </div>
-
-        {/* Legend */}
-        <div className="flex flex-wrap gap-4 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">Core Backend</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">Infrastructure</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">AI & Integrations</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Responsive SVG Container wrapping the interactive map */}
-      <div className="relative w-full select-none py-4 flex justify-center">
-        <div className={cn(
-          "relative",
-          isMobile ? "w-full max-w-[320px] h-[760px]" : "w-full h-[400px]"
-        )}>
-          <svg 
-            viewBox={isMobile ? "0 0 320 760" : "0 0 1000 400"} 
-            className="w-full h-full absolute inset-0 z-0 overflow-visible"
-          >
-            <defs>
-              <linearGradient id="blue-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#22d3ee" />
-              </linearGradient>
-              <linearGradient id="emerald-teal" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#2dd4bf" />
-              </linearGradient>
-              <linearGradient id="purple-pink" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#f472b6" />
-              </linearGradient>
-            </defs>
-
-            {/* Render all curved connection paths */}
-            {connectionPaths.map(conn => {
-              const active = isConnected(conn.sourceId, conn.targetId);
-              return (
-                <g key={conn.id}>
-                  {/* Shadow / Base track path */}
-                  <path
-                    d={conn.path}
-                    fill="none"
-                    stroke={isDark ? '#27272a' : '#e4e4e7'}
-                    strokeWidth={3}
-                    className="transition-colors duration-300"
-                  />
-                  {/* Glowing active path overlay */}
-                  <path
-                    d={conn.path}
-                    fill="none"
-                    stroke={conn.colors.stroke}
-                    strokeWidth={active ? 4 : 1.5}
-                    className={cn(
-                      "transition-all duration-300",
-                      active ? "opacity-100" : "opacity-30 dark:opacity-40"
-                    )}
-                  />
-                </g>
-              );
-            })}
-
-            {/* Render all interactive nodes */}
-            {skillNodes.map(node => {
-              const active = hoveredNode?.id === node.id;
-              const anyActive = hoveredNode !== null;
-              const connectedToActive = hoveredNode ? (hoveredNode.connections.includes(node.id) || node.connections.includes(hoveredNode.id) || hoveredNode.id === node.id) : false;
-              
-              const colors = getCategoryColor(node.category);
-              const coords = getNodeCoords(node);
-              const shortTitle = getShortTitle(node);
-
-              return (
-                <SkillTreeNode
-                  key={node.id}
-                  node={node}
-                  active={active}
-                  anyActive={anyActive}
-                  connectedToActive={connectedToActive}
-                  isDark={isDark}
-                  isMobile={isMobile}
-                  coords={coords}
-                  colors={colors}
-                  shortTitle={shortTitle}
-                  onMouseEnter={() => handleNodeMouseEnter(node)}
-                  onMouseLeave={handleNodeMouseLeave}
-                />
-              );
-            })}
-          </svg>
-        </div>
-      </div>
-
-      {/* Dynamic Proficiency Details card below tree */}
-      <div className="mt-6 p-5 rounded-2xl bg-neu-bg shadow-neu-inset relative min-h-[110px] flex flex-col justify-center border border-white/5">
-        <AnimatePresence mode="wait">
-          {hoveredNode ? (
-            <motion.div
-              key={hoveredNode.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.15 }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center animate-fade-in"
-            >
-              <div className="md:col-span-1 border-r border-gray-300/30 dark:border-gray-700/30 pr-4">
-                <span className={cn("text-[10px] font-mono font-bold uppercase tracking-wider block mb-1", getCategoryColor(hoveredNode.category).text)}>
-                  {hoveredNode.category}
-                </span>
-                <h4 className="text-lg font-bold text-neu-text tracking-tight leading-tight mb-1">
-                  {hoveredNode.title}
-                </h4>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neu-bg shadow-neu rounded-xl text-[10px] font-mono font-bold text-neu-accent mt-1">
-                  Proficiency: {hoveredNode.level}
-                </div>
-              </div>
-              <div className="md:col-span-3 pl-2">
-                <span className="text-[10px] font-mono text-neu-accent font-bold uppercase tracking-widest block mb-1">
-                  TECHNICAL APPLICATION & DEPLOYED CONCEPTS
-                </span>
-                <p className="text-sm text-neu-text-muted leading-relaxed font-sans font-light">
-                  {hoveredNode.details}
-                </p>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-4"
-            >
-              <p className="text-xs font-mono text-neu-text-muted italic flex items-center justify-center gap-2">
-                <span>✦ Hover over any skill node in the progressive blueprint to reveal technical proficiencies and infrastructure deployments.</span>
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
-
-function ProjectArchitectureDiagram({ projectId, isDark }: { projectId: string; isDark: boolean }) {
-  const [hoveredStep, setHoveredStep] = useState<string | null>(null);
-
-  if (projectId === 'auraflow-ai') {
-    const steps: Record<string, { title: string; desc: string; metrics: string }> = {
-      gateway: {
-        title: 'NestJS / Express API Gateway',
-        desc: 'Ingests unstructured records, sanitizes payloads, and runs schema-level validation before dispatching to the queue.',
-        metrics: 'Response: <12ms'
-      },
-      queue: {
-        title: 'Redis & BullMQ In-Memory Queue',
-        desc: 'Provides fault tolerance and backpressure control. Buffers peak traffic to prevent downstream microservice exhaustion.',
-        metrics: 'Capacity: 10K+ jobs/sec'
-      },
-      agents: {
-        title: 'LangGraph Multi-Agent Worker',
-        desc: 'A cyclic stateful Python graph where Parser and Validator agents collaborate to parse, clean, and self-heal data anomalies.',
-        metrics: 'Self-Heal Rate: 94.2%'
-      },
-      db: {
-        title: 'PostgreSQL Clean Storage',
-        desc: 'Stores fully resolved, compliant, and structured documents with indexes optimized for semantic searches.',
-        metrics: 'Uptime: 99.99%'
-      },
-      callback: {
-        title: 'HTTP Webhook Callback',
-        desc: 'Asynchronously alerts the main gateway when task is finished, avoiding polling overhead and freeing up HTTP thread pools.',
-        metrics: 'Delivery Guarantee: 100%'
-      }
-    };
-
-    return (
-      <div className="mb-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
-          <div>
-            <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
-              <Network size={14} /> System Architecture Blueprint
-            </h4>
-            <p className="text-xs font-mono text-neu-text-muted mt-1">
-              Hover over blueprint nodes to inspect real-time data flows and protocol handlers.
-            </p>
-          </div>
-          <span className="px-3 py-1 rounded-xl bg-neu-bg shadow-neu-sm text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
-            AuraFlow AI Active Pipeline
-          </span>
-        </div>
-
-        {/* The SVG Canvas */}
-        <div className="relative w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="min-w-[700px] max-w-[850px] mx-auto">
-            <svg viewBox="0 0 800 320" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="grad-blue" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4f46e5" />
-                  <stop offset="100%" stopColor="#6366f1" />
-                </linearGradient>
-                <linearGradient id="grad-red" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ef4444" />
-                  <stop offset="100%" stopColor="#f43f5e" />
-                </linearGradient>
-                <linearGradient id="grad-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#059669" />
-                </linearGradient>
-                <linearGradient id="grad-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#d97706" />
-                </linearGradient>
-                
-                {/* Glow filter */}
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-
-              {/* Connecting lines */}
-              {/* Line 1: Gateway -> Queue */}
-              <path 
-                d="M 210,78 L 290,78" 
-                stroke={hoveredStep === 'gateway' || hoveredStep === 'queue' ? '#6366f1' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'gateway' || hoveredStep === 'queue' ? 3.5 : 2}
-                strokeDasharray={(hoveredStep === 'gateway' || hoveredStep === 'queue') ? "none" : "5,5"}
-                className="transition-all duration-300"
-                fill="none"
-              />
-              
-              {/* Line 2: Queue -> AI Worker */}
-              <path 
-                d="M 450,78 L 530,78" 
-                stroke={hoveredStep === 'queue' || hoveredStep === 'agents' ? '#ef4444' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'queue' || hoveredStep === 'agents' ? 3.5 : 2}
-                strokeDasharray={(hoveredStep === 'queue' || hoveredStep === 'agents') ? "none" : "5,5"}
-                className="transition-all duration-300"
-                fill="none"
-              />
-
-              {/* Line 3: AI Worker -> PostgreSQL */}
-              <path 
-                d="M 640,180 L 640,258 L 450,258" 
-                stroke={hoveredStep === 'agents' || hoveredStep === 'db' ? '#10b981' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'agents' || hoveredStep === 'db' ? 3.5 : 2}
-                strokeDasharray={(hoveredStep === 'agents' || hoveredStep === 'db') ? "none" : "5,5"}
-                className="transition-all duration-300"
-                fill="none"
-              />
-
-              {/* Line 4: Callback AI Worker -> Gateway */}
-              <path 
-                d="M 530,110 L 130,110 L 130,116" 
-                stroke={hoveredStep === 'callback' || hoveredStep === 'gateway' ? '#f59e0b' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'callback' || hoveredStep === 'gateway' ? 3.5 : 2}
-                className="transition-all duration-300"
-                fill="none"
-              />
-
-              {/* Nodes rendering */}
-              {/* 1. API Gateway */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('gateway')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="50" y="40" width="160" height="76" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'gateway' ? '#6366f1' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'gateway' ? 'url(#glow)' : ''}
-                />
-                <text x="130" y="70" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>API GATEWAY</text>
-                <text x="130" y="88" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>TypeScript / NestJS</text>
-              </g>
-
-              {/* 2. Task Queue */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('queue')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="290" y="40" width="160" height="76" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'queue' ? '#ef4444' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'queue' ? 'url(#glow)' : ''}
-                />
-                <text x="370" y="70" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>BULLMQ QUEUE</text>
-                <text x="370" y="88" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Redis In-Memory</text>
-              </g>
-
-              {/* 3. AI Worker - LangGraph */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('agents')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="530" y="40" width="220" height="140" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'agents' ? '#10b981' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'agents' ? 'url(#glow)' : ''}
-                />
-                <text x="640" y="70" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>LANGGRAPH WORKER</text>
-                <text x="640" y="88" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Python Stateful Graph</text>
-                
-                {/* Loop Visualized */}
-                <rect x="550" y="105" width="80" height="42" rx="8" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                <text x="590" y="122" textAnchor="middle" className="text-[8px] font-mono fill-current font-bold" fill={isDark ? '#10b981' : '#047857'}>Parser Agent</text>
-                <text x="590" y="136" textAnchor="middle" className="text-[7px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Data Cleaning</text>
-
-                <rect x="655" y="105" width="80" height="42" rx="8" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                <text x="695" y="122" textAnchor="middle" className="text-[8px] font-mono fill-current font-bold" fill={isDark ? '#f59e0b' : '#b45309'}>Validator Agent</text>
-                <text x="695" y="136" textAnchor="middle" className="text-[7px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Self-Evaluation</text>
-
-                {/* Connection Loop arrow */}
-                <path d="M 630,126 L 655,126" stroke="#10b981" strokeWidth="1.5" fill="none" />
-                <path d="M 655,136 L 630,136" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
-              </g>
-
-              {/* 4. PostgreSQL */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('db')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="290" y="220" width="160" height="76" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'db' ? '#0ea5e9' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'db' ? 'url(#glow)' : ''}
-                />
-                <text x="370" y="250" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>POSTGRESQL</text>
-                <text x="370" y="268" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Indexed Data Store</text>
-              </g>
-
-              {/* 5. Webhook Callback */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('callback')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="50" y="220" width="160" height="76" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'callback' ? '#f59e0b' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'callback' ? 'url(#glow)' : ''}
-                />
-                <text x="130" y="250" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>WEBHOOK HTTP</text>
-                <text x="130" y="268" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Async Callback</text>
-              </g>
-            </svg>
-          </div>
-        </div>
-
-        {/* Dynamic description of hovered step */}
-        <div className="mt-6 p-5 rounded-2xl bg-neu-bg shadow-neu relative min-h-[96px] flex flex-col justify-center border border-white/5">
-          {hoveredStep ? (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
-            >
-              <div className="md:col-span-3">
-                <span className="text-xs font-mono text-neu-accent font-bold uppercase tracking-wider block mb-1">
-                  Blueprint Node Selected
-                </span>
-                <h5 className="text-sm font-bold text-neu-text font-display">
-                  {steps[hoveredStep].title}
-                </h5>
-                <p className="text-xs text-neu-text-muted mt-1 leading-relaxed font-light">
-                  {steps[hoveredStep].desc}
-                </p>
-              </div>
-              <div className="p-3 rounded-xl bg-neu-bg shadow-neu-inset text-center md:col-span-1 border border-white/5">
-                <span className="text-[9px] font-mono text-neu-text-muted block uppercase">KPI Performance</span>
-                <span className="text-xs font-mono font-bold text-neu-accent mt-1 block">
-                  {steps[hoveredStep].metrics}
-                </span>
-              </div>
-            </motion.div>
-          ) : (
-            <p className="text-xs font-mono text-neu-text-muted text-center italic">
-              ✦ Hover over any component node to inspect technical metrics and orchestration patterns.
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (projectId === 'sera-migration') {
-    const steps: Record<string, { title: string; desc: string; metrics: string }> = {
-      legacy: {
-        title: 'Legacy .NET Monolith',
-        desc: 'Decommissioning phase. Captures state triggers, processes transactional driver records, and emits synchronization events.',
-        metrics: 'Uptime target: 100%'
-      },
-      bus: {
-        title: 'Azure Service Bus Broker',
-        desc: 'Enterprise queue acting as a highly reliable event broker. Employs Topics and Subscriptions for driver updates, sales events, and logs.',
-        metrics: 'Reliability: 99.999%'
-      },
-      nestjs: {
-        title: 'NestJS Microservices (K8s)',
-        desc: 'Autonomous microservices (Driver service, Trip logs, Payroll) deployed as horizontal pods in AKS, decoupled from legacy database constraints.',
-        metrics: 'Scaling limit: Unlimited'
-      },
-      sap: {
-        title: 'Enterprise ERP Integration',
-        desc: 'Coordinates downstream astronomic synchronization with SAP, Mekari Talenta HRIS payrolls, and FMS 2.0 telemetry logs.',
-        metrics: 'Sync Speed: <2s'
-      }
-    };
-
-    return (
-      <div className="mb-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
-          <div>
-            <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
-              <Network size={14} /> Microservices Migration Blueprint
-            </h4>
-            <p className="text-xs font-mono text-neu-text-muted mt-1">
-              Hover over blueprint nodes to inspect decoupling channels and pub/sub pipelines.
-            </p>
-          </div>
-          <span className="px-3 py-1 rounded-xl bg-neu-bg shadow-neu-sm text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
-            Astra Group Enterprise Sync
-          </span>
-        </div>
-
-        {/* The SVG Canvas */}
-        <div className="relative w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="min-w-[700px] max-w-[850px] mx-auto">
-            <svg viewBox="0 0 800 320" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                {/* Glow filter */}
-                <filter id="glow-sera" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-
-              {/* Connecting lines */}
-              {/* Line 1: Legacy -> Service Bus */}
-              <path 
-                d="M 210,130 L 290,130" 
-                stroke={hoveredStep === 'legacy' || hoveredStep === 'bus' ? '#3b82f6' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'legacy' || hoveredStep === 'bus' ? 3.5 : 2}
-                strokeDasharray={(hoveredStep === 'legacy' || hoveredStep === 'bus') ? "none" : "5,5"}
-                className="transition-all duration-300"
-                fill="none"
-              />
-              
-              {/* Line 2: Service Bus <-> NestJS */}
-              <path 
-                d="M 450,90 L 530,90" 
-                stroke={hoveredStep === 'bus' || hoveredStep === 'nestjs' ? '#10b981' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'bus' || hoveredStep === 'nestjs' ? 3.5 : 2}
-                className="transition-all duration-300"
-                fill="none"
-              />
-
-              {/* Line 3: Service Bus <-> SAP */}
-              <path 
-                d="M 450,170 L 530,170" 
-                stroke={hoveredStep === 'bus' || hoveredStep === 'sap' ? '#f59e0b' : (isDark ? '#3f3f46' : '#cbd5e1')}
-                strokeWidth={hoveredStep === 'bus' || hoveredStep === 'sap' ? 3.5 : 2}
-                className="transition-all duration-300"
-                fill="none"
-              />
-
-              {/* Nodes rendering */}
-              {/* 1. Legacy Monolith */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('legacy')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="50" y="90" width="160" height="80" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'legacy' ? '#3b82f6' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'legacy' ? 'url(#glow-sera)' : ''}
-                />
-                <text x="130" y="125" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>LEGACY MONOLITH</text>
-                <text x="130" y="143" textAnchor="middle" className="text-[10px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>C# .NET Framework</text>
-                <text x="130" y="157" textAnchor="middle" className="text-[8px] font-mono fill-current text-red-400 font-bold" fill="#f87171">Decommissioning</text>
-              </g>
-
-              {/* 2. Azure Service Bus */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('bus')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="290" y="40" width="160" height="180" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'bus' ? '#a855f7' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'bus' ? 'url(#glow-sera)' : ''}
-                />
-                <text x="370" y="75" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>AZURE SERVICE BUS</text>
-                <text x="370" y="93" textAnchor="middle" className="text-[9px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Enterprise Event Broker</text>
-                
-                {/* Internal queues */}
-                <rect x="305" y="115" width="130" height="30" rx="6" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                <text x="370" y="133" textAnchor="middle" className="text-[9px] font-mono fill-current" fill={isDark ? '#d8b4fe' : '#6b21a8'}>driver-sync-topic</text>
-                
-                <rect x="305" y="155" width="130" height="30" rx="6" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                <text x="370" y="173" textAnchor="middle" className="text-[9px] font-mono fill-current" fill={isDark ? '#d8b4fe' : '#6b21a8'}>payroll-payout-queue</text>
-              </g>
-
-              {/* 3. NestJS Microservices */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('nestjs')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="530" y="40" width="220" height="106" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'nestjs' ? '#10b981' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'nestjs' ? 'url(#glow-sera)' : ''}
-                />
-                <text x="640" y="70" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>NESTJS MICROSERVICES</text>
-                <text x="640" y="88" textAnchor="middle" className="text-[9px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Modular AKS Pods</text>
-                
-                <g className="flex gap-1.5 justify-center">
-                  <rect x="545" y="102" width="50" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="570" y="118" textAnchor="middle" className="text-[8px] font-mono fill-current" fill={isDark ? '#a1a1aa' : '#18181b'}>Driver</text>
-                  
-                  <rect x="615" y="102" width="50" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="640" y="118" textAnchor="middle" className="text-[8px] font-mono fill-current" fill={isDark ? '#a1a1aa' : '#18181b'}>Trips</text>
-                  
-                  <rect x="685" y="102" width="50" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="710" y="118" textAnchor="middle" className="text-[8px] font-mono fill-current" fill={isDark ? '#a1a1aa' : '#18181b'}>Payroll</text>
-                </g>
-              </g>
-
-              {/* 4. SAP / Mekari */}
-              <g 
-                className="cursor-pointer group/node"
-                onMouseEnter={() => setHoveredStep('sap')}
-                onMouseLeave={() => setHoveredStep(null)}
-              >
-                <rect 
-                  x="530" y="166" width="220" height="106" rx="16" 
-                  fill={isDark ? '#18181b' : '#f4f4f5'} 
-                  stroke={hoveredStep === 'sap' ? '#f59e0b' : (isDark ? '#27272a' : '#e4e4e7')}
-                  strokeWidth="2.5"
-                  className="transition-all duration-300"
-                  filter={hoveredStep === 'sap' ? 'url(#glow-sera)' : ''}
-                />
-                <text x="640" y="196" textAnchor="middle" className="text-xs font-mono font-bold fill-current" fill={isDark ? '#f4f4f5' : '#18181b'}>ENTERPRISE ERPS & DATA</text>
-                <text x="640" y="214" textAnchor="middle" className="text-[9px] font-mono fill-current opacity-60" fill={isDark ? '#a1a1aa' : '#71717a'}>Astra Group Shared Services</text>
-                
-                <g className="flex gap-2 text-[8px] font-mono font-bold">
-                  <rect x="545" y="228" width="55" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="572.5" y="244" textAnchor="middle" className="fill-current text-blue-400" fill={isDark ? '#60a5fa' : '#2563eb'}>SAP</text>
-                  
-                  <rect x="612.5" y="228" width="55" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="640" y="244" textAnchor="middle" className="fill-current text-emerald-400" fill={isDark ? '#34d399' : '#059669'}>Mekari</text>
-                  
-                  <rect x="680" y="228" width="55" height="26" rx="4" fill={isDark ? '#27272a' : '#e4e4e7'} />
-                  <text x="707.5" y="244" textAnchor="middle" className="fill-current text-amber-400" fill={isDark ? '#fbbf24' : '#d97706'}>FMS 2.0</text>
-                </g>
-              </g>
-            </svg>
-          </div>
-        </div>
-
-        {/* Dynamic description of hovered step */}
-        <div className="mt-6 p-5 rounded-2xl bg-neu-bg shadow-neu relative min-h-[96px] flex flex-col justify-center border border-white/5">
-          {hoveredStep ? (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center"
-            >
-              <div className="md:col-span-3">
-                <span className="text-xs font-mono text-neu-accent font-bold uppercase tracking-wider block mb-1">
-                  Blueprint Node Selected
-                </span>
-                <h5 className="text-sm font-bold text-neu-text font-display">
-                  {steps[hoveredStep].title}
-                </h5>
-                <p className="text-xs text-neu-text-muted mt-1 leading-relaxed font-light">
-                  {steps[hoveredStep].desc}
-                </p>
-              </div>
-              <div className="p-3 rounded-xl bg-neu-bg shadow-neu-inset text-center md:col-span-1 border border-white/5">
-                <span className="text-[9px] font-mono text-neu-text-muted block uppercase">KPI Performance</span>
-                <span className="text-xs font-mono font-bold text-neu-accent mt-1 block">
-                  {steps[hoveredStep].metrics}
-                </span>
-              </div>
-            </motion.div>
-          ) : (
-            <p className="text-xs font-mono text-neu-text-muted text-center italic">
-              ✦ Hover over any component node to inspect technical metrics and orchestration patterns.
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-}
-
-const getTagProjectCount = (tag: string) => {
-  return projects.filter(p => p.tags.some(t => t.toLowerCase() === tag.toLowerCase())).length;
-};
-
-const getRelatedProjects = (currentProj: typeof projects[0]) => {
-  return projects
-    .filter(p => p.id !== currentProj.id)
-    .map(p => {
-      const overlapCount = p.tags.filter(t => currentProj.tags.includes(t)).length;
-      return { project: p, overlapCount };
-    })
-    .sort((a, b) => b.overlapCount - a.overlapCount)
-    .slice(0, 2)
-    .map(x => x.project);
-};
-
-const TECHNICAL_IMAGERY: Record<string, {
-  featured: string;
-  blueprint: string;
-  metrics: string;
-  featuredCaption: string;
-  blueprintCaption: string;
-  metricsCaption: string;
-}> = {
-  'auraflow-ai': {
-    featured: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800',
-    blueprint: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800',
-    metrics: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=800',
-    featuredCaption: 'Enterprise multi-agent scheduler nodes',
-    blueprintCaption: 'LangGraph state transition graph mapping',
-    metricsCaption: 'Distributed Redis queue latency tracker'
-  },
-  'sera-migration': {
-    featured: 'https://images.unsplash.com/photo-1597852074816-d933c7d2b988?auto=format&fit=crop&q=80&w=800',
-    blueprint: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&q=80&w=800',
-    metrics: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
-    featuredCaption: 'Kubernetes container fleet nodes',
-    blueprintCaption: 'Azure Service Bus topic exchange pipelines',
-    metricsCaption: 'Microservice domain isolation telemetry'
-  },
-  'ledgerflow': {
-    featured: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&q=80&w=800',
-    blueprint: 'https://images.unsplash.com/photo-1642156814441-ab8994f46e3e?auto=format&fit=crop&q=80&w=800',
-    metrics: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
-    featuredCaption: 'Atomic ledger thread orchestration engine',
-    blueprintCaption: 'Optimistic Concurrency Control pipeline checks',
-    metricsCaption: 'Redis balance cache transaction logs'
-  },
-  'telkomsel-iot': {
-    featured: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800',
-    blueprint: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800',
-    metrics: 'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&q=80&w=800',
-    featuredCaption: 'Physical server hardware provisioning',
-    blueprintCaption: 'Bare-metal Kubernetes cluster configurations',
-    metricsCaption: 'IoT streaming metric ingestion logs'
-  },
-  'doeku-p2p': {
-    featured: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
-    blueprint: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&q=80&w=800',
-    metrics: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800',
-    featuredCaption: 'Transaction registry & database architecture',
-    blueprintCaption: 'Asynchronous payout queues & background workers',
-    metricsCaption: 'Automated auditing ledger security telemetry'
-  }
-};
-
-function ProjectGalleryShowcase({ projectId }: { projectId: string }) {
-  const [activeTab, setActiveTab] = useState<'featured' | 'blueprint' | 'metrics'>('featured');
-  const [isZoomed, setIsZoomed] = useState(false);
-  const data = TECHNICAL_IMAGERY[projectId] || TECHNICAL_IMAGERY['auraflow-ai'];
-
-  const getActiveDetails = () => {
-    switch (activeTab) {
-      case 'blueprint':
-        return {
-          url: data.blueprint,
-          caption: data.blueprintCaption,
-          tag: 'SYSTEM BLUEPRINT'
-        };
-      case 'metrics':
-        return {
-          url: data.metrics,
-          caption: data.metricsCaption,
-          tag: 'TELEMETRY & LOGS'
-        };
-      case 'featured':
-      default:
-        return {
-          url: data.featured,
-          caption: data.featuredCaption,
-          tag: 'SYSTEM OVERVIEW'
-        };
-    }
-  };
-
-  const current = getActiveDetails();
-
-  return (
-    <div className="p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
-        <div>
-          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
-            <PenTool size={14} className="text-neu-accent" /> Technical Blueprints & Systems
-          </h4>
-          <p className="text-[10px] font-mono text-neu-text-muted mt-0.5">High-fidelity imagery mapped to system modules</p>
-        </div>
-        
-        <div className="flex gap-1 bg-neu-bg p-1 rounded-xl shadow-neu-inset border border-white/5 text-[10px] font-mono">
-          {(['featured', 'blueprint', 'metrics'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "px-2.5 py-1.5 rounded-lg capitalize transition-all duration-200 cursor-pointer",
-                activeTab === tab
-                  ? "bg-white dark:bg-zinc-900 text-neu-accent font-bold shadow-sm"
-                  : "text-neu-text-muted hover:text-neu-text"
-              )}
-            >
-              {tab === 'featured' ? 'overview' : tab}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative rounded-2xl overflow-hidden aspect-video shadow-neu-inset border border-black/5 bg-zinc-950 flex items-center justify-center group/frame">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            className="w-full h-full relative"
-          >
-            <img
-              src={current.url}
-              alt={current.caption}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover transition-all duration-700 group-hover/frame:scale-105 filter brightness-95"
-            />
-            
-            <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-[8px] font-mono font-bold text-emerald-400 tracking-wider border border-white/10 select-none">
-              {current.tag}
-            </span>
-
-            <button
-              onClick={() => setIsZoomed(true)}
-              className="absolute top-3 right-3 p-1.5 rounded bg-black/60 backdrop-blur-md text-white/80 hover:text-white transition-colors border border-white/10 opacity-0 group-hover/frame:opacity-100 transition-opacity duration-300"
-              title="Expand Imagery"
-            >
-              <Eye size={12} />
-            </button>
-
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-8 text-left">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
-                Technical Blueprint Capture
-              </span>
-              <p className="text-xs text-white font-medium mt-0.5 leading-tight">
-                {current.caption}
-              </p>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <AnimatePresence>
-        {isZoomed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsZoomed(false)}
-            className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4 cursor-zoom-out"
-          >
-            <button 
-              onClick={() => setIsZoomed(false)}
-              className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/25 transition-colors border border-white/10"
-            >
-              <X size={20} />
-            </button>
-
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              className="relative max-w-4xl max-h-[85vh] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-950"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={current.url}
-                alt={current.caption}
-                referrerPolicy="no-referrer"
-                className="w-full h-auto max-h-[75vh] object-contain mx-auto"
-              />
-              <div className="bg-zinc-900/90 p-5 border-t border-white/10 text-left">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block">
-                  {current.tag}
-                </span>
-                <p className="text-sm text-zinc-100 font-display font-medium mt-1">
-                  {current.caption}
-                </p>
-                <p className="text-[10px] text-zinc-400 font-mono mt-1.5 leading-normal">
-                  * Dynamic system snapshot generated in sandbox telemetry. Highly correlated with production workload cycles.
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function ProjectLifecycleTracker({ phases, spineColor }: { phases: any[]; spineColor: string }) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
-  const getPhaseMeta = (index: number) => {
-    switch (index) {
-      case 0:
-        return {
-          stage: "Planning & Spec",
-          icon: <Compass size={16} className="text-purple-500" />,
-          borderColor: "group-hover:border-purple-500",
-          glowColor: "rgba(168,85,247,0.15)",
-          colorClass: "text-purple-500 bg-purple-500/10 border-purple-500/20"
-        };
-      case 1:
-        return {
-          stage: "Architecture & Design",
-          icon: <Layers size={16} className="text-blue-500" />,
-          borderColor: "group-hover:border-blue-500",
-          glowColor: "rgba(59,130,246,0.15)",
-          colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20"
-        };
-      case 2:
-        return {
-          stage: "Execution & Code",
-          icon: <Code2 size={16} className="text-emerald-500" />,
-          borderColor: "group-hover:border-emerald-500",
-          glowColor: "rgba(16,185,129,0.15)",
-          colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
-        };
-      case 3:
-      default:
-        return {
-          stage: "Testing & Launch",
-          icon: <Activity size={16} className="text-rose-500" />,
-          borderColor: "group-hover:border-rose-500",
-          glowColor: "rgba(244,63,94,0.15)",
-          colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/20"
-        };
-    }
-  };
-
-  return (
-    <div className="p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
-      <div className="flex items-center justify-between mb-6">
-        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
-          <Milestone size={14} className="text-neu-accent" /> Lifecycle & Milestones
-        </h4>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold uppercase tracking-wider animate-pulse">
-          Active Production
-        </span>
-      </div>
-
-      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-        <div className="flex relative min-w-max pt-6">
-          {/* Horizontal connecting line */}
-          <div className="absolute top-[1.375rem] left-0 right-0 h-[2px] bg-gray-200 dark:bg-zinc-800" />
-          
-          {phases.map((phase, idx) => {
-            const meta = getPhaseMeta(idx);
-            const isHovered = hoveredIndex === idx;
-
-            return (
-              <motion.div
-                key={idx}
-                onMouseEnter={() => setHoveredIndex(idx)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className="relative group cursor-default transition-all duration-300 w-72 flex-shrink-0 mr-8"
-              >
-                {/* Timeline Dot */}
-                <div 
-                  className={cn(
-                    "absolute left-6 -top-3 w-5 h-5 rounded-full bg-neu-bg border-2 flex items-center justify-center shadow-neu transition-all duration-300 z-10",
-                    isHovered ? "scale-125 border-neu-accent" : "border-gray-300 dark:border-zinc-700"
-                  )}
-                  style={{
-                    boxShadow: isHovered ? `0 0 12px ${meta.glowColor}` : undefined
-                  }}
-                >
-                  <div className={cn(
-                    "w-2 h-2 rounded-full transition-colors duration-300",
-                    isHovered ? "bg-neu-accent" : "bg-gray-400 dark:bg-zinc-600"
-                  )} />
-                </div>
-
-                <div 
-                  className={cn(
-                    "mt-4 p-4 rounded-2xl bg-neu-bg border border-transparent transition-all duration-300 text-left h-full flex flex-col",
-                    isHovered ? "shadow-neu-sm border-gray-200 dark:border-zinc-800 scale-[1.02]" : "shadow-none"
-                  )}
-                >
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className={cn("text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border flex items-center gap-1", meta.colorClass)}>
-                      {meta.icon}
-                      {meta.stage}
-                    </span>
-                    
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-neu-text-muted">
-                      • {phase.date}
-                    </span>
-                  </div>
-
-                  <h5 className="text-sm font-display font-bold text-neu-text group-hover:text-neu-accent transition-colors">
-                    {phase.title}
-                  </h5>
-
-                  <p className="text-xs text-neu-text-muted mt-2 leading-relaxed font-light flex-grow">
-                    {phase.description}
-                  </p>
-
-                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/40 flex items-center justify-between text-[10px] font-mono">
-                    <span className="text-emerald-500 font-bold flex items-center gap-1">
-                      ✓ Verified
-                    </span>
-                    <span className="text-neu-text-muted font-medium">
-                      Gate {idx + 1}/4 Complete
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface BookItemProps {
-  project: typeof projects[0];
-  setSelectedProject: (p: typeof projects[0]) => void;
-  setFocusedProject: (p: typeof projects[0] | null) => void;
-  isDark: boolean;
-  getTagProjectCount: (tag: string) => number;
-}
-
-function BookItem({
-  project,
-  setSelectedProject,
-  setFocusedProject,
-  isDark,
-  getTagProjectCount,
-}: BookItemProps) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Smooth out the motion values using useSpring
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
-
-  // Map mouse coordinate ratios to rotation degrees
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [15, -15]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-15, 15]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Calculate normalized mouse positions (-0.5 to 0.5)
-    const mouseX = (e.clientX - rect.left) / width - 0.5;
-    const mouseY = (e.clientY - rect.top) / height - 0.5;
-
-    x.set(mouseX);
-    y.set(mouseY);
-  };
-
-  const handleMouseLeave = () => {
-    // Reset back to center smoothly
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 50, rotate: -5 }}
-      animate={{ opacity: 1, y: 0, rotate: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-      onClick={() => setSelectedProject(project)}
-      className="relative cursor-pointer group perspective-1000 flex-shrink-0 snap-center w-24 sm:w-28 md:w-auto flex justify-center"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* 3D tilt-able container wrapper */}
-      <motion.div
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
-        }}
-        className="relative transform-gpu transition-all duration-300 group-hover:-translate-y-4 group-hover:scale-105 group-hover:z-20 group-hover:shadow-neu-modal w-full md:w-auto flex justify-center"
-      >
-
-
-        {/* The "Book Spine" */}
-        <div
-          style={{ transform: "translateZ(20px)" }}
-          className={cn(
-            "w-20 md:w-20 h-80 shadow-neu relative flex flex-col justify-between p-3 border border-white/40 overflow-hidden",
-            project.spineColor
-          )}
-        >
-          {/* Spine Details */}
-          <div className="w-full h-1 bg-black/10 rounded-full mb-2 shadow-inner"></div>
-          <div className="w-full h-1 bg-black/10 rounded-full mb-4 shadow-inner"></div>
-
-          <div className="flex-1 relative flex items-center justify-center">
-            <span className="absolute whitespace-pre-wrap transform -rotate-90 origin-center text-sm md:text-[10px] lg:text-xs font-mono font-bold tracking-widest text-white drop-shadow-md w-[260px] md:w-[220px] text-center leading-tight">
-              {project.spineText}
-            </span>
-          </div>
-
-          <div className="mt-4 flex flex-col items-center gap-2">
-            <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-            <Code2 size={16} className="text-white drop-shadow-sm md:w-3 md:h-3" />
-            <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-          </div>
-
-          {/* 3D Page Edge Effect */}
-          <div className="absolute right-0 top-0 bottom-0 w-2 md:w-1 bg-gradient-to-r from-transparent to-black/10 rounded-r-lg"></div>
-
-          {/* Hover Actions Overlay */}
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-6 md:gap-4 p-4 md:p-2.5 z-30">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setFocusedProject(project);
-              }}
-              className="p-3 md:p-2.5 rounded-xl bg-neu-accent hover:bg-neu-accent/90 text-white shadow-md active:scale-95 transition-all flex items-center justify-center hover:scale-110"
-              title="Focus / Spotlight"
-            >
-              <Sparkles size={20} className="md:w-4 md:h-4" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedProject(project);
-              }}
-              className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10 active:scale-95 transition-all flex items-center justify-center hover:scale-110"
-              title="Open Dev Log"
-            >
-              <BookOpen size={16} />
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-const legendLevels = [
-  { level: 0, darkBg: 'bg-zinc-800/60', lightBg: 'bg-gray-200', label: 'No contributions (0)' },
-  { level: 1, darkBg: 'bg-emerald-950', lightBg: 'bg-indigo-100', label: 'Low (1-2 contributions)' },
-  { level: 2, darkBg: 'bg-emerald-800', lightBg: 'bg-indigo-300', label: 'Medium (3-4 contributions)' },
-  { level: 3, darkBg: 'bg-emerald-500', lightBg: 'bg-indigo-500', label: 'High (5-7 contributions)' },
-  { level: 4, darkBg: 'bg-emerald-400', lightBg: 'bg-indigo-600', label: 'Very high (8+ contributions)' }
-];
-
-const roadmapItems = [
-  {
-    quarter: 'Q3 2026',
-    title: 'Systems & High-Performance Services',
-    tech: 'Rust & WebAssembly',
-    icon: <Code2 size={20} />,
-    description: 'Transitioning performance-critical modules to memory-safe systems programming to design ultra-low latency WebAssembly edge services.',
-    status: 'Plan Formulated',
-    depth: 'Intermediate Focus',
-    color: 'from-purple-500 to-indigo-600',
-    darkColor: 'from-emerald-500 to-teal-500',
-    topics: ['Ownership & Borrow Checker', 'Tokio Async Runtime', 'WASM Edge Handlers', 'Zero-cost Abstractions'],
-    projects: ['WASM-based HTTP Request Filter', 'High-performance API Proxy in Rust']
-  },
-  {
-    quarter: 'Q4 2026',
-    title: 'Advanced Streaming & Event Architecture',
-    tech: 'Apache Kafka & Event Sourcing',
-    icon: <Database size={20} />,
-    description: 'Building robust, multi-region distributed streaming architectures with strict event ordering, transaction support, and message guarantees.',
-    status: 'Scheduled',
-    depth: 'Advanced Practice',
-    color: 'from-blue-500 to-cyan-500',
-    darkColor: 'from-emerald-400 to-emerald-600',
-    topics: ['Partitioning & Consumer Groups', 'Kafka Streams API', 'Schema Registry & Avro', 'Idempotent Producers'],
-    projects: ['Real-time Event Logging Pipeline', 'Transactional Event-Sourced Ledger']
-  },
-  {
-    quarter: 'Q1 2027',
-    title: 'Agentic Workflows & Cognitive Systems',
-    tech: 'LangGraph & Stateful Agents',
-    icon: <BrainCircuit size={20} />,
-    description: 'Evolving LLM integrations from standard RAG pipelines into autonomous stateful multi-agent systems that learn and adapt with memory.',
-    status: 'Research Phase',
-    depth: 'Architect Level',
-    color: 'from-pink-500 to-rose-500',
-    darkColor: 'from-green-400 to-emerald-500',
-    topics: ['Stateful Multi-Agent Graphs', 'Human-in-the-loop Workflows', 'Semantic Caching & Memory', 'Self-Correcting RAG'],
-    projects: ['Autonomous PR Reviewer Agent', 'Self-Improving Code Interpreter Engine']
-  },
-  {
-    quarter: 'Q2 2027',
-    title: 'Edge-Native WebAssembly Serverless',
-    tech: 'Wasmtime & Spin Runtime',
-    icon: <Globe size={20} />,
-    description: 'Leveraging WebAssembly System Interface (WASI) and modular compilation to deploy sandboxed, lightning-fast edge-native serverless functions.',
-    status: 'Exploration Phase',
-    depth: 'Intermediate Focus',
-    color: 'from-amber-500 to-orange-500',
-    darkColor: 'from-teal-400 to-emerald-400',
-    topics: ['WASI Preview 2', 'Component Model Architecture', 'Spin Serverless Framework', 'Secure Sandbox Environments'],
-    projects: ['Edge-Deployed GeoIP Middleware', 'Instant-boot Sandbox Function Orchestrator']
-  }
-];
+import { getTechIconAndColor } from "@/lib/tech-icons";
+import SkillTree from "@/components/SkillTree";
+import ProjectArchitectureDiagram from "@/components/ProjectArchitectureDiagram";
+import { getTagProjectCount, getRelatedProjects, TECHNICAL_IMAGERY } from "@/lib/projects-data";
+import ProjectGalleryShowcase from "@/components/ProjectGalleryShowcase";
+import ProjectLifecycleTracker from "@/components/ProjectLifecycleTracker";
+import BookItem from "@/components/BookItem";
+import { legendLevels, roadmapItems } from "@/lib/roadmap-data";
+import { commitActivityData, repositoryBreakdownData } from "@/lib/github-data";
 
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [isBannerMinimized, setIsBannerMinimized] = useState(false);
   const [focusedProject, setFocusedProject] = useState<typeof projects[0] | null>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -2156,6 +374,17 @@ export default function Portfolio() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedProject || showInquiryModal || isFilterModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedProject, showInquiryModal, isFilterModalOpen]);
 
   const toggleTheme = () => {
     const nextDark = !isDark;
@@ -3482,7 +1711,7 @@ export default function Portfolio() {
                 ) : !mounted ? (
                   <div className="text-neu-text-muted font-mono text-xs">Initializing chart engine...</div>
                 ) : chartType === 'temporal' ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                     <AreaChart data={commitActivityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorCommits" x1="0" y1="0" x2="0" y2="1">
@@ -3531,7 +1760,7 @@ export default function Portfolio() {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                     <BarChart data={repositoryBreakdownData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2b2f' : '#cbd5e1'} opacity={0.3} vertical={false} />
                       <XAxis 
@@ -4082,7 +2311,14 @@ export default function Portfolio() {
                   className="w-full h-full flex flex-col overflow-hidden"
                 >
                   {/* Modal Header */}
-                  <div className={cn("p-8 md:p-12 relative overflow-hidden flex-shrink-0", selectedProject.coverColor)}>
+                  <motion.div 
+                    animate={{ 
+                      padding: isBannerMinimized ? '1.5rem 2rem' : '2rem 3rem',
+                      height: isBannerMinimized ? 'auto' : 'auto'
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className={cn("relative overflow-hidden flex-shrink-0", selectedProject.coverColor)}
+                  >
                     {/* The High-Quality Unsplash Background Image */}
                     <div className="absolute inset-0 z-0">
                       <img 
@@ -4094,69 +2330,107 @@ export default function Portfolio() {
                       <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/25"></div>
                     </div>
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-15"></div>
-                    <button 
-                      onClick={() => setSelectedProject(null)}
-                      className="absolute top-6 right-6 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors z-10"
-                      title="Close"
-                    >
-                      <X size={20} />
-                    </button>
-
-                    {selectedProject.github && (
-                      <a
-                        href={selectedProject.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute top-6 right-20 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all z-10 flex items-center justify-center border border-white/10 shadow-sm"
-                        title="View Source Code on GitHub"
-                        onClick={(e) => e.stopPropagation()}
+                    <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
+                      {(selectedProject as any).demoUrl && (
+                        <a
+                          href={(selectedProject as any).demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all flex items-center justify-center border border-white/10 shadow-sm"
+                          title="Visit Website Demo"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Globe size={20} />
+                        </a>
+                      )}
+                      {selectedProject.github && (
+                        <a
+                          href={selectedProject.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all flex items-center justify-center border border-white/10 shadow-sm"
+                          title="View Source Code on GitHub"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Github size={20} />
+                        </a>
+                      )}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setIsBannerMinimized(!isBannerMinimized); }}
+                        className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors border border-white/10 shadow-sm"
+                        title={isBannerMinimized ? "Expand Banner" : "Minimize Banner"}
                       >
-                        <Github size={20} />
-                      </a>
-                    )}
+                        {isBannerMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
+                      </button>
+                      <button 
+                        onClick={() => setSelectedProject(null)}
+                        className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors border border-white/10 shadow-sm"
+                        title="Close"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
                     
-                    {/* Navigation helper hint */}
-                    <div className={cn("absolute top-6 hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/20 rounded-full text-[10px] font-mono text-white/80 select-none", selectedProject.github ? "right-36" : "right-20")}>
+                                        {/* Navigation helper hint */}
+                    <div className={cn("absolute top-6 hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/20 rounded-full text-[10px] font-mono text-white/80 select-none", 
+                      (selectedProject as any).demoUrl && selectedProject.github ? "right-52" : 
+                      ((selectedProject as any).demoUrl || selectedProject.github) ? "right-40" : "right-28"
+                    )}>
                       <span>Swipe or use Arrow keys to browse</span>
                     </div>
 
-                    <div className="relative z-10 flex items-center gap-3 mb-4">
-                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-mono font-medium text-white/90">
+                    <div className="relative z-10 flex items-center gap-3 mb-2">
+                      <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] sm:text-xs font-mono font-medium text-white/90">
                         {selectedProject.category}
                       </span>
-                      <span className="text-white/70 text-sm font-mono">{selectedProject.date}</span>
+                      <span className="text-white/70 text-xs sm:text-sm font-mono">{selectedProject.date}</span>
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-2 relative z-10 tracking-tight">
+
+                    <motion.h2 
+                      animate={{ fontSize: isBannerMinimized ? '1.5rem' : '3rem', marginBottom: isBannerMinimized ? '0' : '0.5rem' }}
+                      className="font-display font-bold text-white relative z-10 tracking-tight"
+                    >
                       {selectedProject.title}
-                    </h2>
+                    </motion.h2>
 
-                    {/* Horizontal Tech Stack Row */}
-                    <div className="relative z-10 flex flex-wrap gap-2.5 mb-4 mt-3">
-                      {selectedProject.tags.map(tag => {
-                        const { color, icon } = getTechIconAndColor(tag);
-                        const count = getTagProjectCount(tag);
-                        return (
-                          <div 
-                            key={tag} 
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 shadow-sm text-xs font-mono font-medium text-white/95 hover:bg-black/50 hover:border-white/20 transition-all cursor-default select-none hover:scale-[1.03]"
-                          >
-                            <span className={cn("flex-shrink-0", color)}>
-                              {icon}
-                            </span>
-                            <span>{tag}</span>
-                            <span className="text-emerald-400 font-bold text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                              +{count} project{count > 1 ? 's' : ''} exp
-                            </span>
+                    <AnimatePresence>
+                      {!isBannerMinimized && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          {/* Horizontal Tech Stack Row */}
+                          <div className="relative z-10 flex flex-wrap gap-2.5 mb-4 mt-3">
+                            {selectedProject.tags.map(tag => {
+                              const { color, icon } = getTechIconAndColor(tag);
+                              const count = getTagProjectCount(tag);
+                              return (
+                                <div 
+                                  key={tag} 
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 shadow-sm text-xs font-mono font-medium text-white/95 hover:bg-black/50 hover:border-white/20 transition-all cursor-default select-none hover:scale-[1.03]"
+                                >
+                                  <span className={cn("flex-shrink-0", color)}>
+                                    {icon}
+                                  </span>
+                                  <span>{tag}</span>
+                                  <span className="text-emerald-400 font-bold text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                                    +{count} project{count > 1 ? 's' : ''} exp
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
-                        );
-                      })}
-                    </div>
-
-                    <p className="text-lg text-white/80 font-light max-w-2xl relative z-10">
-                      {selectedProject.subtitle}
-                    </p>
-                  </div>
-
+                          
+                          <p className="text-sm sm:text-base md:text-lg text-white/80 font-light max-w-2xl relative z-10">
+                            {selectedProject.subtitle}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                   {/* Modal Content */}
                   <div className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar">
                     <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-neu-text/10">
@@ -4170,13 +2444,26 @@ export default function Portfolio() {
                       })}
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                      {/* Left Column (Main documentation and systems architecture) */}
-                      <div className="lg:col-span-7 space-y-8">
-                        {/* Interactive Architecture Diagram */}
+                    <div className="space-y-12">
+                      {/* Interactive Architecture Diagram */}
+                      <div className="w-full">
                         <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
+                      </div>
 
-                        {/* System Specifications Markdown block */}
+                      {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
+                      <div className="w-full">
+                        <ProjectGalleryShowcase projectId={selectedProject.id} />
+                      </div>
+
+                      {/* Vertical Project Lifecycle Tracker (Planning, Architecture, Execution, Launch) */}
+                      <div className="w-full">
+                        <ProjectLifecycleTracker phases={selectedProject.phases} spineColor={selectedProject.spineColor} />
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        {/* Left Column (System Specifications Markdown block) */}
+                        <div className="lg:col-span-7 space-y-8">
+                          {/* System Specifications Markdown block */}
                         <div className="prose prose-slate max-w-none font-sans
                             prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neu-text
                             prose-h1:text-3xl prose-h2:text-2xl prose-h2:border-b prose-h2:border-neu-text/10 prose-h2:pb-2
@@ -4273,13 +2560,8 @@ export default function Portfolio() {
                             </div>
                           </div>
                         )}
-
-                        {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
-                        <ProjectGalleryShowcase projectId={selectedProject.id} />
-
-                        {/* Vertical Project Lifecycle Tracker (Planning, Architecture, Execution, Launch) */}
-                        <ProjectLifecycleTracker phases={selectedProject.phases} spineColor={selectedProject.spineColor} />
                       </div>
+                    </div>
                     </div>
 
                     {/* Related Projects Section */}
