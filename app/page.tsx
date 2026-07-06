@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus, prism } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { projects, testimonials } from '@/lib/data';
 import { cn } from '@/lib/utils';
@@ -1542,70 +1540,76 @@ function ProjectLifecycleTracker({ phases, spineColor }: { phases: any[]; spineC
         </span>
       </div>
 
-      <div className="relative pl-6 sm:pl-8 border-l-2 border-gray-200 dark:border-zinc-800 space-y-6 ml-3">
-        {phases.map((phase, idx) => {
-          const meta = getPhaseMeta(idx);
-          const isHovered = hoveredIndex === idx;
+      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+        <div className="flex relative min-w-max pt-6">
+          {/* Horizontal connecting line */}
+          <div className="absolute top-[1.375rem] left-0 right-0 h-[2px] bg-gray-200 dark:bg-zinc-800" />
+          
+          {phases.map((phase, idx) => {
+            const meta = getPhaseMeta(idx);
+            const isHovered = hoveredIndex === idx;
 
-          return (
-            <motion.div
-              key={idx}
-              onMouseEnter={() => setHoveredIndex(idx)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              className="relative group cursor-default transition-all duration-300"
-            >
-              <div 
-                className={cn(
-                  "absolute -left-[35px] sm:-left-[43px] top-1.5 w-5 h-5 rounded-full bg-neu-bg border-2 flex items-center justify-center shadow-neu transition-all duration-300 z-10",
-                  isHovered ? "scale-125 border-neu-accent" : "border-gray-300 dark:border-zinc-700"
-                )}
-                style={{
-                  boxShadow: isHovered ? `0 0 12px ${meta.glowColor}` : undefined
-                }}
+            return (
+              <motion.div
+                key={idx}
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                className="relative group cursor-default transition-all duration-300 w-72 flex-shrink-0 mr-8"
               >
-                <div className={cn(
-                  "w-2 h-2 rounded-full transition-colors duration-300",
-                  isHovered ? "bg-neu-accent" : "bg-gray-400 dark:bg-zinc-600"
-                )} />
-              </div>
-
-              <div 
-                className={cn(
-                  "p-4 rounded-2xl bg-neu-bg border border-transparent transition-all duration-300 text-left",
-                  isHovered ? "shadow-neu-sm border-gray-200 dark:border-zinc-800 scale-[1.02]" : "shadow-none"
-                )}
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={cn("text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border flex items-center gap-1", meta.colorClass)}>
-                    {meta.icon}
-                    {meta.stage}
-                  </span>
-                  
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-neu-text-muted">
-                    • {phase.date}
-                  </span>
+                {/* Timeline Dot */}
+                <div 
+                  className={cn(
+                    "absolute left-6 -top-3 w-5 h-5 rounded-full bg-neu-bg border-2 flex items-center justify-center shadow-neu transition-all duration-300 z-10",
+                    isHovered ? "scale-125 border-neu-accent" : "border-gray-300 dark:border-zinc-700"
+                  )}
+                  style={{
+                    boxShadow: isHovered ? `0 0 12px ${meta.glowColor}` : undefined
+                  }}
+                >
+                  <div className={cn(
+                    "w-2 h-2 rounded-full transition-colors duration-300",
+                    isHovered ? "bg-neu-accent" : "bg-gray-400 dark:bg-zinc-600"
+                  )} />
                 </div>
 
-                <h5 className="text-sm font-display font-bold text-neu-text mt-2 group-hover:text-neu-accent transition-colors">
-                  {phase.title}
-                </h5>
+                <div 
+                  className={cn(
+                    "mt-4 p-4 rounded-2xl bg-neu-bg border border-transparent transition-all duration-300 text-left h-full flex flex-col",
+                    isHovered ? "shadow-neu-sm border-gray-200 dark:border-zinc-800 scale-[1.02]" : "shadow-none"
+                  )}
+                >
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className={cn("text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border flex items-center gap-1", meta.colorClass)}>
+                      {meta.icon}
+                      {meta.stage}
+                    </span>
+                    
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-neu-text-muted">
+                      • {phase.date}
+                    </span>
+                  </div>
 
-                <p className="text-xs text-neu-text-muted mt-1.5 leading-relaxed font-light">
-                  {phase.description}
-                </p>
+                  <h5 className="text-sm font-display font-bold text-neu-text group-hover:text-neu-accent transition-colors">
+                    {phase.title}
+                  </h5>
 
-                <div className="mt-2.5 pt-2 border-t border-gray-100 dark:border-zinc-800/40 flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-emerald-500 font-bold flex items-center gap-1">
-                    ✓ Verified Quality Gate
-                  </span>
-                  <span className="text-neu-text-muted font-medium">
-                    Gate {idx + 1}/4 Complete
-                  </span>
+                  <p className="text-xs text-neu-text-muted mt-2 leading-relaxed font-light flex-grow">
+                    {phase.description}
+                  </p>
+
+                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/40 flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-emerald-500 font-bold flex items-center gap-1">
+                      ✓ Verified
+                    </span>
+                    <span className="text-neu-text-muted font-medium">
+                      Gate {idx + 1}/4 Complete
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -1886,7 +1890,7 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
-    const sections = ['hero', 'projects', 'proficiency', 'insights', 'skills', 'experience'];
+    const sections = ['hero', 'proficiency', 'experience', 'endorse'];
     const observerOptions = {
       root: null,
       rootMargin: '-30% 0px -40% 0px',
@@ -2169,14 +2173,29 @@ export default function Portfolio() {
         style={{ scaleX }}
       />
       
-      {/* Sticky bottom dock navigation */}
+      {/* Sticky bottom dock navigation with rotating dynamic border glow */}
       <motion.div
         initial={{ y: 100, x: "-50%", opacity: 0 }}
         animate={{ y: 0, x: "-50%", opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="fixed bottom-6 left-1/2 z-50 max-w-[95vw] sm:max-w-none p-1.5 rounded-2xl bg-white/80 dark:bg-zinc-950/70 backdrop-blur-md shadow-[0_8px_30px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_30px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 flex items-center transition-all duration-300"
+        className="fixed bottom-6 left-1/2 z-50 max-w-[95vw] sm:max-w-none p-1.5 rounded-2xl flex items-center transition-all duration-300 group"
+        style={{
+          boxShadow: isDark 
+            ? '0 8px 30px rgba(16, 185, 129, 0.12), inset 0 0 12px rgba(16, 185, 129, 0.04)'
+            : '0 8px 30px rgba(124, 58, 237, 0.06), inset 0 0 12px rgba(124, 58, 237, 0.02)'
+        }}
       >
-        <div className="overflow-x-auto flex items-center gap-1 sm:gap-2 px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] max-w-full sm:max-w-none">
+        {/* Dynamic Rotating Glow Border Effect */}
+        <div className="absolute inset-0 rounded-2xl -z-10 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-[150%] opacity-40 dark:opacity-60 bg-[conic-gradient(from_0deg,#c084fc,#818cf8,#34d399,#c084fc)] blur-[4px]"
+          />
+          {/* Inner masking to keep only the thin border shining and preserve backdrop blur */}
+          <div className="absolute inset-[1px] rounded-[15px] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md" />
+        </div>
+        <div className="flex items-center gap-1 sm:gap-2 px-1 max-w-full sm:max-w-none flex-wrap justify-center sm:justify-start">
           <AnimatePresence>
             {activeSection !== 'hero' && (
               <motion.div 
@@ -2185,7 +2204,7 @@ export default function Portfolio() {
                 animate={{ opacity: 1, width: 'auto', scale: 1, marginRight: 8 }}
                 exit={{ opacity: 0, width: 0, scale: 0.5, marginRight: 0 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                className="flex items-center gap-1 sm:gap-2 overflow-hidden flex-shrink-0"
+                className="flex items-center gap-1 sm:gap-2 overflow-visible flex-shrink-0"
               >
                 <button
                   onClick={() => {
@@ -2220,12 +2239,9 @@ export default function Portfolio() {
           </AnimatePresence>
 
           {[
-            { id: 'hero', label: 'Intro', icon: <Terminal size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'projects', label: 'Projects', icon: <BookOpen size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'proficiency', label: 'Proficiency', icon: <Cpu size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'insights', label: 'Insights', icon: <Layers size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'skills', label: 'Skills', icon: <BrainCircuit size={16} className="sm:w-[18px] sm:h-[18px]" /> },
-            { id: 'experience', label: 'Experience', icon: <Briefcase size={16} className="sm:w-[18px] sm:h-[18px]" /> }
+            { id: 'proficiency', label: 'Stack & Insights', icon: <Cpu size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'experience', label: 'Experience', icon: <Briefcase size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+            { id: 'endorse', label: 'Endorse', icon: <MessageSquare size={16} className="sm:w-[18px] sm:h-[18px]" /> }
           ].map((sec) => {
             const active = activeSection === sec.id;
             return (
@@ -2315,8 +2331,9 @@ export default function Portfolio() {
         </div>
       </motion.div>
 
-      {/* Header Section - Full One Display */}
-      <header id="hero" className="max-w-7xl mx-auto min-h-[90vh] md:min-h-[85vh] flex flex-col justify-center scroll-mt-20 py-12 border-b border-gray-300/50 dark:border-gray-700/50">
+      {/* Combined Section 1: Intro & Projects */}
+      <section id="hero" className="scroll-mt-20">
+        <header className="max-w-7xl mx-auto min-h-[90vh] md:min-h-[85vh] flex flex-col justify-center py-12 border-b border-gray-300/50 dark:border-gray-700/50">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 flex flex-col justify-center">
             {/* Headline */}
@@ -2348,47 +2365,55 @@ export default function Portfolio() {
               Node.js & Go engineer building async, event-driven backend systems for enterprise & fintech. I ship LLM integrations into production — not train models in notebooks.
             </motion.p>
 
-            {/* Metric Strip */}
+            {/* Metric Strip - Redesigned as modern high-fidelity micro-cards */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-mono text-neu-text font-semibold mb-6 bg-neu-bg shadow-neu-inset px-4 py-3 rounded-2xl border border-white/5 w-fit"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8 w-full max-w-3xl"
             >
-              <span className="flex items-center gap-1.5"><Code2 size={14} className="text-neu-accent" /> 5+ Years Engineering</span>
-              <span className="text-neu-text-muted/45 select-none">·</span>
-              <span className="flex items-center gap-1.5"><Briefcase size={14} className="text-neu-accent" /> Enterprise & Fintech</span>
-              <span className="text-neu-text-muted/45 select-none">·</span>
-              <span className="flex items-center gap-1.5 text-emerald-500 dark:text-emerald-400 font-bold"><TrendingUp size={14} /> $18K/yr Infra Savings</span>
-              <span className="text-neu-text-muted/45 select-none">·</span>
-              <span className="flex items-center gap-1.5"><MapPin size={14} className="text-neu-accent" /> Currently @ Astra Group</span>
-            </motion.div>
-
-            {/* Status Line */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs md:text-sm font-mono text-neu-text-muted mb-10"
-            >
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-neu-text">
-                <Globe size={14} className="text-neu-accent" /> Remote Only
-              </span>
-              <span className="text-neu-text-muted/45 select-none">·</span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-neu-text">
-                <Calendar size={14} className="text-neu-accent" /> UTC+7 (Jakarta)
-              </span>
-              <span className="text-neu-text-muted/45 select-none">·</span>
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-sm border border-white/5 font-bold text-emerald-500 dark:text-emerald-400">
-                <Sparkles size={14} className="animate-pulse" /> Open to Opportunities
-              </span>
+              {[
+                { label: "EXPERIENCE", val: "5+ Years", icon: <Code2 size={14} />, desc: "Engineering" },
+                { label: "DOMAINS", val: "Enterprise", icon: <Briefcase size={14} />, desc: "& Fintech" },
+                { label: "NET SAVINGS", val: "$18K/yr", icon: <TrendingUp size={14} />, desc: "Infra cost cuts", highlight: true },
+                { label: "PRESENT ROLE", val: "@ Astra Group", icon: <MapPin size={14} />, desc: "Full-time Lead" }
+              ].map((item, idx) => (
+                <div 
+                  key={idx}
+                  className={cn(
+                    "relative overflow-hidden p-3.5 rounded-2xl bg-gradient-to-br from-white/60 to-white/40 dark:from-zinc-900/60 dark:to-zinc-900/30 border border-gray-200/50 dark:border-zinc-800/40 shadow-neu-sm backdrop-blur-sm group hover:border-neu-accent/30 dark:hover:border-neu-accent/30 transition-all duration-300",
+                    item.highlight && "border-emerald-500/20 dark:border-emerald-500/20 shadow-[inset_0_1px_1px_rgba(16,185,129,0.05)]"
+                  )}
+                >
+                  <div className={cn(
+                    "absolute top-0 left-0 w-full h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                    item.highlight ? "bg-emerald-500" : "bg-neu-accent"
+                  )} />
+                  <span className="block text-[8px] font-mono font-bold text-neu-text-muted tracking-widest uppercase mb-1">{item.label}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={cn(
+                      "text-neu-accent",
+                      item.highlight && "text-emerald-500 dark:text-emerald-400"
+                    )}>
+                      {item.icon}
+                    </span>
+                    <span className={cn(
+                      "font-display font-extrabold text-sm text-neu-text tracking-tight",
+                      item.highlight && "text-emerald-500 dark:text-emerald-400"
+                    )}>
+                      {item.val}
+                    </span>
+                  </div>
+                  <span className="block text-[10px] font-mono text-neu-text-muted mt-0.5 font-medium">{item.desc}</span>
+                </div>
+              ))}
             </motion.div>
 
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.25 }}
               className="flex flex-wrap gap-4"
             >
               <button
@@ -2417,6 +2442,66 @@ export default function Portfolio() {
               >
                 <Mail size={16} /> Contact Me
               </button>
+            </motion.div>
+
+            {/* Status Line - Moved below CTA and simplified to low-profile text & interactive toggle */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2.5 text-xs font-mono text-neu-text-muted select-none"
+            >
+              <span className="flex items-center gap-1.5 text-neu-text">
+                <Globe size={13} className="text-neu-accent" /> Remote Only
+              </span>
+              <span className="text-neu-text-muted/30 select-none">·</span>
+              <span className="flex items-center gap-1.5 text-neu-text">
+                <Calendar size={13} className="text-neu-accent" /> UTC+7 (Jakarta)
+              </span>
+              <span className="text-neu-text-muted/30 select-none">·</span>
+              
+              {/* Interactive Status Indicator and Dynamic Toggle */}
+              <div className="flex items-center gap-2.5">
+                {/* Blinking lamp/bip indicator */}
+                <div className="relative flex h-2 w-2">
+                  {portfolioStatus === 'available' ? (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </>
+                  )}
+                </div>
+                
+                <span className={cn(
+                  "font-bold transition-colors duration-300",
+                  portfolioStatus === 'available' ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"
+                )}>
+                  {portfolioStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}
+                </span>
+
+                {/* Elegant low-profile toggle switch */}
+                <button
+                  onClick={() => {
+                    const nextStatus = portfolioStatus === 'available' ? 'busy' : 'available';
+                    setPortfolioStatus(nextStatus);
+                    triggerToast(`Availability status updated: ${nextStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}`);
+                  }}
+                  className="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-zinc-850 hover:bg-gray-300 dark:hover:bg-zinc-800 transition-colors duration-200 focus:outline-none cursor-pointer"
+                  aria-label="Toggle availability status"
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-200",
+                      portfolioStatus === 'available' ? "translate-x-4.5 bg-emerald-500" : "translate-x-1 bg-zinc-400"
+                    )}
+                  />
+                </button>
+              </div>
             </motion.div>
           </div>
 
@@ -2467,9 +2552,8 @@ export default function Portfolio() {
       </header>
 
       {/* Projects Section with Intersection Observer Animations */}
-      <motion.section
-        id="projects"
-        className="scroll-mt-20"
+      <motion.div
+        className="mt-24"
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -2623,7 +2707,7 @@ export default function Portfolio() {
       </AnimatePresence>
 
       {/* Bookshelf Layout */}
-      <div className="max-w-7xl mx-auto">
+      <div id="projects" className="max-w-7xl mx-auto scroll-mt-24">
         <div className="bg-neu-bg p-4 sm:p-8 md:p-12 rounded-3xl shadow-neu-inset relative overflow-hidden">
           {/* Wooden Shelf Aesthetic Details */}
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent opacity-50 z-10"></div>
@@ -2830,17 +2914,19 @@ export default function Portfolio() {
           </div>
         </div>
       </div>
-      </motion.section>
+      </motion.div>
+      </section>
 
-      {/* Technical Proficiency Section */}
-      <motion.section
-        id="proficiency"
-        className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20"
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
+      {/* Combined Section 2: Stack, Learning, Philosophy & Career */}
+      <section id="proficiency" className="scroll-mt-20">
+        {/* Technical Proficiency Sub-section */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-24 mb-24"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
         <div className="mb-10">
           <div className="flex items-center gap-2 text-neu-accent mb-1">
             <Cpu size={18} />
@@ -3198,17 +3284,16 @@ export default function Portfolio() {
             </AnimatePresence>
           </div>
         </div>
-      </motion.section>
+        </motion.div>
 
-      {/* Professional Insights & Focus Section */}
-      <motion.section
-        id="insights"
-        className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20"
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
+        {/* Professional Insights & Focus Section */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-24 mb-24"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
         <div className="mb-10">
           <div className="flex items-center gap-2 text-neu-accent mb-1">
             <Layers size={18} />
@@ -3262,19 +3347,18 @@ export default function Portfolio() {
             </p>
           </div>
         </div>
-      </motion.section>
+        </motion.div>
 
-      {/* Skill Tree Section */}
-      <motion.section
-        id="skills"
-        className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20"
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
+        {/* Skill Tree Section */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-24 mb-24"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
         <SkillTree isDark={isDark} isLoading={isLoading} />
-      </motion.section>
+        </motion.div>
 
       {/* Animated subtle divider with a centered 'leaf' icon */}
       <div className="relative max-w-7xl mx-auto my-16 flex items-center justify-center select-none overflow-hidden">
@@ -3297,11 +3381,12 @@ export default function Portfolio() {
           </div>
         </motion.div>
       </div>
+      </section>
 
       {/* Experience Section */}
-      <motion.section
-        id="experience"
-        className="max-w-7xl mx-auto mt-24 mb-24 scroll-mt-20"
+      <section id="experience" className="scroll-mt-20">
+      <motion.div
+        className="max-w-7xl mx-auto mt-24 mb-24"
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -3832,11 +3917,13 @@ export default function Portfolio() {
               </motion.div>
             </motion.div>
           </div>
-      </motion.section>
+        </motion.div>
+      </section>
 
       {/* Testimonials Section */}
       <motion.section
-        className="max-w-7xl mx-auto mb-24 overflow-visible"
+        id="endorse"
+        className="max-w-7xl mx-auto mb-24 overflow-visible scroll-mt-20"
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -4104,6 +4191,37 @@ export default function Portfolio() {
                             components={{
                               code({ className, children, ...props }: any) {
                                 const match = /language-(\w+)/.exec(className || '');
+                                
+                                // Custom high-fidelity inline highlighting logic for the project spec sheets
+                                const highlightCode = (code: string, lang: string) => {
+                                  if (!code) return '';
+                                  // Escape HTML tags to prevent rendering issues
+                                  let html = code
+                                    .replace(/&/g, '&amp;')
+                                    .replace(/</g, '&lt;')
+                                    .replace(/>/g, '&gt;')
+                                    .replace(/"/g, '&quot;')
+                                    .replace(/'/g, '&#039;');
+
+                                  // Apply custom theme colors to the code block tokens
+                                  const keywords = /\b(const|let|var|function|return|import|export|from|class|extends|if|else|for|while|async|await|try|catch|def|elif|print|public|private|protected|interface|new|this|package|void|string|number|boolean|any|type|implements)\b/g;
+                                  html = html.replace(keywords, '<span class="text-purple-400 dark:text-purple-400 font-medium">$1</span>');
+
+                                  const strings = /(["'`])(.*?)\1/g;
+                                  html = html.replace(strings, '<span class="text-emerald-400 dark:text-emerald-400">$1$2$1</span>');
+
+                                  const comments = /(\/\/.*|#.*)/g;
+                                  html = html.replace(comments, '<span class="text-zinc-500 italic">$1</span>');
+
+                                  const numbers = /\b(\d+)\b/g;
+                                  html = html.replace(numbers, '<span class="text-amber-400 dark:text-amber-400">$1</span>');
+
+                                  const builtins = /\b(console|log|error|window|document|process|env|true|false|null|undefined)\b/g;
+                                  html = html.replace(builtins, '<span class="text-rose-400 dark:text-rose-400 font-medium">$1</span>');
+
+                                  return html;
+                                };
+
                                 return match ? (
                                   <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
                                     <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
@@ -4117,21 +4235,12 @@ export default function Portfolio() {
                                         Copy
                                       </button>
                                     </div>
-                                    <SyntaxHighlighter
-                                      style={isDark ? vscDarkPlus : prism}
-                                      language={match[1]}
-                                      PreTag="div"
-                                      customStyle={{
-                                        margin: 0,
-                                        padding: '1.25rem',
-                                        background: 'transparent',
-                                        fontSize: '0.85rem',
-                                        lineHeight: '1.6',
-                                      }}
-                                      {...props}
-                                    >
-                                      {String(children).replace(/\n$/, '')}
-                                    </SyntaxHighlighter>
+                                    <pre className="p-5 overflow-x-auto font-mono text-sm leading-relaxed text-zinc-300 select-text bg-transparent m-0">
+                                      <code 
+                                        className={`language-${match[1]}`}
+                                        dangerouslySetInnerHTML={{ __html: highlightCode(String(children).replace(/\n$/, ''), match[1]) }}
+                                      />
+                                    </pre>
                                   </div>
                                 ) : (
                                   <code className={cn("bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium", className)} {...props}>
@@ -4321,10 +4430,10 @@ export default function Portfolio() {
       <AnimatePresence>
         {toastMessage && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="fixed bottom-8 left-1/2 -translate-y-1/2 z-50 px-6 py-3.5 rounded-2xl bg-black/90 dark:bg-neutral-950 text-white font-mono text-xs shadow-neu border border-white/10 flex items-center gap-2.5 backdrop-blur-md"
+            initial={{ opacity: 0, y: -50, x: "-50%", scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: -20, x: "-50%", scale: 0.9 }}
+            className="fixed top-8 left-1/2 z-[150] px-6 py-3.5 rounded-2xl bg-black/90 dark:bg-neutral-950 text-white font-mono text-xs shadow-neu border border-white/10 flex items-center gap-2.5 backdrop-blur-md"
           >
             <Sparkles className="text-neu-accent animate-pulse" size={14} />
             <span>{toastMessage}</span>
