@@ -2331,30 +2331,6 @@ export default function Portfolio() {
                     </div>
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay opacity-15"></div>
                     <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
-                      {(selectedProject as any).demoUrl && (
-                        <a
-                          href={(selectedProject as any).demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all flex items-center justify-center border border-white/10 shadow-sm"
-                          title="Visit Website Demo"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Globe size={20} />
-                        </a>
-                      )}
-                      {selectedProject.github && (
-                        <a
-                          href={selectedProject.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all flex items-center justify-center border border-white/10 shadow-sm"
-                          title="View Source Code on GitHub"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Github size={20} />
-                        </a>
-                      )}
                       <button 
                         onClick={(e) => { e.stopPropagation(); setIsBannerMinimized(!isBannerMinimized); }}
                         className="p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors border border-white/10 shadow-sm"
@@ -2372,10 +2348,7 @@ export default function Portfolio() {
                     </div>
                     
                                         {/* Navigation helper hint */}
-                    <div className={cn("absolute top-6 hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/20 rounded-full text-[10px] font-mono text-white/80 select-none", 
-                      (selectedProject as any).demoUrl && selectedProject.github ? "right-52" : 
-                      ((selectedProject as any).demoUrl || selectedProject.github) ? "right-40" : "right-28"
-                    )}>
+                    <div className={cn("absolute top-6 hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/20 rounded-full text-[10px] font-mono text-white/80 select-none right-28")}>
                       <span>Swipe or use Arrow keys to browse</span>
                     </div>
 
@@ -2433,15 +2406,39 @@ export default function Portfolio() {
                   </motion.div>
                   {/* Modal Content */}
                   <div tabIndex={0} className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neu-accent focus-visible:ring-inset">
-                    <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-neu-text/10">
-                      {selectedProject.tags.map(tag => {
-                        const count = getTagProjectCount(tag);
-                        return (
-                          <span key={tag} className="px-4 py-2 bg-neu-bg shadow-neu-sm text-neu-text rounded-xl text-xs font-mono font-medium flex items-center gap-2 hover:scale-[1.02] transition-transform">
-                            {tag} <span className="text-neu-accent font-bold text-[10px]">+{count} project experience</span>
-                          </span>
-                        );
-                      })}
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 pb-6 border-b border-neu-text/10">
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProject.tags.map(tag => {
+                          const count = getTagProjectCount(tag);
+                          return (
+                            <span key={tag} className="px-4 py-2 bg-neu-bg shadow-neu-sm text-neu-text rounded-xl text-xs font-mono font-medium flex items-center gap-2 hover:scale-[1.02] transition-transform">
+                              {tag} <span className="text-neu-accent font-bold text-[10px]">+{count} project experience</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        {(selectedProject as any).demoUrl && (
+                          <a
+                            href={(selectedProject as any).demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-neu-accent hover:bg-neu-accent/90 text-white rounded-xl font-mono text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
+                          >
+                            <Globe size={16} /> View Live Demo
+                          </a>
+                        )}
+                        {selectedProject.github && (
+                          <a
+                            href={selectedProject.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-neu-bg hover:bg-neu-base text-neu-text rounded-xl font-mono text-xs sm:text-sm font-bold shadow-neu-sm border border-neu-text/10 transition-all active:scale-95"
+                          >
+                            <Github size={16} /> Source Code
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-12">
