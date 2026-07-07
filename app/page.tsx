@@ -407,7 +407,7 @@ export default function Portfolio() {
         initial={{ y: 100, x: "-50%", opacity: 0 }}
         animate={{ y: 0, x: "-50%", opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="fixed bottom-6 left-1/2 z-50 max-w-[95vw] sm:max-w-none p-1.5 rounded-2xl flex items-center transition-all duration-300 group"
+        className="fixed bottom-6 left-1/2 z-50 w-auto max-w-[95vw] sm:max-w-lg md:max-w-none p-1.5 rounded-2xl flex flex-nowrap items-center transition-all duration-300 group overflow-hidden"
         style={{
           boxShadow: isDark 
             ? '0 8px 30px rgba(16, 185, 129, 0.12), inset 0 0 12px rgba(16, 185, 129, 0.04)'
@@ -424,7 +424,7 @@ export default function Portfolio() {
           {/* Inner masking to keep only the thin border shining and preserve backdrop blur */}
           <div className="absolute inset-[1px] rounded-[15px] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md" />
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 px-1 max-w-full sm:max-w-none flex-wrap justify-center sm:justify-start">
+        <div className="flex items-center gap-1 sm:gap-2 px-1 w-full max-w-full sm:max-w-none flex-nowrap justify-center sm:justify-start">
           <AnimatePresence>
             {activeSection !== 'hero' && (
               <motion.div 
@@ -441,7 +441,7 @@ export default function Portfolio() {
                   }}
                   onMouseEnter={() => setHoveredDockId('scroll-top')}
                   onMouseLeave={() => setHoveredDockId(null)}
-                  className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+                  className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
                   aria-label="Scroll to Top"
                 >
                   <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5 text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400">
@@ -481,7 +481,7 @@ export default function Portfolio() {
                 }}
                 onMouseEnter={() => setHoveredDockId(sec.id)}
                 onMouseLeave={() => setHoveredDockId(null)}
-                className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+                className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
                 aria-label={sec.label}
               >
                 {active && (
@@ -527,7 +527,7 @@ export default function Portfolio() {
             onClick={toggleTheme}
             onMouseEnter={() => setHoveredDockId('theme')}
             onMouseLeave={() => setHoveredDockId(null)}
-            className="group relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink-0"
+            className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
             aria-label="Toggle Theme"
           >
             <div
