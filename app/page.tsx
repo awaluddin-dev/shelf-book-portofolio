@@ -6,7 +6,8 @@ import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useSc
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
-import { projects, testimonials } from '@/lib/data';
+import { projects } from '@/lib/data';
+import { Testimonial } from '@/lib/data';
 import { cn } from '@/lib/utils';
 
 import { getTechIconAndColor } from "@/lib/tech-icons";
@@ -80,7 +81,14 @@ export default function Portfolio() {
   }, []);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [testimonialsList, setTestimonialsList] = useState<Testimonial[]>([]);
+  useEffect(() => {
+    fetch('/api/testimonials').then(res => res.json()).then(data => setTestimonialsList(data.testimonials));
+  }, []);
   const [portfolioStatus, setPortfolioStatus] = useState<'available' | 'busy'>('available');
+  useEffect(() => {
+    fetch('/api/status').then(res => res.json()).then(data => setPortfolioStatus(data.status));
+  }, []);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
 
   const triggerToast = (msg: string) => {
@@ -712,24 +720,6 @@ export default function Portfolio() {
                 )}>
                   {portfolioStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}
                 </span>
-
-                {/* Elegant low-profile toggle switch */}
-                <button
-                  onClick={() => {
-                    const nextStatus = portfolioStatus === 'available' ? 'busy' : 'available';
-                    setPortfolioStatus(nextStatus);
-                    triggerToast(`Availability status updated: ${nextStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}`);
-                  }}
-                  className="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-zinc-850 hover:bg-gray-300 dark:hover:bg-zinc-800 transition-colors duration-200 focus:outline-none cursor-pointer"
-                  aria-label="Toggle availability status"
-                >
-                  <span
-                    className={cn(
-                      "inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-200",
-                      portfolioStatus === 'available' ? "translate-x-4.5 bg-emerald-500" : "translate-x-1 bg-zinc-400"
-                    )}
-                  />
-                </button>
               </div>
             </motion.div>
           </div>
@@ -767,13 +757,7 @@ export default function Portfolio() {
                     <PenTool size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
                   </div>
                 </a>
-                <a href="mailto:awal14h@gmail.com" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
-                  <span className="font-semibold text-neu-text">Email</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-neu-text-muted">awal14h@gmail.com</span>
-                    <Mail size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
-                  </div>
-                </a>
+                
               </div>
             </motion.div>
           </div>
@@ -937,6 +921,10 @@ export default function Portfolio() {
 
       {/* Bookshelf Layout */}
       <div id="projects" className="max-w-7xl mx-auto scroll-mt-24">
+        <div className="flex items-center gap-2.5 mb-6 md:mb-8 ml-2 sm:ml-4">
+          <BookOpen size={24} className="text-neu-accent" />
+          <h3 className="text-2xl font-display font-bold text-neu-text tracking-tight">My Bookshelf Projects</h3>
+        </div>
         <div className="bg-neu-bg p-4 sm:p-8 md:p-12 rounded-3xl shadow-neu-inset relative overflow-hidden">
           {/* Wooden Shelf Aesthetic Details */}
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent opacity-50 z-10"></div>
@@ -1632,7 +1620,7 @@ export default function Portfolio() {
           </div>
             
             {/* Git Activity & Contribution Dashboard */}
-            <div className="p-4 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6 max-w-full overflow-hidden">
+            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6 max-w-full overflow-hidden">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6">
                 <div>
                   <div className="flex items-center gap-2 text-neu-accent mb-1">
@@ -1820,10 +1808,10 @@ export default function Portfolio() {
               <div className="pt-6 border-t border-gray-300/30 dark:border-gray-700/30">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                   <div>
-                    <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
+                    <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2 pl-1 sm:pl-0">
                       <Code2 size={14} /> Annual Coding Contribution Heatmap
                     </h4>
-                    <p className="text-xs font-mono text-neu-text-muted mt-1">
+                    <p className="text-xs font-mono text-neu-text-muted mt-1 pl-1 sm:pl-0">
                       Consistent development activity logged over the past 365 days
                     </p>
                   </div>
@@ -1848,15 +1836,15 @@ export default function Portfolio() {
                 {/* Heatmap Grid Wrapper */}
                 <div 
                   ref={heatmapRef}
-                  className="relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className="w-full relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                   <div className="min-w-[740px] flex flex-col pt-6">
                     <div className="flex w-full">
                       {/* Weekday labels */}
-                      <div className="flex flex-col justify-between text-[9px] font-mono text-neu-text-muted w-8 pr-2 pt-6 pb-1 h-[114px] select-none">
-                        <span>Mon</span>
-                        <span>Wed</span>
-                        <span>Fri</span>
+                      <div className="relative text-[9px] font-mono text-neu-text-muted w-8 pr-2 select-none flex-shrink-0 h-[146px] sm:h-[136px]">
+                        <span className="absolute top-[55px] sm:top-[53px] left-3 leading-[12px] sm:leading-[10px]">Mon</span>
+                        <span className="absolute top-[85px] sm:top-[79px] left-3 leading-[12px] sm:leading-[10px]">Wed</span>
+                        <span className="absolute top-[115px] sm:top-[105px] left-3 leading-[12px] sm:leading-[10px]">Fri</span>
                       </div>
 
                       {/* Columns of weeks grouped by month */}
@@ -1875,7 +1863,7 @@ export default function Portfolio() {
                                   <div 
                                     key={wIdxInMonth} 
                                     className={cn(
-                                      "flex flex-col gap-[3px] shrink-0 relative pt-6 px-[1px] rounded-md transition-all duration-300",
+                                      "flex flex-col gap-[3px] shrink-0 relative pt-10 px-[1px] rounded-md transition-all duration-300",
                                       isColInHoveredMonth 
                                         ? "bg-neu-accent/[0.04] dark:bg-neu-accent/[0.08] ring-1 ring-neu-accent/15 scale-[1.02] z-10" 
                                         : hoveredMonth !== null ? "opacity-30" : ""
@@ -1955,60 +1943,60 @@ export default function Portfolio() {
                 {/* Legend */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mt-6 pt-4 border-t border-gray-300/10 dark:border-gray-700/10 select-none">
                       <div className="relative group/legend-info flex flex-col gap-1 text-[10px] font-mono text-neu-text-muted max-w-xl">
-                        <span className="font-bold text-neu-text text-[11px] mb-0.5 flex items-center gap-1.5 cursor-help">
+                        <span className="font-bold text-neu-text text-[11px] mb-0.5 flex items-center gap-1.5 cursor-help pl-1 sm:pl-0">
                           ℹ Understanding Activity Levels
                           <span className="text-[9px] bg-neu-accent/15 text-neu-accent px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">Inspect Info</span>
                         </span>
-                        <p className="leading-relaxed">
+                        <p className="leading-relaxed pl-1 sm:pl-0">
                           Each tile represents a single day of the year. The shade of color shows daily coding intensity. Click legend levels to filter.
                         </p>
                         
                         {/* Interactive descriptive tooltip that explains color coding and ranges in detail */}
-                        <div className="absolute bottom-full left-0 mb-3 p-4 w-[280px] sm:w-[320px] rounded-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200 dark:border-white/10 text-zinc-800 dark:text-zinc-100 shadow-2xl opacity-0 pointer-events-none group-hover/legend-info:opacity-100 group-hover/legend-info:translate-y-0 translate-y-2 transition-all duration-300 z-50 ease-out">
+                        <div className="absolute bottom-full left-0 translate-x-0 mb-3 p-4 w-[calc(100vw-32px)] max-w-[320px] sm:w-auto sm:max-w-none rounded-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200 dark:border-white/10 text-zinc-800 dark:text-zinc-100 shadow-2xl opacity-0 pointer-events-none group-hover/legend-info:opacity-100 group-hover/legend-info:translate-y-0 translate-y-2 transition-all duration-300 z-50 ease-out">
                           <h5 className="font-bold text-xs text-neu-accent mb-2 flex items-center gap-1.5 border-b border-zinc-200 dark:border-white/5 pb-1.5">
                             <Activity size={14} /> Coding Intensity Ranges
                           </h5>
-                          <div className="space-y-2 text-[10px] font-mono">
-                            <div className="flex items-center justify-between">
-                              <span className="flex items-center gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-mono">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="w-3.5 h-3.5 rounded-[4px] bg-gray-200 dark:bg-zinc-800/60 border border-zinc-300 dark:border-zinc-700"></span>
                                 <span className="text-zinc-500 dark:text-zinc-400">Level 0: Empty</span>
                               </span>
-                              <span className="font-bold text-zinc-600 dark:text-zinc-400">0 commits</span>
+                              <span className="font-bold text-zinc-600 dark:text-zinc-400 whitespace-nowrap">0 commits</span>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <span className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-100 dark:bg-emerald-950"></span>
                                 <span className="text-zinc-500 dark:text-zinc-400">Level 1: Low</span>
                               </span>
-                              <span className="font-bold text-indigo-500 dark:text-emerald-500">1 - 2 commits</span>
+                              <span className="font-bold text-indigo-500 dark:text-emerald-500 whitespace-nowrap">1 - 2 commits</span>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <span className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-300 dark:bg-emerald-800"></span>
                                 <span className="text-zinc-500 dark:text-zinc-400">Level 2: Medium</span>
                               </span>
-                              <span className="font-bold text-indigo-600 dark:text-emerald-400">3 - 4 commits</span>
+                              <span className="font-bold text-indigo-600 dark:text-emerald-400 whitespace-nowrap">3 - 4 commits</span>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <span className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-500 dark:bg-emerald-500"></span>
                                 <span className="text-zinc-500 dark:text-zinc-400">Level 3: High</span>
                               </span>
-                              <span className="font-bold text-indigo-700 dark:text-emerald-300">5 - 7 commits</span>
+                              <span className="font-bold text-indigo-700 dark:text-emerald-300 whitespace-nowrap">5 - 7 commits</span>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <span className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-600 dark:bg-emerald-400"></span>
                                 <span className="text-zinc-500 dark:text-zinc-400">Level 4: Very High</span>
                               </span>
-                              <span className="font-bold text-indigo-800 dark:text-emerald-200">8+ commits</span>
+                              <span className="font-bold text-indigo-800 dark:text-emerald-200 whitespace-nowrap">8+ commits</span>
                             </div>
                           </div>
                           <div className="mt-3 pt-2 border-t border-zinc-200 dark:border-white/5 text-[9px] text-zinc-400 leading-normal">
                             ℹ Values are simulated based on realistic developer commit distributions, reflecting live velocity and delivery metrics.
                           </div>
-                          <div className="absolute top-full left-6 -translate-x-1/2 -mt-[5px] w-2.5 h-2.5 rotate-45 bg-white/95 dark:bg-zinc-900/95 border-r border-b border-zinc-200 dark:border-white/10"></div>
+                          <div className="absolute top-full left-1/2 sm:left-6 -translate-x-1/2 -mt-[5px] w-2.5 h-2.5 rotate-45 bg-white/95 dark:bg-zinc-900/95 border-r border-b border-zinc-200 dark:border-white/10"></div>
                         </div>
                       </div>
                       
@@ -2177,7 +2165,7 @@ export default function Portfolio() {
         {/* Infinite CSS Marquee Viewport with generous vertical padding to prevent top/bottom clipping on hover scale & high-contrast glow shadows */}
         <div className="relative w-full overflow-hidden py-24 -my-12 px-6">
           <div className="animate-marquee flex gap-10 select-none">
-            {[...testimonials, ...testimonials, ...testimonials].map((t, index) => (
+            {[...testimonialsList, ...testimonialsList, ...testimonialsList].map((t, index) => (
               <div
                 key={`${t.id}-dup-${index}`}
                 className={cn(
@@ -2209,15 +2197,10 @@ export default function Portfolio() {
                 <div>
                   {/* User Identity Footer of Card */}
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-300/30 dark:border-gray-700/30">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-neu-accent bg-neu-bg shadow-neu-sm flex-shrink-0">
-                      <Image
-                        src={t.photoUrl}
-                        alt={t.name}
-                        fill
-                        sizes="48px"
-                        className="object-cover"
-                        referrerPolicy="no-referrer"
-                      />
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-neu-accent bg-neu-bg shadow-neu-sm flex-shrink-0 flex items-center justify-center">
+                      <span className="text-sm font-bold text-neu-text tracking-widest uppercase">
+                        {t.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      </span>
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-neu-text leading-tight">{t.name}</h4>
@@ -2321,7 +2304,8 @@ export default function Portfolio() {
                   >
                     {/* The High-Quality Unsplash Background Image */}
                     <div className="absolute inset-0 z-0">
-                      <img 
+                      
+<img 
                         src={TECHNICAL_IMAGERY[selectedProject.id]?.featured || TECHNICAL_IMAGERY['auraflow-ai'].featured} 
                         alt="Background Tech Grid" 
                         referrerPolicy="no-referrer"

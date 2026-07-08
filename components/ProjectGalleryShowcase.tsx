@@ -75,7 +75,8 @@ export default function ProjectGalleryShowcase({ projectId }: { projectId: strin
             transition={{ duration: 0.25 }}
             className="w-full h-full relative"
           >
-            <img
+            
+<img
               src={current.url}
               alt={current.caption}
               referrerPolicy="no-referrer"
@@ -129,7 +130,8 @@ export default function ProjectGalleryShowcase({ projectId }: { projectId: strin
               className="relative max-w-4xl max-h-[85vh] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-zinc-950"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
+              
+<img
                 src={current.url}
                 alt={current.caption}
                 referrerPolicy="no-referrer"
