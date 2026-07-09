@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
 
+import { useTheme } from '@/components/ThemeProvider';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp, Award, CheckCircle, Smile, Clock, Wrench, HandFist, Heart } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -175,7 +176,7 @@ export default function Portfolio() {
   const [isBannerMinimized, setIsBannerMinimized] = useState(false);
   const [focusedProject, setFocusedProject] = useState<typeof projects[0] | null>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
-   const [isDark, setIsDark] = useState<boolean>(false);
+  const { isDark, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState<'temporal' | 'repository'>('temporal');
   const [hoveredMonth, setHoveredMonth] = useState<number | null>(null);
@@ -486,25 +487,9 @@ export default function Portfolio() {
 
   useEffect(() => {
     setTimeout(() => {
-        if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-          setIsDark(savedTheme === 'dark');
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          setIsDark(true);
-        }
-      }
       setMounted(true);
     }, 0);
   }, []);
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -542,12 +527,6 @@ export default function Portfolio() {
       document.body.style.overflow = '';
     };
   }, [selectedProject, showInquiryModal, isFilterModalOpen]);
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    localStorage.setItem('theme', nextDark ? 'dark' : 'light');
-  };
 
   return (
     <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300 relative">
