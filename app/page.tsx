@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
-import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp } from 'lucide-react';
+import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp, Award, CheckCircle, Smile, Clock, Wrench, HandFist, Heart } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { projects } from '@/lib/data';
@@ -19,6 +19,153 @@ import ProjectLifecycleTracker from "@/components/ProjectLifecycleTracker";
 import BookItem from "@/components/BookItem";
 import { legendLevels, roadmapItems } from "@/lib/roadmap-data";
 import { commitActivityData, repositoryBreakdownData } from "@/lib/github-data";
+
+const experiencesList = [
+  {
+    years: "2025 - Present",
+    duration: "Ongoing",
+    company: "PT Serasi Autoraya (SERA)",
+    role: "Backend Developer",
+    stack: "Node.js & Go",
+    teaser: "Real-time SAP & Azure Bus Sync",
+    fullImpact: "Streamlined massive corporate log pipelines and payroll synchronizations with robust event-driven microservices.",
+    bullets: [
+      "Migrating legacy .NET Driver Management System to highly concurrent Node.js microservices.",
+      "Integrating SAP, Mekari Talenta, and FMS 2.0 via Azure Service Bus for critical payroll and logistics data queues.",
+      "Achieved sub-second data synchronization latencies under heavy event concurrency."
+    ]
+  },
+  {
+    years: "2024 - 2025",
+    duration: "1 year",
+    company: "Telkomsel (Vendor)",
+    role: "Software Engineer",
+    stack: "Kubernetes & IoT",
+    teaser: "Slashed Cloud Costs by $20K+/yr",
+    fullImpact: "Slashed server infrastructure spend by 90% while running a bulletproof bare-metal Kubernetes IoT pipeline.",
+    bullets: [
+      "Built and engineered bare-metal Kubernetes clusters with custom-tuned IoT monitoring layers.",
+      "Saved between 1,800 to 2,500 USD per month by transitioning architecture away from managed public cloud providers.",
+      "Maintained 99.99% system availability under intense device data packet polling."
+    ]
+  },
+  {
+    years: "2023 - 2024",
+    duration: "1 year",
+    company: "PT Hensel Davest Indonesia",
+    role: "Full Stack Developer",
+    stack: "Laravel & NestJS",
+    teaser: "OJK & BI Regulatory Compliance",
+    fullImpact: "Successfully achieved strict banking and lending regulatory approvals single-handedly under extreme deadlines.",
+    bullets: [
+      "Led solo compliance engineering to meet OJK & BI regulatory standards, securing active fintech licenses.",
+      "Rewrote the core P2P lending Laravel monolith into modular NestJS microservices, achieving a 4x increase in API throughput.",
+      "Designed secure database architectures safeguarding sensitive transaction records and personal financial data."
+    ]
+  },
+  {
+    years: "2022 - 2023",
+    duration: "1 year",
+    company: "PT Maccon Generasi Mandiri",
+    role: "Full Stack Developer",
+    stack: "Laravel, Vue & Postgres",
+    teaser: "Eliminated Vendor Licensing Costs",
+    fullImpact: "Rebuilt core proprietary vendor tools in-house, ensuring 100% intellectual property ownership and 0% vendor fees.",
+    bullets: [
+      "Reconstructed external vendor systems from scratch, saving substantial annual licensing and maintenance fees.",
+      "Developed end-to-end database schemas and business logic for factory inventory, sales pipeline, and delivery tracking.",
+      "Designed dynamic Vue.js frontends paired with PostgreSQL for real-time warehouse data visualization."
+    ]
+  }
+];
+
+const skillCategoriesList = [
+  {
+    title: "CORE BACKEND",
+    skills: [
+      {
+        name: "Node.js / TypeScript",
+        subtext: "Production · 3+ yrs · SERA, Telkomsel, HDI",
+        status: "Production-ready"
+      },
+      {
+        name: "NestJS",
+        subtext: "Production · 2+ yrs · Microservices, SAP integration",
+        status: "Production-ready"
+      },
+      {
+        name: "Go",
+        subtext: "Production · 1 yr · IoT monitoring system",
+        status: "Production-ready"
+      },
+      {
+        name: "REST API / Event-Driven",
+        subtext: "Production · Applied across all roles",
+        status: "Production-ready"
+      },
+      {
+        name: "Python",
+        subtext: "In use · LangGraph worker, scripting",
+        status: "In Use"
+      }
+    ]
+  },
+  {
+    title: "AI & AUTOMATION",
+    skills: [
+      {
+        name: "LangGraph",
+        subtext: "Building · AuraFlow AI project",
+        status: "Building"
+      },
+      {
+        name: "LangChain",
+        subtext: "In use · Agent orchestration",
+        status: "In Use"
+      },
+      {
+        name: "OpenAI / Gemini API",
+        subtext: "In use · LLM integration, multi-provider router",
+        status: "In Use"
+      },
+      {
+        name: "Groq / Azure OpenAI",
+        subtext: "Building · Fallback router design",
+        status: "Building"
+      }
+    ]
+  },
+  {
+    title: "INFRASTRUCTURE & DATA",
+    skills: [
+      {
+        name: "PostgreSQL / SQL Server",
+        subtext: "Production · 3+ yrs · SERA, HDI, Maccon",
+        status: "Production-ready"
+      },
+      {
+        name: "Redis / BullMQ",
+        subtext: "Production · Queue-based async pipelines",
+        status: "Production-ready"
+      },
+      {
+        name: "Docker / Kubernetes",
+        subtext: "Production · Bare-metal K8s at Telkomsel",
+        status: "Production-ready"
+      },
+      {
+        name: "Azure (APIM, Service Bus, Key Vault)",
+        subtext: "Production · Enterprise integration at SERA",
+        status: "Production-ready"
+      },
+      {
+        name: "MongoDB",
+        subtext: "In use · SERA driver management system",
+        status: "In Use"
+      }
+    ]
+  }
+];
 
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +196,7 @@ export default function Portfolio() {
   const [activeSection, setActiveSection] = useState('hero');
   const [hoveredDockId, setHoveredDockId] = useState<string | null>(null);
   const [selectedRoadmapIndex, setSelectedRoadmapIndex] = useState(0);
+  const [activeExpIdx, setActiveExpIdx] = useState<number | null>(0);
   const [activeTooltipDate, setActiveTooltipDate] = useState<string | null>(null);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -406,7 +554,7 @@ export default function Portfolio() {
       {/* Animated Scroll Progress Bar */}
       <motion.div
         id="scroll-progress"
-        className="fixed top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-400 z-[100] origin-left"
+        className="fixed top-0 left-0 right-0 h-[4px] bg-neu-accent z-[100] origin-left"
         style={{ scaleX }}
       />
       
@@ -418,8 +566,8 @@ export default function Portfolio() {
         className="fixed bottom-6 left-1/2 z-50 w-auto max-w-[95vw] sm:max-w-lg md:max-w-none p-1.5 rounded-2xl flex flex-nowrap items-center transition-all duration-300 group overflow-hidden"
         style={{
           boxShadow: isDark 
-            ? '0 8px 30px rgba(16, 185, 129, 0.12), inset 0 0 12px rgba(16, 185, 129, 0.04)'
-            : '0 8px 30px rgba(124, 58, 237, 0.06), inset 0 0 12px rgba(124, 58, 237, 0.02)'
+            ? '0 8px 30px rgba(0, 173, 181, 0.12), inset 0 0 12px rgba(0, 173, 181, 0.04)'
+            : '0 8px 30px rgba(63, 114, 175, 0.08), inset 0 0 12px rgba(63, 114, 175, 0.02)'
         }}
       >
         {/* Dynamic Rotating Glow Border Effect */}
@@ -427,10 +575,10 @@ export default function Portfolio() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-            className="absolute -inset-[150%] opacity-40 dark:opacity-60 bg-[conic-gradient(from_0deg,#c084fc,#818cf8,#34d399,#c084fc)] blur-[4px]"
+            className="absolute -inset-[150%] opacity-40 dark:opacity-60 bg-[conic-gradient(from_0deg,var(--color-neu-accent),var(--color-neu-secondary),var(--color-neu-accent))]"
           />
           {/* Inner masking to keep only the thin border shining and preserve backdrop blur */}
-          <div className="absolute inset-[1px] rounded-[15px] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md" />
+          <div className="absolute inset-[1px] rounded-[15px] bg-neu-bg/90 backdrop-blur-md" />
         </div>
         <div className="flex items-center gap-1 sm:gap-2 px-1 w-full max-w-full sm:max-w-none flex-nowrap justify-center sm:justify-start">
           <AnimatePresence>
@@ -449,10 +597,10 @@ export default function Portfolio() {
                   }}
                   onMouseEnter={() => setHoveredDockId('scroll-top')}
                   onMouseLeave={() => setHoveredDockId(null)}
-                  className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
+                  className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-neu-secondary/50 dark:hover:bg-neu-secondary/30 active:scale-90 transition-all cursor-pointer flex-shrink"
                   aria-label="Scroll to Top"
                 >
-                  <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5 text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400">
+                  <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5 text-neu-text-muted group-hover:text-neu-accent">
                     <ArrowUp size={16} className="sm:w-[18px] sm:h-[18px]" />
                   </div>
                   <AnimatePresence>
@@ -462,15 +610,15 @@ export default function Portfolio() {
                         animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                         exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
                         transition={{ type: 'spring', stiffness: 450, damping: 24 }}
-                        className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                        className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-neu-bg/95 dark:bg-neu-bg/90 backdrop-blur-md text-neu-accent text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-neu-modal border border-neu-accent/20 z-50 pointer-events-none left-1/2"
                       >
                         Back to Top
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-neu-bg/95 dark:bg-neu-bg/90 border-r border-b border-neu-accent/20"></div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </button>
-                <div className="w-[1px] h-6 bg-purple-200/50 dark:bg-emerald-500/20 mx-1 flex-shrink-0" />
+                <div className="w-[1px] h-6 bg-neu-text/10 dark:bg-neu-text/15 mx-1 flex-shrink-0" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -489,13 +637,13 @@ export default function Portfolio() {
                 }}
                 onMouseEnter={() => setHoveredDockId(sec.id)}
                 onMouseLeave={() => setHoveredDockId(null)}
-                className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
+                className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-neu-secondary/50 dark:hover:bg-neu-secondary/30 active:scale-90 transition-all cursor-pointer flex-shrink"
                 aria-label={sec.label}
               >
                 {active && (
                   <motion.div
                     layoutId="activeDockButton"
-                    className="absolute inset-0 bg-purple-100/60 dark:bg-emerald-950/45 rounded-xl border border-purple-200/40 dark:border-emerald-500/30"
+                    className="absolute inset-0 bg-neu-secondary/80 dark:bg-neu-secondary/60 rounded-xl border border-neu-accent/30"
                     transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                   />
                 )}
@@ -503,8 +651,8 @@ export default function Portfolio() {
                   className={cn(
                     "relative z-10 transition-transform duration-300 group-hover:scale-110",
                     active
-                      ? "text-purple-600 dark:text-emerald-400"
-                      : "text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400"
+                      ? "text-neu-accent"
+                      : "text-neu-text-muted group-hover:text-neu-accent"
                   )}
                 >
                   {sec.icon}
@@ -516,10 +664,10 @@ export default function Portfolio() {
                       animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                       exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
                       transition={{ type: 'spring', stiffness: 450, damping: 24 }}
-                      className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                      className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-neu-bg/95 dark:bg-neu-bg/90 backdrop-blur-md text-neu-accent text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-neu-modal border border-neu-accent/20 z-50 pointer-events-none left-1/2"
                     >
                       {sec.label}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-neu-bg/95 dark:bg-neu-bg/90 border-r border-b border-neu-accent/20"></div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -528,20 +676,20 @@ export default function Portfolio() {
           })}
 
           {/* Vertical divider */}
-          <div className="w-[1px] h-6 bg-purple-200/50 dark:bg-emerald-500/20 mx-1 flex-shrink-0" />
+          <div className="w-[1px] h-6 bg-neu-text/10 dark:bg-neu-text/15 mx-1 flex-shrink-0" />
 
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             onMouseEnter={() => setHoveredDockId('theme')}
             onMouseLeave={() => setHoveredDockId(null)}
-            className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-purple-50/80 dark:hover:bg-emerald-950/30 active:scale-90 transition-all cursor-pointer flex-shrink"
+            className="group relative flex items-center justify-center w-8 h-8 xs:w-9 xs:h-9 sm:w-11 sm:h-11 rounded-xl hover:bg-neu-secondary/50 dark:hover:bg-neu-secondary/30 active:scale-90 transition-all cursor-pointer flex-shrink"
             aria-label="Toggle Theme"
           >
             <div
               className={cn(
                 "relative z-10 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110",
-                "text-purple-400/80 dark:text-emerald-500/75 group-hover:text-purple-600 dark:group-hover:text-emerald-400"
+                "text-neu-text-muted group-hover:text-neu-accent"
               )}
             >
               {isDark ? (
@@ -557,10 +705,10 @@ export default function Portfolio() {
                   animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                   exit={{ opacity: 0, y: 6, x: "-50%", scale: 0.8 }}
                   transition={{ type: 'spring', stiffness: 450, damping: 24 }}
-                  className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-zinc-950/80 backdrop-blur-md text-purple-600 dark:text-emerald-400 text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-[0_8px_32px_rgba(124,58,237,0.08)] dark:shadow-[0_8px_32px_rgba(16,185,129,0.15)] border border-purple-200/40 dark:border-emerald-500/20 z-50 pointer-events-none left-1/2"
+                  className="absolute bottom-full mb-3 px-3 py-1.5 rounded-xl bg-neu-bg/95 dark:bg-neu-bg/90 backdrop-blur-md text-neu-accent text-[10px] font-mono tracking-wider uppercase font-semibold whitespace-nowrap shadow-neu-modal border border-neu-accent/20 z-50 pointer-events-none left-1/2"
                 >
                   {isDark ? 'Light Mode' : 'Dark Mode'}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-white/95 dark:bg-zinc-950/80 border-r border-b border-purple-200/40 dark:border-emerald-500/20"></div>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[5px] w-2 h-2 rotate-45 bg-neu-bg/95 dark:bg-neu-bg/90 border-r border-b border-neu-accent/20"></div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -569,200 +717,268 @@ export default function Portfolio() {
       </motion.div>
 
       {/* Combined Section 1: Intro & Projects */}
-      <section id="hero" className="scroll-mt-20">
-        <header className="max-w-7xl mx-auto min-h-[90vh] md:min-h-[85vh] flex flex-col justify-center py-12 border-b border-gray-300/50 dark:border-gray-700/50">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-8 flex flex-col justify-center">
-            {/* Headline */}
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-display font-extrabold tracking-tight text-neu-text mb-4 drop-shadow-sm transition-colors duration-300"
-            >
-              Awaluddin
-            </motion.h1>
+      <section id="hero" className="scroll-mt-20 mb-20 md:mb-28">
+        <header className="flex flex-col gap-10 md:gap-14 py-8 md:py-12">
+          {/* Main Grid Content - equal-height containers on large screens */}
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+              <div className="lg:col-span-8 flex flex-col justify-between h-full py-2">
+                <div className="flex flex-col gap-y-8 md:gap-y-10">
+                  {/* Headline */}
+                  <motion.h1 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-5xl md:text-7xl font-display font-extrabold tracking-tight text-neu-text drop-shadow-sm transition-colors duration-300"
+                  >
+                    Awaluddin
+                  </motion.h1>
 
-            {/* Subheadline */}
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-lg md:text-xl font-display font-bold text-neu-accent mb-4 transition-colors duration-300"
-            >
-              Backend Engineer — Integrating LLMs into Production Systems
-            </motion.p>
+                  {/* Subheadlines / Narrative Group */}
+                  <div className="flex flex-col gap-y-4 md:gap-y-5">
+                    {/* Subheadline */}
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="text-lg md:text-xl font-display font-bold text-neu-accent transition-colors duration-300"
+                    >
+                      Backend Engineer — Integrating LLMs into Production Systems
+                    </motion.p>
 
-            {/* Body */}
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="text-sm md:text-base text-neu-text-muted max-w-3xl font-light mb-6 leading-relaxed transition-colors duration-300"
-            >
-              Node.js & Go engineer building async, event-driven backend systems for enterprise & fintech. I ship LLM integrations into production — not train models in notebooks.
-            </motion.p>
+                    {/* Body */}
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="text-sm md:text-base text-neu-text-muted max-w-3xl font-light leading-relaxed transition-colors duration-300"
+                    >
+                      Node.js & Go engineer building async, event-driven backend systems for enterprise & fintech. I ship LLM integrations into production — not train models in notebooks.
+                    </motion.p>
+                  </div>
 
-            {/* Metric Strip - Redesigned as modern high-fidelity micro-cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-8 w-full max-w-3xl"
-            >
+                  {/* Pillars: Expertise, Grit, and Service */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.22 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1 text-left w-full mt-[-4px]"
+                  >
+                    {/* Expertise Card */}
+                    <div className="p-4 rounded-2xl bg-neu-bg border border-gray-200/50 dark:border-zinc-800/30 flex flex-col justify-start text-left transition-colors duration-300 shadow-sm">
+                      <p className="text-[13px] md:text-[14px] leading-relaxed text-neu-text-muted font-light transition-colors duration-300">
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-neu-accent mr-1.5">
+                          <HandFist size={14} className="text-neu-accent" /> Expertise
+                        </span>
+                        <span className="text-neu-accent font-extrabold mr-1.5">→</span>
+                        Backend systems that don&apos;t break when things get serious — async pipelines, event-driven architecture, and LLM integration for enterprise and fintech environments.
+                      </p>
+                    </div>
+
+                    {/* Grit Card */}
+                    <div className="p-4 rounded-2xl bg-neu-bg border border-gray-200/50 dark:border-zinc-800/30 flex flex-col justify-start text-left transition-colors duration-300 shadow-sm">
+                      <p className="text-[13px] md:text-[14px] leading-relaxed text-neu-text-muted font-light transition-colors duration-300">
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-neu-accent mr-1.5">
+                          <Heart size={14} className="text-neu-accent" /> Grit
+                        </span>
+                        <span className="text-neu-accent font-extrabold mr-1.5">→</span>
+                        Survived a solo OJK & BI regulatory audit as the only engineer. Moved from HVAC blueprints to production microservices in under 2 years.
+                      </p>
+                    </div>
+
+                    {/* Service Card */}
+                    <div className="p-4 rounded-2xl bg-neu-bg border border-gray-200/50 dark:border-zinc-800/30 flex flex-col justify-start text-left transition-colors duration-300 shadow-sm">
+                      <p className="text-[13px] md:text-[14px] leading-relaxed text-neu-text-muted font-light transition-colors duration-300">
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-neu-accent mr-1.5">
+                          <Wrench size={14} className="text-neu-accent" /> Service
+                        </span>
+                        <span className="text-neu-accent font-extrabold mr-1.5">→</span>
+                        I don&apos;t just ship code — I reduce costs, cut vendors, and leave systems better than I found them.
+                      </p>
+                    </div>
+                  </motion.div>
+                  {/* Status Line - Moved below content and matches height perfectly */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-8 lg:mt-auto flex flex-wrap items-center gap-x-4 gap-y-2.5 text-xs font-mono text-neu-text-muted select-none"
+                  >
+                    <span className="flex items-center gap-1.5 text-neu-text">
+                      <Globe size={13} className="text-neu-accent" /> Remote Only
+                    </span>
+                    <span className="text-neu-text-muted/30 select-none">·</span>
+                    <span className="flex items-center gap-1.5 text-neu-text">
+                      <Calendar size={13} className="text-neu-accent" /> UTC+7 (Jakarta)
+                    </span>
+                    <span className="text-neu-text-muted/30 select-none">·</span>
+                    
+                    {/* Interactive Status Indicator and Dynamic Toggle */}
+                    <div className="flex items-center gap-2.5">
+                      {/* Blinking lamp/bip indicator */}
+                      <div className="relative flex h-2 w-2">
+                        {portfolioStatus === 'available' ? (
+                          <>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                          </>
+                        )}
+                      </div>
+                      
+                      <span className={cn(
+                        "font-bold transition-colors duration-300",
+                        portfolioStatus === 'available' ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"
+                      )}>
+                        {portfolioStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}
+                      </span>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Side CTA & Connection Terminal - matches left column height on desktop */}
+              <div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-6">
+                {/* CTA Buttons - Move CTA Button above Connection Terminal */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full"
+                >
+                  <button
+                    onClick={() => {
+                      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text bg-neu-bg shadow-neu border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full"
+                  >
+                    <BookOpen size={14} className="group-hover:rotate-12 transition-transform text-neu-accent group-hover:text-white" /> View Projects
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      triggerToast('Professional CV view initiated!');
+                      window.open('https://github.com/awaluddin-dev', '_blank');
+                    }}
+                    className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text bg-neu-bg shadow-neu border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full"
+                  >
+                    <Eye size={14} className="group-hover:scale-110 transition-transform text-neu-accent group-hover:text-white" /> View Resume
+                  </button>
+                </motion.div>
+
+                {/* Connection Terminal Card */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex flex-col gap-4 w-full bg-neu-bg p-5 rounded-3xl shadow-neu border border-white/5"
+                >
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-neu-accent mb-1">
+                    <Terminal size={14} /> Connection Terminal
+                  </div>
+                  <div className="flex flex-col gap-2.5 font-mono text-xs">
+                    <a href="https://github.com/awaluddin-dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                      <span className="font-semibold text-neu-text">GitHub</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neu-text-muted">awaluddin-dev</span>
+                        <Github size={15} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                      </div>
+                    </a>
+                    <a href="https://linkedin.com/in/awaluddin0001" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                      <span className="font-semibold text-neu-text">LinkedIn</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neu-text-muted">awaluddin0001</span>
+                        <Linkedin size={15} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                      </div>
+                    </a>
+                    <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
+                      <span className="font-semibold text-neu-text">Dev.to</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neu-text-muted">awaluddin</span>
+                        <PenTool size={15} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                      </div>
+                    </a>
+                    
+                    <button
+                      onClick={() => setShowInquiryModal(true)}
+                      className="w-full flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group text-left cursor-pointer border-none outline-none"
+                    >
+                      <span className="font-semibold text-neu-text">Inquiries</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-neu-text-muted">Contact Me</span>
+                        <Mail size={15} className="text-neu-accent group-hover:scale-110 transition-transform" />
+                      </div>
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+
+          {/* Spaced Metric Cards - Move up metric strip & add space/gap between items */}
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { label: "EXPERIENCE", val: "5+ Years", icon: <Code2 size={14} />, desc: "Engineering" },
-                { label: "DOMAINS", val: "Enterprise", icon: <Briefcase size={14} />, desc: "& Fintech" },
-                { label: "NET SAVINGS", val: "$18K/yr", icon: <TrendingUp size={14} />, desc: "Infra cost cuts", highlight: true },
-                { label: "PRESENT ROLE", val: "@ Astra Group", icon: <MapPin size={14} />, desc: "Full-time Lead" }
+                {
+                  val: "5+ Years",
+                  label: "Engineering Experience",
+                  icon: <Code2 className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
+                },
+                {
+                  val: "Enterprise",
+                  label: "Fintech Domains",
+                  icon: <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
+                },
+                {
+                  val: "$18K/yr",
+                  label: "Infra Cost Savings",
+                  icon: <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 dark:text-emerald-400" />,
+                  isSavings: true
+                },
+                {
+                  val: "@ Astra",
+                  label: "Present Lead Role",
+                  icon: <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
+                }
               ].map((item, idx) => (
-                <div 
-                  key={idx}
+                <motion.div 
+                  key={idx} 
+                  whileHover={{ 
+                    y: -6,
+                  }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
                   className={cn(
-                    "relative overflow-hidden p-3.5 rounded-2xl bg-gradient-to-br from-white/60 to-white/40 dark:from-zinc-900/60 dark:to-zinc-900/30 border border-gray-200/50 dark:border-zinc-800/40 shadow-neu-sm backdrop-blur-sm group hover:border-neu-accent/30 dark:hover:border-neu-accent/30 transition-all duration-300",
-                    item.highlight && "border-emerald-500/20 dark:border-emerald-500/20 shadow-[inset_0_1px_1px_rgba(16,185,129,0.05)]"
+                    "flex flex-col sm:flex-row items-center sm:items-start gap-3.5 p-4 sm:p-5 rounded-2xl bg-neu-bg border text-center sm:text-left cursor-pointer",
+                    item.isSavings 
+                      ? "metric-card-savings border-emerald-500/20 dark:border-emerald-500/20" 
+                      : "metric-card-normal border-white/5 dark:border-zinc-800/30"
                   )}
                 >
-                  <div className={cn(
-                    "absolute top-0 left-0 w-full h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                    item.highlight ? "bg-emerald-500" : "bg-neu-accent"
-                  )} />
-                  <span className="block text-[8px] font-mono font-bold text-neu-text-muted tracking-widest uppercase mb-1">{item.label}</span>
-                  <div className="flex items-center gap-1.5">
+                  {/* Left: Icon inside a soft circle */}
+                  <div className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-neu-bg shadow-neu-inset flex items-center justify-center border border-white/5">
+                    {item.icon}
+                  </div>
+                  
+                  {/* Right: Numeric and Text info */}
+                  <div className="flex flex-col">
                     <span className={cn(
-                      "text-neu-accent",
-                      item.highlight && "text-emerald-500 dark:text-emerald-400"
-                    )}>
-                      {item.icon}
-                    </span>
-                    <span className={cn(
-                      "font-display font-extrabold text-sm text-neu-text tracking-tight",
-                      item.highlight && "text-emerald-500 dark:text-emerald-400"
+                      "font-display font-extrabold text-lg sm:text-xl text-neu-text tracking-tight leading-none mb-1.5",
+                      item.isSavings && "text-emerald-500 dark:text-emerald-400"
                     )}>
                       {item.val}
                     </span>
+                    <span className="text-[10px] sm:text-xs font-sans font-semibold text-neu-text-muted leading-tight uppercase tracking-wide">
+                      {item.label}
+                    </span>
                   </div>
-                  <span className="block text-[10px] font-mono text-neu-text-muted mt-0.5 font-medium">{item.desc}</span>
-                </div>
+                </motion.div>
               ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="flex flex-wrap gap-4"
-            >
-              <button
-                onClick={() => {
-                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="px-8 py-4 rounded-xl font-bold text-white bg-neu-accent shadow-neu hover:shadow-neu-sm hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group"
-              >
-                <BookOpen size={16} className="group-hover:rotate-12 transition-transform" /> View Projects
-              </button>
-              
-              <button
-                onClick={() => {
-                  triggerToast('Professional CV download initiated!');
-                }}
-                className="px-6 py-4 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-white/5 cursor-pointer"
-              >
-                <Download size={16} /> Download Resume
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowInquiryModal(true);
-                }}
-                className="px-6 py-4 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 border border-white/5 cursor-pointer"
-              >
-                <Mail size={16} /> Contact Me
-              </button>
-            </motion.div>
-
-            {/* Status Line - Moved below CTA and simplified to low-profile text & interactive toggle */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2.5 text-xs font-mono text-neu-text-muted select-none"
-            >
-              <span className="flex items-center gap-1.5 text-neu-text">
-                <Globe size={13} className="text-neu-accent" /> Remote Only
-              </span>
-              <span className="text-neu-text-muted/30 select-none">·</span>
-              <span className="flex items-center gap-1.5 text-neu-text">
-                <Calendar size={13} className="text-neu-accent" /> UTC+7 (Jakarta)
-              </span>
-              <span className="text-neu-text-muted/30 select-none">·</span>
-              
-              {/* Interactive Status Indicator and Dynamic Toggle */}
-              <div className="flex items-center gap-2.5">
-                {/* Blinking lamp/bip indicator */}
-                <div className="relative flex h-2 w-2">
-                  {portfolioStatus === 'available' ? (
-                    <>
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                    </>
-                  )}
-                </div>
-                
-                <span className={cn(
-                  "font-bold transition-colors duration-300",
-                  portfolioStatus === 'available' ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"
-                )}>
-                  {portfolioStatus === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}
-                </span>
-              </div>
-            </motion.div>
+            </div>
           </div>
-
-          {/* Side Contact card for secondary visual hierarchy */}
-          <div className="lg:col-span-4">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col gap-4 w-full bg-neu-bg p-6 rounded-3xl shadow-neu border border-white/5"
-            >
-              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-neu-accent mb-2">
-                <Terminal size={14} /> Connection Terminal
-              </div>
-              <div className="flex flex-col gap-3 font-mono text-xs">
-                <a href="https://github.com/awaluddin-dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
-                  <span className="font-semibold text-neu-text">GitHub</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-neu-text-muted">awaluddin-dev</span>
-                    <Github size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
-                  </div>
-                </a>
-                <a href="https://linkedin.com/in/awaluddin0001" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
-                  <span className="font-semibold text-neu-text">LinkedIn</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-neu-text-muted">awaluddin0001</span>
-                    <Linkedin size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
-                  </div>
-                </a>
-                <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group">
-                  <span className="font-semibold text-neu-text">Dev.to</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-neu-text-muted">awaluddin</span>
-                    <PenTool size={16} className="text-neu-accent group-hover:scale-110 transition-transform" />
-                  </div>
-                </a>
-                
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </header>
+        </header>
 
       {/* Projects Section with Intersection Observer Animations */}
       <motion.div
@@ -921,11 +1137,13 @@ export default function Portfolio() {
 
       {/* Bookshelf Layout */}
       <div id="projects" className="max-w-7xl mx-auto scroll-mt-24">
-        <div className="flex items-center gap-2.5 mb-6 md:mb-8 ml-2 sm:ml-4">
-          <BookOpen size={24} className="text-neu-accent" />
-          <h3 className="text-2xl font-display font-bold text-neu-text tracking-tight">My Bookshelf Projects</h3>
-        </div>
         <div className="bg-neu-bg p-4 sm:p-8 md:p-12 rounded-3xl shadow-neu-inset relative overflow-hidden">
+          {/* Centered Bookshelf Projects Title inside, matching book spine font but bold */}
+          <div className="flex justify-center items-center gap-2 mb-10 relative z-20">
+            <h3 className="text-sm sm:text-base md:text-lg font-mono font-bold tracking-[0.25em] text-neu-text uppercase text-center border-b border-gray-300/40 dark:border-zinc-800/40 pb-2 flex items-center gap-2">
+              <BookOpen size={16} className="text-neu-accent animate-pulse" /> My Bookshelf Projects
+            </h3>
+          </div>
           {/* Wooden Shelf Aesthetic Details */}
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent opacity-50 z-10"></div>
           
@@ -973,42 +1191,75 @@ export default function Portfolio() {
               <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-md rounded-3xl z-0 pointer-events-none"></div>
               <div className={cn("absolute -inset-10 opacity-15 blur-[120px] rounded-full z-0 pointer-events-none transition-all duration-500", focusedProject.spineColor)}></div>
               
-              {/* Magnified Centered Book */}
-              <div className="relative z-10 flex-shrink-0 flex items-center justify-center">
+              {/* Magnified Centered Book (Cover & Side View with realistic 3D styling) */}
+              <div className="relative z-10 flex-shrink-0 flex items-center justify-center w-[280px] md:w-[320px] h-[340px] md:h-[400px]" style={{ perspective: '1200px' }}>
                 <motion.div
-                  initial={{ scale: 0.8, rotateY: -20, opacity: 0 }}
-                  animate={{ scale: 1.15, rotateY: 0, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                  className="relative cursor-pointer group animate-pulse-subtle"
+                  initial={{ scale: 0.8, rotateY: -35, rotateX: 12, rotateZ: -6, opacity: 0 }}
+                  animate={{ scale: 1.05, rotateY: -18, rotateX: 8, rotateZ: -4, opacity: 1 }}
+                  whileHover={{ rotateY: -8, rotateX: 4, rotateZ: -2, scale: 1.12 }}
+                  transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                  className="relative cursor-pointer group flex items-center justify-center"
                   onClick={() => setSelectedProject(focusedProject)}
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <div className={cn("w-28 md:w-36 h-80 md:h-[400px] rounded-xl shadow-neu-modal relative flex flex-col justify-between p-5 border border-white/30", focusedProject.spineColor)}>
-                    {/* Compact badge inside the top right corner of the spotlight book spine */}
-                    <div className="absolute top-2.5 right-2.5 z-40 bg-black/25 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10 flex flex-col items-end gap-0.5 select-none pointer-events-none text-white">
-                      <span className="text-[8px] font-mono font-bold leading-none uppercase tracking-tight whitespace-nowrap text-neu-accent">
-                        {focusedProject.tags[0]}
-                      </span>
-                      <span className="text-[7px] font-mono text-white/70 leading-none whitespace-nowrap">
-                        {Math.max(1, Math.ceil((focusedProject.markdown || '').split(/\s+/).filter(Boolean).length / 150))}m read
-                      </span>
+                  {/* Spine Crease shadow on Left (runs vertically inside front cover) */}
+                  <div className="absolute left-[12px] top-0 bottom-0 w-[4px] bg-gradient-to-r from-black/20 to-transparent z-40 pointer-events-none" />
+
+                  {/* Right Page Stack Side View (3D paper thickness) */}
+                  <div 
+                    className="absolute right-[-8px] top-[4px] bottom-[4px] w-[10px] bg-stone-100 dark:bg-zinc-800 border-y border-r border-stone-300 dark:border-zinc-700/60 rounded-r shadow-md z-10"
+                    style={{
+                      transform: 'skewY(6deg)',
+                      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 3px)',
+                    }}
+                  />
+
+                  {/* Front Cover */}
+                  <div className={cn(
+                    "w-[200px] md:w-[240px] h-[280px] md:h-[340px] rounded-r-xl shadow-2xl relative flex flex-col justify-between p-6 border-y border-r border-white/20 overflow-hidden z-20",
+                    focusedProject.coverColor || focusedProject.spineColor
+                  )}>
+                    {/* Glossy overlay sheen */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/15 via-transparent to-white/10 pointer-events-none z-10" />
+
+                    {/* Book Cover Content */}
+                    <div className="relative z-20 flex flex-col h-full justify-between">
+                      {/* Top Header of Cover */}
+                      <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <span className="text-[9px] font-mono font-bold tracking-widest text-white/70 uppercase">
+                          {focusedProject.category}
+                        </span>
+                        <span className="text-[8px] font-mono text-white/50">{focusedProject.date}</span>
+                      </div>
+
+                      {/* Main Title section (Horizontal, beautifully legible, high-impact) */}
+                      <div className="my-auto py-2">
+                        <h4 className="text-lg md:text-xl font-display font-black text-white tracking-tight leading-snug drop-shadow-md">
+                          {focusedProject.title}
+                        </h4>
+                        <p className="text-[10px] md:text-xs text-white/80 font-mono mt-1.5 font-medium italic line-clamp-2 leading-relaxed">
+                          {focusedProject.subtitle}
+                        </p>
+                      </div>
+
+                      {/* Bottom Footer of Cover */}
+                      <div className="flex items-center justify-between pt-2 border-t border-white/15">
+                        <div className="flex flex-col">
+                          <span className="text-[7px] font-mono text-white/40 tracking-wider uppercase">Author</span>
+                          <span className="text-[9px] font-mono font-bold text-white/80 leading-none">A. AWALUDDIN</span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-black/20 border border-white/10 text-white/80">
+                          <Code2 size={12} />
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="w-full h-1.5 bg-black/10 rounded-full mb-2 shadow-inner"></div>
-                    <div className="w-full h-1.5 bg-black/10 rounded-full mb-6 shadow-inner"></div>
-                    
-                    <div className="flex-1 relative flex items-center justify-center">
-                      <span className="absolute whitespace-pre-wrap transform -rotate-90 origin-center text-sm md:text-base font-mono font-bold tracking-widest text-white drop-shadow-md w-[260px] text-center leading-tight">
-                        {focusedProject.spineText}
-                      </span>
-                    </div>
-                    
-                    <div className="mt-6 flex flex-col items-center gap-2.5">
-                      <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-                      <Code2 size={16} className="text-white drop-shadow-sm" />
-                      <div className="w-full h-0.5 bg-white/40 shadow-sm"></div>
-                    </div>
-                    
-                    <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-r from-transparent to-black/15 rounded-r-xl"></div>
+                    {/* Left Binding Cover Crease line */}
+                    <div className="absolute left-[3px] top-0 bottom-0 w-[1px] bg-black/25 z-30" />
+                    <div className="absolute left-[4px] top-0 bottom-0 w-[1px] bg-white/10 z-30" />
+
+                    {/* Subtle bookmark ribbon hanging from the top */}
+                    <div className="absolute top-0 right-4 w-3 h-8 bg-red-500 shadow-md origin-top transform translate-y-[-4px] z-10 rounded-b" />
                   </div>
                 </motion.div>
               </div>
@@ -1144,179 +1395,184 @@ export default function Portfolio() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div className="flex items-center gap-2 text-neu-accent mb-1">
+              <Cpu size={18} />
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Stack & Capabilities</span>
+            </div>
+            <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Technical Proficiency</h2>
+            <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Structured breakdown of core software engineering, system architecture, and DevOps practices.</p>
+          </div>
+          
+          {/* Legend with Tooltips */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 font-mono text-xs bg-neu-bg shadow-neu-inset px-4 py-2.5 rounded-2xl border border-white/5 select-none self-start md:self-auto z-10">
+            <div className="relative group cursor-help flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+              <span className="text-neu-text font-medium text-[11px] sm:text-xs">Production-ready</span>
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-xl bg-zinc-950/95 dark:bg-white/95 text-zinc-100 dark:text-zinc-900 shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none text-left text-[11.5px] font-sans leading-relaxed border border-white/10 dark:border-zinc-200/50 z-50">
+                <p className="font-semibold text-emerald-400 dark:text-emerald-600 mb-0.5">Production-ready</p>
+                <p className="text-zinc-300 dark:text-zinc-600">Used in real-world production environments</p>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-950/95 dark:border-t-white/95" />
+              </div>
+            </div>
+            
+            <div className="relative group cursor-help flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+              <span className="text-neu-text font-medium text-[11px] sm:text-xs">In Use</span>
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-xl bg-zinc-950/95 dark:bg-white/95 text-zinc-100 dark:text-zinc-900 shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none text-left text-[11.5px] font-sans leading-relaxed border border-white/10 dark:border-zinc-200/50 z-50">
+                <p className="font-semibold text-blue-400 dark:text-blue-600 mb-0.5">In Use</p>
+                <p className="text-zinc-300 dark:text-zinc-600">Actively used in current projects</p>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-950/95 dark:border-t-white/95" />
+              </div>
+            </div>
+            
+            <div className="relative group cursor-help flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+              <span className="text-neu-text font-medium text-[11px] sm:text-xs">Building</span>
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 rounded-xl bg-zinc-950/95 dark:bg-white/95 text-zinc-100 dark:text-zinc-900 shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none text-left text-[11.5px] font-sans leading-relaxed border border-white/10 dark:border-zinc-200/50 z-50">
+                <p className="font-semibold text-purple-400 dark:text-purple-600 mb-0.5">Building</p>
+                <p className="text-zinc-300 dark:text-zinc-600">Currently learning through active projects</p>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-950/95 dark:border-t-white/95" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {skillCategoriesList.map((category, catIdx) => (
+            <div 
+              key={catIdx} 
+              className="p-6 sm:p-8 rounded-3xl bg-neu-bg shadow-neu border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between"
+            >
+              <div>
+                <h3 className="font-mono text-xs font-extrabold uppercase tracking-widest text-neu-accent border-b border-gray-200/10 dark:border-zinc-800/30 pb-3.5 mb-4">
+                  {category.title}
+                </h3>
+                
+                <div className="flex flex-col">
+                  {category.skills.map((skill, skillIdx) => (
+                    <div 
+                      key={skillIdx} 
+                      className="py-4 border-b border-gray-200/5 dark:border-zinc-800/20 last:border-b-0 flex justify-between items-center gap-4 group/item"
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Colored status dot */}
+                        <span className={cn(
+                          "w-2 h-2 rounded-full mt-1.5 flex-shrink-0 transition-transform duration-300 group-hover/item:scale-125",
+                          skill.status === 'Production-ready' && "bg-emerald-500",
+                          skill.status === 'In Use' && "bg-blue-500",
+                          skill.status === 'Building' && "bg-purple-500"
+                        )} />
+                        <div className="flex flex-col text-left">
+                          <h4 className="font-display font-bold text-[14px] sm:text-[15px] text-neu-text leading-tight group-hover/item:text-neu-accent transition-colors duration-300">
+                            {skill.name}
+                          </h4>
+                          <p className="font-mono text-[11px] sm:text-[11.5px] text-neu-text-muted mt-1 leading-snug">
+                            {skill.subtext}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex-shrink-0">
+                        <span className={cn(
+                          "text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border transition-all duration-300",
+                          skill.status === 'Production-ready' && "border-emerald-500/20 text-emerald-600 bg-emerald-500/5 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/30",
+                          skill.status === 'In Use' && "border-blue-500/20 text-blue-600 bg-blue-500/5 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/30",
+                          skill.status === 'Building' && "border-purple-500/20 text-purple-600 bg-purple-500/5 dark:text-purple-400 dark:bg-purple-500/10 dark:border-purple-500/30"
+                        )}>
+                          {skill.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        </motion.div>
+
+        {/* Professional Insights & Focus Section */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-24 mb-24"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
         <div className="mb-10">
           <div className="flex items-center gap-2 text-neu-accent mb-1">
-            <Cpu size={18} />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Stack & Capabilities</span>
+            <Layers size={18} />
+            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Philosophy & Thoughts</span>
           </div>
-          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Technical Proficiency</h2>
-          <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Structured breakdown of core software engineering, system architecture, and DevOps practices.</p>
+          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Professional Insights & Focus</h2>
+          <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Deep dives into architectural principles, software patterns, and technical writeups.</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Backend */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Core Backend</h3>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>Node.js / TypeScript</span>
-                <span className="text-neu-accent">Advanced</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Writing Card */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                  <PenTool size={20} />
+                </div>
+                <h3 className="text-xl font-bold text-neu-text">Writing</h3>
               </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[92%]"></div>
-              </div>
+              <p className="text-neu-text-muted font-medium mb-4 leading-relaxed">
+                &quot;I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs&quot;
+              </p>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>NestJS / Express</span>
-                <span className="text-neu-accent">Advanced</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>REST API</span>
-                <span className="text-neu-accent">Advanced</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[90%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>GraphQL</span>
-                <span className="text-neu-accent/70">Learning</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent/50 h-2 rounded-full w-[40%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>Go</span>
-                <span className="text-neu-accent">Intermediate</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>Python</span>
-                <span className="text-neu-accent">Intermediate</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
-              </div>
-            </div>
+            <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-neu-accent hover:underline mt-2">
+              Read on dev.to <ArrowRight size={16} />
+            </a>
           </div>
 
-          {/* AI & Automation */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">AI & Automation</h3>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>LangGraph</span>
-                <span className="text-neu-accent">Intermediate</span>
+          {/* Current Work Card */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                <Briefcase size={20} />
               </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[72%]"></div>
-              </div>
+              <h3 className="text-xl font-bold text-neu-text">Current Work</h3>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>LangChain</span>
-                <span className="text-neu-accent">Intermediate</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[70%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>OpenAI / LLM APIs</span>
-                <span className="text-neu-accent">Intermediate</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[75%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>RAG</span>
-                <span className="text-neu-accent/70">Learning</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent/50 h-2 rounded-full w-[45%]"></div>
-              </div>
-            </div>
+            <p className="text-neu-text-muted leading-relaxed">
+              Backend Developer at <strong className="text-neu-text font-medium">PT Serasi Autoraya (SERA) — Astra Group</strong>. Migrating legacy .NET systems to Node.js microservices and integrating SAP data.
+            </p>
           </div>
 
-          {/* Infrastructure & Data */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6">
-            <h3 className="text-xl font-bold text-neu-text mb-4 border-b border-gray-300/50 pb-2">Infrastructure & Data</h3>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>PostgreSQL / SQL Server</span>
-                <span className="text-neu-accent">Advanced</span>
+          {/* Currently Learning Card */}
+          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                <BrainCircuit size={20} />
               </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[88%]"></div>
-              </div>
+              <h3 className="text-xl font-bold text-neu-text">Currently Learning</h3>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted flex-wrap gap-x-2">
-                <span>Message Queues (Azure Service Bus, BullMQ, Redis)</span>
-                <span className="text-neu-accent">Advanced</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[86%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>Docker / Kubernetes</span>
-                <span className="text-neu-accent">Advanced</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[82%]"></div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-mono text-neu-text-muted">
-                <span>Azure</span>
-                <span className="text-neu-accent">Advanced</span>
-              </div>
-              <div className="w-full bg-neu-bg shadow-neu-inset rounded-full h-2">
-                <div className="bg-neu-accent h-2 rounded-full w-[84%]"></div>
-              </div>
-            </div>
+            <p className="text-neu-text-muted leading-relaxed">
+              Deepening <strong className="text-neu-text font-medium">LangGraph</strong> multi-agent patterns and studying <strong className="text-neu-text font-medium">neural network fundamentals</strong>.
+            </p>
           </div>
         </div>
+        </motion.div>
 
-        {/* Learning Roadmap Sub-section */}
-        <div className="mt-20 border-t border-gray-300/40 dark:border-gray-800/40 pt-16">
+        {/* Learning Roadmap Sub-section (Moved below Professional Insights & Focus) */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-24 mb-24"
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <div className="mb-10 text-center md:text-left">
             <div className="flex items-center gap-2 text-neu-accent mb-1 justify-center md:justify-start">
               <Milestone size={18} />
               <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Learning Roadmap</span>
             </div>
-            <h3 className="text-2xl font-display font-bold text-neu-text tracking-tight">Upcoming Tech & Specializations</h3>
+            <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Upcoming Tech & Specializations</h2>
             <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Vision path for continuous learning and technology adoption over the upcoming quarters.</p>
           </div>
 
@@ -1500,70 +1756,6 @@ export default function Portfolio() {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
-        </motion.div>
-
-        {/* Professional Insights & Focus Section */}
-        <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-        <div className="mb-10">
-          <div className="flex items-center gap-2 text-neu-accent mb-1">
-            <Layers size={18} />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neu-accent">Philosophy & Thoughts</span>
-          </div>
-          <h2 className="text-3xl font-display font-bold text-neu-text tracking-tight">Professional Insights & Focus</h2>
-          <p className="text-xs text-neu-text-muted font-mono mt-1">✦ Deep dives into architectural principles, software patterns, and technical writeups.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Writing Card */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
-                  <PenTool size={20} />
-                </div>
-                <h3 className="text-xl font-bold text-neu-text">Writing</h3>
-              </div>
-              <p className="text-neu-text-muted font-medium mb-4 leading-relaxed">
-                &quot;I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs&quot;
-              </p>
-            </div>
-            <a href="https://dev.to/awaluddin" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-neu-accent hover:underline mt-2">
-              Read on dev.to <ArrowRight size={16} />
-            </a>
-          </div>
-
-          {/* Current Work Card */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
-                <Briefcase size={20} />
-              </div>
-              <h3 className="text-xl font-bold text-neu-text">Current Work</h3>
-            </div>
-            <p className="text-neu-text-muted leading-relaxed">
-              Backend Developer at <strong className="text-neu-text font-medium">PT Serasi Autoraya (SERA) — Astra Group</strong>. Migrating legacy .NET systems to Node.js microservices and integrating SAP data.
-            </p>
-          </div>
-
-          {/* Currently Learning Card */}
-          <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
-                <BrainCircuit size={20} />
-              </div>
-              <h3 className="text-xl font-bold text-neu-text">Currently Learning</h3>
-            </div>
-            <p className="text-neu-text-muted leading-relaxed">
-              Deepening <strong className="text-neu-text font-medium">LangGraph</strong> multi-agent patterns and studying <strong className="text-neu-text font-medium">neural network fundamentals</strong>.
-            </p>
-          </div>
-        </div>
         </motion.div>
 
         {/* Skill Tree Section */}
@@ -2039,13 +2231,13 @@ export default function Portfolio() {
             </div>
 
             <motion.div 
-              className="space-y-6 sm:space-y-8 mt-10"
+              className="mt-10 rounded-3xl bg-neu-bg shadow-neu-inset p-4 sm:p-6 md:p-8 space-y-1 relative"
               variants={{
                 hidden: { opacity: 0 },
                 show: {
                   opacity: 1,
                   transition: {
-                    staggerChildren: 0.15
+                    staggerChildren: 0.1
                   }
                 }
               }}
@@ -2053,85 +2245,114 @@ export default function Portfolio() {
               whileInView="show"
               viewport={{ once: true, margin: "-100px" }}
             >
-              <motion.div 
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                }}
-                className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Backend Developer (Contract) / Current Work</h3>
-                    <p className="text-neu-accent font-medium">PT Serasi Autoraya (SERA) — Astra Group</p>
-                  </div>
-                  <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2025 - Present</div>
-                </div>
-                <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
-                  <li>Migrating legacy .NET Driver Management System to Node.js microservices.</li>
-                  <li>Integrating SAP, Mekari Talenta, FMS 2.0 via Azure Service Bus for payroll and logistics data.</li>
-                </ul>
-              </motion.div>
-              
-              <motion.div 
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                }}
-                className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Software Engineer</h3>
-                    <p className="text-neu-accent font-medium">Telkomsel (Vendor)</p>
-                  </div>
-                  <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2024 - 2025</div>
-                </div>
-                <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
-                  <li>Built bare-metal Kubernetes + IoT monitoring system.</li>
-                  <li>Saved 1,800–2,500 USD/month by transitioning away from managed cloud.</li>
-                </ul>
-              </motion.div>
-              
-              <motion.div 
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                }}
-                className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
-                    <p className="text-neu-accent font-medium">PT Hensel Davest Indonesia / PT Doeku</p>
-                  </div>
-                  <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2023 - 2024</div>
-                </div>
-                <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
-                  <li>Solo OJK & BI compliance engineering.</li>
-                  <li>Rewrote P2P lending Laravel monolith to NestJS microservices.</li>
-                </ul>
-              </motion.div>
+              {/* Table Headers (Visible only on desktop) */}
+              <div className="hidden md:grid grid-cols-12 gap-4 px-6 pb-4 border-b border-gray-300/20 dark:border-zinc-800/20 text-[10px] font-mono font-bold tracking-[0.2em] text-neu-text-muted uppercase">
+                <div className="col-span-3">Year / Duration</div>
+                <div className="col-span-3">Company</div>
+                <div className="col-span-4">Role & Tech Stack</div>
+                <div className="col-span-2 text-right">Key Impact Highlight</div>
+              </div>
 
-              <motion.div 
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
-                }}
-                className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative transition-all hover:shadow-neu-sm group"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-neu-text group-hover:text-neu-accent transition-colors">Full Stack Developer</h3>
-                    <p className="text-neu-accent font-medium">PT Maccon Generasi Mandiri</p>
+              {experiencesList.map((job, idx) => {
+                const isActive = activeExpIdx === idx;
+                return (
+                  <div
+                    key={idx}
+                    className="block"
+                    onMouseEnter={() => setActiveExpIdx(idx)}
+                  >
+                    <div
+                      onClick={() => setActiveExpIdx(isActive ? null : idx)}
+                      className={cn(
+                        "grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-6 px-6 rounded-2xl cursor-pointer transition-all duration-300 group relative border-b border-gray-300/10 dark:border-zinc-800/10 last:border-0",
+                        isActive 
+                          ? "bg-white/80 dark:bg-zinc-800/30 shadow-neu border-transparent" 
+                          : "hover:bg-white/40 dark:hover:bg-zinc-800/10"
+                      )}
+                    >
+                      {/* Column 1: Dates & Duration */}
+                      <div className="col-span-3 flex flex-col justify-center text-left">
+                        <span className="font-mono font-bold text-sm sm:text-base text-neu-text group-hover:text-neu-accent transition-colors">
+                          {job.years}
+                        </span>
+                        <span className="text-[10px] font-mono text-neu-text-muted mt-0.5 uppercase tracking-wider">
+                          {job.duration}
+                        </span>
+                      </div>
+
+                      {/* Column 2: Company */}
+                      <div className="col-span-3 flex flex-col justify-center text-left">
+                        <span className="font-display font-extrabold text-base sm:text-lg text-neu-text tracking-tight uppercase">
+                          {job.company}
+                        </span>
+                      </div>
+
+                      {/* Column 3: Role & Stack */}
+                      <div className="col-span-4 flex items-center text-left">
+                        <span className="font-mono text-xs sm:text-sm text-neu-text-muted">
+                          <strong className="text-neu-text font-bold font-sans text-sm">{job.role}</strong>
+                          {" | "}
+                          <span className="text-neu-accent font-medium">{job.stack}</span>
+                        </span>
+                      </div>
+
+                      {/* Column 4: Primary Impact Teaser */}
+                      <div className="col-span-2 text-right hidden md:block">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-mono font-bold bg-neu-accent/10 text-neu-accent border border-neu-accent/15 tracking-tight">
+                          ✦ {job.teaser}
+                        </span>
+                      </div>
+
+                      {/* Expand Icon */}
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 md:hidden">
+                        {isActive ? <ChevronUp size={16} className="text-neu-accent" /> : <ChevronDown size={16} className="text-neu-text-muted" />}
+                      </div>
+                    </div>
+
+                    {/* Expanded Content with Framer Motion */}
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6 pt-2 bg-white/20 dark:bg-zinc-800/10 rounded-b-2xl border-t border-gray-300/10 dark:border-zinc-800/10">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-4">
+                              {/* Left: Quantifiable Impact Box */}
+                              <div className="lg:col-span-4 p-4 rounded-xl bg-neu-bg border border-white/10 dark:border-zinc-800/50 shadow-neu-inset flex flex-col justify-center">
+                                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-neu-accent mb-1.5 flex items-center gap-1">
+                                  <Sparkles size={12} className="text-neu-accent animate-pulse" /> Business Impact
+                                </span>
+                                <p className="text-xs sm:text-sm font-sans font-extrabold text-neu-text leading-snug">
+                                  {job.fullImpact}
+                                </p>
+                              </div>
+
+                              {/* Right: Detailed Accomplishments */}
+                              <div className="lg:col-span-8">
+                                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-neu-text-muted mb-2 block">
+                                  Core Contributions & Technical Delivery
+                                </span>
+                                <ul className="space-y-2.5">
+                                  {job.bullets.map((bullet, bIdx) => (
+                                    <li key={bIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-neu-text-muted leading-relaxed font-light">
+                                      <span className="text-neu-accent font-bold mt-1 shrink-0">✦</span>
+                                      <span>{bullet}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <div className="text-neu-text-muted font-mono text-xs sm:text-sm flex-shrink-0 bg-neu-bg shadow-neu-inset px-3 py-1.5 rounded-lg w-fit">2022 - 2023</div>
-                </div>
-                <ul className="list-disc list-inside text-neu-text-muted space-y-2 font-light text-sm sm:text-base">
-                  <li>Rebuilt vendor platform in-house, cutting operational software costs significantly.</li>
-                  <li>Developed core business logic and database schemas for inventory and sales tracking.</li>
-                </ul>
-              </motion.div>
+                );
+              })}
             </motion.div>
           </div>
         </motion.div>
@@ -2223,8 +2444,6 @@ export default function Portfolio() {
           </div>
         </div>
       </motion.section>
-
-
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto py-12 border-t border-gray-300/50 dark:border-gray-700/50 text-center text-xs font-mono text-neu-text-muted">

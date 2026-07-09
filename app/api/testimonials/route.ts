@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getDb, saveDb } from '@/lib/db';
 import { testimonials as defaultTestimonials } from '@/lib/data';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const db = getDb();
   // Merge default with custom ones

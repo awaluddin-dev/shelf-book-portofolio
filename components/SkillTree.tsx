@@ -166,9 +166,9 @@ const SkillTreeNode = memo(function SkillTreeNode({
   onMouseEnter,
   onMouseLeave
 }: SkillNodeProps) {
-  let fillGradient = "url(#blue-cyan)";
-  if (node.category === "Infrastructure") fillGradient = "url(#emerald-teal)";
-  if (node.category === "AI & Integrations") fillGradient = "url(#purple-pink)";
+  let fillGradient = "url(#emerald-grad)";
+  if (node.category === "Infrastructure") fillGradient = "url(#blue-grad)";
+  if (node.category === "AI & Integrations") fillGradient = "url(#purple-grad)";
 
   return (
     <g
@@ -222,7 +222,7 @@ const SkillTreeNode = memo(function SkillTreeNode({
               ? "opacity-30 fill-current" 
               : "fill-current opacity-90"
         )}
-        fill={isDark ? '#f4f4f5' : '#18181b'}
+        fill={isDark ? '#EEEEEE' : '#112D4E'}
       >
         {shortTitle}
       </text>
@@ -309,24 +309,24 @@ export default function SkillTree({ isDark, isLoading }: { isDark: boolean; isLo
     switch (category) {
       case "Core Backend":
         return {
-          bg: "bg-blue-500/10 border-blue-500/30",
-          text: "text-blue-500 dark:text-blue-400",
-          stroke: "#3b82f6",
-          gradient: "from-blue-500 to-cyan-400"
+          bg: "bg-emerald-500/10 border-emerald-500/30 dark:border-emerald-500/40",
+          text: "text-emerald-500 dark:text-emerald-400",
+          stroke: "#10B981",
+          gradient: "from-emerald-500 to-emerald-700"
         };
       case "Infrastructure":
         return {
-          bg: "bg-emerald-500/10 border-emerald-500/30",
-          text: "text-emerald-500 dark:text-emerald-400",
-          stroke: "#10b981",
-          gradient: "from-emerald-500 to-teal-400"
+          bg: "bg-blue-500/10 border-blue-500/30 dark:border-blue-500/40",
+          text: "text-blue-500 dark:text-blue-400",
+          stroke: "#3B82F6",
+          gradient: "from-blue-500 to-blue-700"
         };
       default:
         return {
-          bg: "bg-purple-500/10 border-purple-500/30",
+          bg: "bg-purple-500/10 border-purple-500/30 dark:border-purple-500/40",
           text: "text-purple-500 dark:text-purple-400",
-          stroke: "#a855f7",
-          gradient: "from-purple-500 to-pink-400"
+          stroke: "#A855F7",
+          gradient: "from-purple-500 to-purple-700"
         };
     }
   }, []);
@@ -410,7 +410,7 @@ export default function SkillTree({ isDark, isLoading }: { isDark: boolean; isLo
     <div className="p-8 rounded-3xl bg-neu-bg shadow-neu relative overflow-hidden border border-white/5">
       {/* Background decoration elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-neu-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-neu-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6 mb-8">
         <div>
@@ -425,16 +425,16 @@ export default function SkillTree({ isDark, isLoading }: { isDark: boolean; isLo
         {/* Legend */}
         <div className="flex flex-wrap gap-4 text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">Core Backend</span>
+            <span className="w-3.5 h-3.5 rounded-full shadow-sm bg-emerald-500"></span>
+            <span className="text-neu-text font-medium">Core Backend</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">Infrastructure</span>
+            <span className="w-3.5 h-3.5 rounded-full shadow-sm bg-blue-500"></span>
+            <span className="text-neu-text font-medium">Infrastructure</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded-full bg-purple-500 shadow-sm"></span>
-            <span className="text-neu-text-muted">AI & Integrations</span>
+            <span className="w-3.5 h-3.5 rounded-full shadow-sm bg-purple-500"></span>
+            <span className="text-neu-text font-medium">AI & Integrations</span>
           </div>
         </div>
       </div>
@@ -450,17 +450,17 @@ export default function SkillTree({ isDark, isLoading }: { isDark: boolean; isLo
             className="w-full h-full absolute inset-0 z-0 overflow-visible"
           >
             <defs>
-              <linearGradient id="blue-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#22d3ee" />
+              <linearGradient id="emerald-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#10B981" />
+                <stop offset="100%" stopColor={isDark ? "#064E3B" : "#A7F3D0"} />
               </linearGradient>
-              <linearGradient id="emerald-teal" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#2dd4bf" />
+              <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor={isDark ? "#1E3A8A" : "#BFDBFE"} />
               </linearGradient>
-              <linearGradient id="purple-pink" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#f472b6" />
+              <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#A855F7" />
+                <stop offset="100%" stopColor={isDark ? "#581C87" : "#E9D5FF"} />
               </linearGradient>
             </defs>
 
@@ -473,7 +473,7 @@ export default function SkillTree({ isDark, isLoading }: { isDark: boolean; isLo
                   <path
                     d={conn.path}
                     fill="none"
-                    stroke={isDark ? '#27272a' : '#e4e4e7'}
+                    stroke={isDark ? '#393E46' : '#DBE2EF'}
                     strokeWidth={3}
                     className="transition-colors duration-300"
                   />

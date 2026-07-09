@@ -12,7 +12,7 @@ export default function AdminLogin() {
     e.preventDefault();
     if (password === 'admin123') {
       localStorage.setItem('isAdmin', 'true');
-      router.push('/admin/toggle-opportunities');
+      router.push('/admin/dashboard');
     } else {
       setError(true);
     }
