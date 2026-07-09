@@ -1,5 +1,6 @@
 'use client';
 
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'next-themes';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type ThemeContextType = {
@@ -15,31 +16,25 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState<boolean>(false);
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <ThemeContextWrapper>{children}</ThemeContextWrapper>
+    </NextThemesProvider>
+  );
+}
+
+function ThemeContextWrapper({ children }: { children: React.ReactNode }) {
+  const { theme, setTheme, resolvedTheme } = useNextTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        setIsDark(savedTheme === 'dark');
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setIsDark(true);
-      }
-    }, 0);
+    setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
+  const isDark = mounted ? resolvedTheme === 'dark' : false;
 
   const toggleTheme = () => {
-    setIsDark(prev => !prev);
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
   return (

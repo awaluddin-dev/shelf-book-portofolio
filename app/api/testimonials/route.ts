@@ -4,10 +4,19 @@ import { testimonials as defaultTestimonials } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const all = searchParams.get('all') === 'true';
+
   const db = getDb();
+  let dbTestimonials = db.testimonials || [];
+
+  if (!all) {
+    dbTestimonials = dbTestimonials.filter((t: any) => t.status === 'accepted');
+  }
+
   // Merge default with custom ones
-  return NextResponse.json({ testimonials: [...defaultTestimonials, ...(db.testimonials || [])] });
+  return NextResponse.json({ testimonials: [...defaultTestimonials, ...dbTestimonials] });
 }
 
 export async function POST(req: Request) {
@@ -23,7 +32,9 @@ export async function POST(req: Request) {
     photoUrl: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&q=80&w=200&h=200',
     testimonial: data.testimonial,
     relationship: data.relationship || 'Colleague',
-    tags: ['Community', 'Endorsement']
+    tags: ['Community', 'Endorsement'],
+    status: 'pending',
+    date: new Date().toISOString()
   });
   
   saveDb(db);

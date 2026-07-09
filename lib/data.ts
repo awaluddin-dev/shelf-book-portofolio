@@ -293,6 +293,7 @@ export interface Testimonial {
   testimonial: string;
   relationship: string;
   tags: string[];
+  status?: 'pending' | 'accepted' | 'rejected';
 }
 
 export const testimonials: Testimonial[] = [
