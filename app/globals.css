@@ -130,7 +130,9 @@ body *,
   animation: marquee 60s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee:hover,
+.animate-marquee:active,
+.animate-marquee:focus-within {
   animation-play-state: paused;
 }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
+
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp, Award, CheckCircle, Smile, Clock, Wrench, HandFist, Heart } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -174,7 +175,7 @@ export default function Portfolio() {
   const [isBannerMinimized, setIsBannerMinimized] = useState(false);
   const [focusedProject, setFocusedProject] = useState<typeof projects[0] | null>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
-  const [isDark, setIsDark] = useState<boolean>(false);
+   const [isDark, setIsDark] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const [chartType, setChartType] = useState<'temporal' | 'repository'>('temporal');
   const [hoveredMonth, setHoveredMonth] = useState<number | null>(null);
@@ -485,7 +486,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     setTimeout(() => {
-      if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined') {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
           setIsDark(savedTheme === 'dark');
@@ -1766,7 +1767,7 @@ export default function Portfolio() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-        <SkillTree isDark={isDark} isLoading={isLoading} />
+        <SkillTree isDark={isDark} isLoading={isLoading} /> 
         </motion.div>
 
       {/* Animated subtle divider with a centered 'leaf' icon */}
@@ -2761,7 +2762,7 @@ export default function Portfolio() {
                       <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
                         <Layers size={14} /> System Architecture
                       </h4>
-                      <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} />
+                      <ProjectArchitectureDiagram projectId={selectedProject.id} isDark={isDark} /> 
                     </div>
 
                     {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
