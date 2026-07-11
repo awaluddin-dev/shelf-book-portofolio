@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css'; // Global styles
-import { ThemeProvider } from '@/components/ThemeProvider';
+import { ThemeProvider } from '@/shared/ui/ThemeProvider';
 
 const inter = Inter({
   subsets: ['latin'],

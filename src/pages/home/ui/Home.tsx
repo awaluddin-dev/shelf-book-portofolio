@@ -3,171 +3,30 @@
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from 'react';
 import Image from 'next/image';
 
-import { useTheme } from '@/components/ThemeProvider';
+import { useTheme } from '@/shared/ui/ThemeProvider';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
 import { Search, X, BookOpen, Terminal, Code2, Database, Github, Linkedin, MapPin, Globe, Download, PenTool, Mail, Moon, Sun, ArrowRight, Book, BrainCircuit, Briefcase, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Activity, BarChart2, GitCommit, Quote, MessageSquare, Sparkles, Eye, ArrowLeft, Network, GitFork, Cpu, Layers, FileText, Filter, Leaf, ArrowUp, Calendar, Milestone, Compass, TrendingUp, Award, CheckCircle, Smile, Clock, Wrench, HandFist, Heart } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
-import { projects } from '@/lib/data';
-import { Testimonial } from '@/lib/data';
-import { cn } from '@/lib/utils';
+import { projects } from '@/entities/testimonial/model/data';
+import { Testimonial } from '@/entities/testimonial/model/data';
+import { cn } from '@/shared/lib/utils';
 
-import { getTechIconAndColor } from "@/lib/tech-icons";
-import SkillTree from "@/components/SkillTree";
-import ProjectArchitectureDiagram from "@/components/ProjectArchitectureDiagram";
-import { getTagProjectCount, getRelatedProjects, TECHNICAL_IMAGERY } from "@/lib/projects-data";
-import ProjectGalleryShowcase from "@/components/ProjectGalleryShowcase";
-import ProjectLifecycleTracker from "@/components/ProjectLifecycleTracker";
-import BookItem from "@/components/BookItem";
-import { legendLevels, roadmapItems } from "@/lib/roadmap-data";
-import { commitActivityData, repositoryBreakdownData } from "@/lib/github-data";
+import { getTechIconAndColor } from "@/shared/lib/tech-icons";
+import SkillTree from "@/entities/skill/ui/SkillTree";
+import ProjectArchitectureDiagram from "@/entities/project/ui/ProjectArchitectureDiagram";
+import { getTagProjectCount, getRelatedProjects, TECHNICAL_IMAGERY } from "@/entities/project/model/projects-data";
+import ProjectGalleryShowcase from "@/entities/project/ui/ProjectGalleryShowcase";
+import ProjectLifecycleTracker from "@/entities/project/ui/ProjectLifecycleTracker";
+import BookItem from "@/entities/project/ui/BookItem";
+import { legendLevels, roadmapItems } from "@/entities/skill/model/roadmap-data";
+import { experiencesList } from '@/entities/experience/model/experience-data';
+import { skillCategoriesList } from '@/entities/skill/model/skill-data';
+import { commitActivityData, repositoryBreakdownData } from "@/entities/project/model/github-data";
 
-const experiencesList = [
-  {
-    years: "2025 - Present",
-    duration: "Ongoing",
-    company: "PT Serasi Autoraya (SERA)",
-    role: "Backend Developer",
-    stack: "Node.js & Go",
-    teaser: "Real-time SAP & Azure Bus Sync",
-    fullImpact: "Streamlined massive corporate log pipelines and payroll synchronizations with robust event-driven microservices.",
-    bullets: [
-      "Migrating legacy .NET Driver Management System to highly concurrent Node.js microservices.",
-      "Integrating SAP, Mekari Talenta, and FMS 2.0 via Azure Service Bus for critical payroll and logistics data queues.",
-      "Achieved sub-second data synchronization latencies under heavy event concurrency."
-    ]
-  },
-  {
-    years: "2024 - 2025",
-    duration: "1 year",
-    company: "Telkomsel (Vendor)",
-    role: "Software Engineer",
-    stack: "Kubernetes & IoT",
-    teaser: "Slashed Cloud Costs by $20K+/yr",
-    fullImpact: "Slashed server infrastructure spend by 90% while running a bulletproof bare-metal Kubernetes IoT pipeline.",
-    bullets: [
-      "Built and engineered bare-metal Kubernetes clusters with custom-tuned IoT monitoring layers.",
-      "Saved between 1,800 to 2,500 USD per month by transitioning architecture away from managed public cloud providers.",
-      "Maintained 99.99% system availability under intense device data packet polling."
-    ]
-  },
-  {
-    years: "2023 - 2024",
-    duration: "1 year",
-    company: "PT Hensel Davest Indonesia",
-    role: "Full Stack Developer",
-    stack: "Laravel & NestJS",
-    teaser: "OJK & BI Regulatory Compliance",
-    fullImpact: "Successfully achieved strict banking and lending regulatory approvals single-handedly under extreme deadlines.",
-    bullets: [
-      "Led solo compliance engineering to meet OJK & BI regulatory standards, securing active fintech licenses.",
-      "Rewrote the core P2P lending Laravel monolith into modular NestJS microservices, achieving a 4x increase in API throughput.",
-      "Designed secure database architectures safeguarding sensitive transaction records and personal financial data."
-    ]
-  },
-  {
-    years: "2022 - 2023",
-    duration: "1 year",
-    company: "PT Maccon Generasi Mandiri",
-    role: "Full Stack Developer",
-    stack: "Laravel, Vue & Postgres",
-    teaser: "Eliminated Vendor Licensing Costs",
-    fullImpact: "Rebuilt core proprietary vendor tools in-house, ensuring 100% intellectual property ownership and 0% vendor fees.",
-    bullets: [
-      "Reconstructed external vendor systems from scratch, saving substantial annual licensing and maintenance fees.",
-      "Developed end-to-end database schemas and business logic for factory inventory, sales pipeline, and delivery tracking.",
-      "Designed dynamic Vue.js frontends paired with PostgreSQL for real-time warehouse data visualization."
-    ]
-  }
-];
 
-const skillCategoriesList = [
-  {
-    title: "CORE BACKEND",
-    skills: [
-      {
-        name: "Node.js / TypeScript",
-        subtext: "Production · 3+ yrs · SERA, Telkomsel, HDI",
-        status: "Production-ready"
-      },
-      {
-        name: "NestJS",
-        subtext: "Production · 2+ yrs · Microservices, SAP integration",
-        status: "Production-ready"
-      },
-      {
-        name: "Go",
-        subtext: "Production · 1 yr · IoT monitoring system",
-        status: "Production-ready"
-      },
-      {
-        name: "REST API / Event-Driven",
-        subtext: "Production · Applied across all roles",
-        status: "Production-ready"
-      },
-      {
-        name: "Python",
-        subtext: "In use · LangGraph worker, scripting",
-        status: "In Use"
-      }
-    ]
-  },
-  {
-    title: "AI & AUTOMATION",
-    skills: [
-      {
-        name: "LangGraph",
-        subtext: "Building · AuraFlow AI project",
-        status: "Building"
-      },
-      {
-        name: "LangChain",
-        subtext: "In use · Agent orchestration",
-        status: "In Use"
-      },
-      {
-        name: "OpenAI / Gemini API",
-        subtext: "In use · LLM integration, multi-provider router",
-        status: "In Use"
-      },
-      {
-        name: "Groq / Azure OpenAI",
-        subtext: "Building · Fallback router design",
-        status: "Building"
-      }
-    ]
-  },
-  {
-    title: "INFRASTRUCTURE & DATA",
-    skills: [
-      {
-        name: "PostgreSQL / SQL Server",
-        subtext: "Production · 3+ yrs · SERA, HDI, Maccon",
-        status: "Production-ready"
-      },
-      {
-        name: "Redis / BullMQ",
-        subtext: "Production · Queue-based async pipelines",
-        status: "Production-ready"
-      },
-      {
-        name: "Docker / Kubernetes",
-        subtext: "Production · Bare-metal K8s at Telkomsel",
-        status: "Production-ready"
-      },
-      {
-        name: "Azure (APIM, Service Bus, Key Vault)",
-        subtext: "Production · Enterprise integration at SERA",
-        status: "Production-ready"
-      },
-      {
-        name: "MongoDB",
-        subtext: "In use · SERA driver management system",
-        status: "In Use"
-      }
-    ]
-  }
-];
+
+
 
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState('');

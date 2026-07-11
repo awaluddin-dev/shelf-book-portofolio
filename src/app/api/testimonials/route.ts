@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getDb, saveDb } from '@/lib/db';
-import { testimonials as defaultTestimonials } from '@/lib/data';
+import { getDb, saveDb } from '@/shared/lib/db';
+import { testimonials as defaultTestimonials } from '@/entities/testimonial/model/data';
 
 export const dynamic = 'force-dynamic';
 

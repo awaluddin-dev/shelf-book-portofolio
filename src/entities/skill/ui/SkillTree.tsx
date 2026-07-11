@@ -1,7 +1,7 @@
 import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Network } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 interface SkillNode {
   id: string;

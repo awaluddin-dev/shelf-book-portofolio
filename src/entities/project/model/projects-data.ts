@@ -1,4 +1,4 @@
-import { projects } from '@/lib/data';
+import { projects } from '@/entities/testimonial/model/data';
 
 export const getTagProjectCount = (tag: string) => {
   return projects.filter(p => p.tags.some(t => t.toLowerCase() === tag.toLowerCase())).length;

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PenTool, Eye, X } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { TECHNICAL_IMAGERY } from '@/lib/projects-data';
+import { TECHNICAL_IMAGERY } from '@/entities/project/model/projects-data';
 
 export default function ProjectGalleryShowcase({ projectId }: { projectId: string }) {
   const [activeTab, setActiveTab] = useState<'featured' | 'blueprint' | 'metrics'>('featured');

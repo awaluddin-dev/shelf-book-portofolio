@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Code2, Terminal, Cpu, Database, Play, Compass, Layers, Activity, Milestone } from 'lucide-react';
 
 export default function ProjectLifecycleTracker({ phases, spineColor }: { phases: any[]; spineColor: string }) {

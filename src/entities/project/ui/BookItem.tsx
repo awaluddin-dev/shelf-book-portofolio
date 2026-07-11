@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Code2 } from "lucide-react";
-import { projects } from '@/lib/data';
+import { projects } from '@/entities/testimonial/model/data';
 
 interface BookItemProps {
   project: typeof projects[0];

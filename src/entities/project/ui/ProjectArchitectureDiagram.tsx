@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 import { Network, Server, ArrowRight, ArrowDown } from 'lucide-react';
 export default function ProjectArchitectureDiagram({ projectId, isDark }: { projectId: string; isDark: boolean }) {
   const [hoveredStep, setHoveredStep] = useState<string | null>(null);

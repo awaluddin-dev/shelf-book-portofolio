@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Briefcase, LogOut, LayoutDashboard, Check, X, MessageSquare, ChevronRight, ChevronLeft, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
-import { Testimonial } from '@/lib/data';
+import { cn } from '@/shared/lib/utils';
+import { Testimonial } from '@/entities/testimonial/model/data';
 
 export default function AdminDashboard() {
   const [status, setStatus] = useState<'available' | 'busy'>('available');
