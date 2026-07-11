@@ -764,7 +764,7 @@ export default function Portfolio() {
                           .getElementById("projects")
                           ?.scrollIntoView({ behavior: "smooth" });
                       }}
-                      className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text bg-neu-bg shadow-neu border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
+                      className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
                     >
                       <BookOpen
                         size={14}
@@ -781,7 +781,7 @@ export default function Portfolio() {
                           "_blank",
                         );
                       }}
-                      className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text bg-neu-bg shadow-neu border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
+                      className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
                     >
                       <Download
                         size={14}
@@ -864,7 +864,7 @@ export default function Portfolio() {
                       href="https://github.com/awaluddin-dev"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group"
+                      className="flex items-center justify-between p-2.5 rounded-xl glass-card-inset hover:text-neu-accent transition-all group"
                     >
                       <span className="font-semibold text-neu-text">
                         GitHub
@@ -883,7 +883,7 @@ export default function Portfolio() {
                       href="https://linkedin.com/in/awaluddin0001"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group"
+                      className="flex items-center justify-between p-2.5 rounded-xl glass-card-inset hover:text-neu-accent transition-all group"
                     >
                       <span className="font-semibold text-neu-text">
                         LinkedIn
@@ -902,7 +902,7 @@ export default function Portfolio() {
                       href="https://dev.to/awaluddin"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group"
+                      className="flex items-center justify-between p-2.5 rounded-xl glass-card-inset hover:text-neu-accent transition-all group"
                     >
                       <span className="font-semibold text-neu-text">
                         Dev.to
@@ -920,7 +920,7 @@ export default function Portfolio() {
 
                     <button
                       onClick={() => setShowInquiryModal(true)}
-                      className="w-full flex items-center justify-between p-2.5 rounded-xl bg-neu-bg shadow-neu-inset hover:text-neu-accent transition-all group text-left cursor-pointer border-none outline-none"
+                      className="w-full flex items-center justify-between p-2.5 rounded-xl glass-card-inset hover:text-neu-accent transition-all group text-left cursor-pointer border-none outline-none"
                     >
                       <span className="font-semibold text-neu-text">
                         Inquiries
@@ -1044,7 +1044,7 @@ export default function Portfolio() {
                   )}
                 >
                   {/* Left: Icon inside a soft circle */}
-                  <div className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-neu-bg shadow-neu-inset flex items-center justify-center border border-white/5">
+                  <div className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card-inset flex items-center justify-center border border-white/5">
                     {item.icon}
                   </div>
 
@@ -1102,7 +1102,7 @@ export default function Portfolio() {
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-3 rounded-xl leading-5 bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 sm:text-sm transition-all"
+                className="block w-full pl-10 pr-3 py-3 rounded-xl leading-5 glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 sm:text-sm transition-all"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -1124,7 +1124,7 @@ export default function Portfolio() {
                   {!selectedCategory && (
                     <motion.div
                       layoutId="activeCategoryDesktop"
-                      className="absolute inset-0 bg-neu-bg shadow-neu rounded-xl"
+                      className="absolute inset-0 glass-card rounded-xl"
                       transition={{
                         type: "spring",
                         stiffness: 380,
@@ -1148,7 +1148,7 @@ export default function Portfolio() {
                     {selectedCategory === cat && (
                       <motion.div
                         layoutId="activeCategoryDesktop"
-                        className="absolute inset-0 bg-neu-bg shadow-neu rounded-xl"
+                        className="absolute inset-0 glass-card rounded-xl"
                         transition={{
                           type: "spring",
                           stiffness: 380,
@@ -1166,7 +1166,7 @@ export default function Portfolio() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="appearance-none w-full md:w-auto pl-4 pr-10 py-3 rounded-xl bg-neu-bg shadow-neu text-neu-text text-xs font-mono cursor-pointer focus:outline-none transition-all hover:text-neu-accent text-center md:text-left"
+                  className="appearance-none w-full md:w-auto pl-4 pr-10 py-3 rounded-xl glass-card text-neu-text text-xs font-mono cursor-pointer focus:outline-none transition-all hover:text-neu-accent text-center md:text-left"
                   style={{ WebkitAppearance: "none", MozAppearance: "none" }}
                 >
                   <option
@@ -1196,7 +1196,7 @@ export default function Portfolio() {
               {/* Mobile Filter Button */}
               <button
                 onClick={() => setIsFilterModalOpen(true)}
-                className="md:hidden flex items-center justify-center p-3 rounded-xl bg-neu-bg shadow-neu text-neu-text-muted hover:text-neu-accent transition-colors"
+                className="md:hidden flex items-center justify-center p-3 rounded-xl glass-card text-neu-text-muted hover:text-neu-accent transition-colors"
               >
                 <Filter size={20} />
               </button>
@@ -1225,7 +1225,7 @@ export default function Portfolio() {
                     <h3 className="text-lg font-bold">Filter Projects</h3>
                     <button
                       onClick={() => setIsFilterModalOpen(false)}
-                      className="p-2 rounded-full bg-neu-bg shadow-neu-inset text-neu-text-muted hover:text-neu-accent"
+                      className="p-2 rounded-full glass-card-inset text-neu-text-muted hover:text-neu-accent"
                     >
                       <X size={20} />
                     </button>
@@ -1239,8 +1239,8 @@ export default function Portfolio() {
                       className={cn(
                         "px-5 py-3 text-sm font-bold uppercase tracking-wider rounded-xl transition-all text-left",
                         !selectedCategory
-                          ? "bg-neu-bg shadow-neu text-neu-accent"
-                          : "text-neu-text-muted bg-neu-bg shadow-neu-inset",
+                          ? "glass-card text-neu-accent"
+                          : "text-neu-text-muted glass-card-inset",
                       )}
                     >
                       All Projects
@@ -1255,8 +1255,8 @@ export default function Portfolio() {
                         className={cn(
                           "px-5 py-3 text-sm font-bold uppercase tracking-wider rounded-xl transition-all text-left",
                           selectedCategory === cat
-                            ? "bg-neu-bg shadow-neu text-neu-accent"
-                            : "text-neu-text-muted bg-neu-bg shadow-neu-inset",
+                            ? "glass-card text-neu-accent"
+                            : "text-neu-text-muted glass-card-inset",
                         )}
                       >
                         {cat}
@@ -1289,14 +1289,14 @@ export default function Portfolio() {
                 <>
                   <button
                     onClick={() => scrollShelf("left")}
-                    className="absolute left-4 top-[45%] -translate-y-1/2 z-20 p-3.5 rounded-full bg-neu-bg shadow-neu hover:shadow-neu-sm transition-all text-neu-text-muted hover:text-neu-accent active:scale-95 flex items-center justify-center border border-white/5"
+                    className="absolute left-4 top-[45%] -translate-y-1/2 z-20 p-3.5 rounded-full glass-card hover:shadow-neu-sm transition-all text-neu-text-muted hover:text-neu-accent active:scale-95 flex items-center justify-center border border-white/5"
                     aria-label="Scroll Left"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
                     onClick={() => scrollShelf("right")}
-                    className="absolute right-4 top-[45%] -translate-y-1/2 z-20 p-3.5 rounded-full bg-neu-bg shadow-neu hover:shadow-neu-sm transition-all text-neu-text-muted hover:text-neu-accent active:scale-95 flex items-center justify-center border border-white/5"
+                    className="absolute right-4 top-[45%] -translate-y-1/2 z-20 p-3.5 rounded-full glass-card hover:shadow-neu-sm transition-all text-neu-text-muted hover:text-neu-accent active:scale-95 flex items-center justify-center border border-white/5"
                     aria-label="Scroll Right"
                   >
                     <ChevronRight size={20} />
@@ -1454,7 +1454,7 @@ export default function Portfolio() {
                   >
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="px-3 py-1 bg-neu-bg shadow-neu-inset rounded-xl text-xs font-mono font-bold text-neu-accent uppercase tracking-wider">
+                        <span className="px-3 py-1 glass-card-inset rounded-xl text-xs font-mono font-bold text-neu-accent uppercase tracking-wider">
                           {focusedProject.category}
                         </span>
                         <span className="text-neu-text-muted text-xs font-mono">
@@ -1478,7 +1478,7 @@ export default function Portfolio() {
                           return (
                             <div
                               key={tag}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neu-bg shadow-neu-inset text-[10px] font-mono font-semibold text-neu-text-muted hover:scale-[1.02] transition-transform"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-card-inset text-[10px] font-mono font-semibold text-neu-text-muted hover:scale-[1.02] transition-transform"
                             >
                               <span className={cn("flex-shrink-0", color)}>
                                 {icon}
@@ -1501,7 +1501,7 @@ export default function Portfolio() {
                               (stat: any, idx: number) => (
                                 <div
                                   key={idx}
-                                  className="p-3 rounded-2xl bg-neu-bg shadow-neu-inset flex flex-col sm:flex-col justify-center items-center text-center"
+                                  className="p-3 rounded-2xl glass-card-inset flex flex-col sm:flex-col justify-center items-center text-center"
                                 >
                                   <span className="text-base md:text-lg font-bold font-display text-neu-text tracking-tight">
                                     {stat.value}
@@ -1526,7 +1526,7 @@ export default function Portfolio() {
                       </button>
                       <button
                         onClick={() => setFocusedProject(null)}
-                        className="w-full sm:w-auto py-4 sm:py-3.5 px-6 rounded-xl font-bold text-neu-text bg-neu-bg shadow-neu hover:shadow-neu-sm active:scale-95 transition-all text-sm sm:text-xs text-center flex items-center justify-center gap-2 border border-gray-300/10"
+                        className="w-full sm:w-auto py-4 sm:py-3.5 px-6 rounded-xl font-bold text-neu-text glass-card hover:shadow-neu-sm active:scale-95 transition-all text-sm sm:text-xs text-center flex items-center justify-center gap-2 border border-gray-300/10"
                       >
                         <ArrowLeft size={16} className="sm:w-3.5 sm:h-3.5" />{" "}
                         Exit Spotlight
@@ -1539,7 +1539,7 @@ export default function Portfolio() {
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-neu-bg shadow-neu text-neu-accent/60 mb-6 border border-white/5"
+                    className="inline-flex items-center justify-center w-16 h-16 rounded-3xl glass-card text-neu-accent/60 mb-6 border border-white/5"
                   >
                     <Search size={28} />
                   </motion.div>
@@ -1588,7 +1588,7 @@ export default function Portfolio() {
                 </motion.div>
               )}
               {/* The visual "shelf" plank */}
-              <div className="w-full h-4 bg-neu-bg shadow-neu mt-4 rounded-xl relative z-0"></div>
+              <div className="w-full h-4 glass-card mt-4 rounded-xl relative z-0"></div>
             </div>
           </div>
         </motion.div>
@@ -1622,7 +1622,7 @@ export default function Portfolio() {
             </div>
 
             {/* Legend with Tooltips */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 font-mono text-xs bg-neu-bg shadow-neu-inset px-4 py-2.5 rounded-2xl border border-white/5 select-none self-start md:self-auto z-10">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 font-mono text-xs glass-card-inset px-4 py-2.5 rounded-2xl border border-white/5 select-none self-start md:self-auto z-10">
               <div className="relative group cursor-help flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 <span className="text-neu-text font-medium text-[11px] sm:text-xs">
@@ -1680,7 +1680,7 @@ export default function Portfolio() {
             {skillCategoriesList.map((category, catIdx) => (
               <div
                 key={catIdx}
-                className="p-6 sm:p-8 rounded-3xl bg-neu-bg shadow-neu border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between"
+                className="p-6 sm:p-8 rounded-3xl glass-card border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between"
               >
                 <div>
                   <h3 className="font-mono text-xs font-extrabold uppercase tracking-widest text-neu-accent border-b border-gray-200/10 dark:border-zinc-800/30 pb-3.5 mb-4">
@@ -1762,10 +1762,10 @@ export default function Portfolio() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Writing Card */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all flex flex-col justify-between">
+            <div className="p-5 sm:p-8 rounded-3xl glass-card group hover:shadow-neu-sm transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                  <div className="p-2 glass-card-inset rounded-lg text-neu-accent">
                     <PenTool size={20} />
                   </div>
                   <h3 className="text-xl font-bold text-neu-text">Writing</h3>
@@ -1786,9 +1786,9 @@ export default function Portfolio() {
             </div>
 
             {/* Current Work Card */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+            <div className="p-5 sm:p-8 rounded-3xl glass-card group hover:shadow-neu-sm transition-all">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                <div className="p-2 glass-card-inset rounded-lg text-neu-accent">
                   <Briefcase size={20} />
                 </div>
                 <h3 className="text-xl font-bold text-neu-text">
@@ -1800,15 +1800,19 @@ export default function Portfolio() {
                   At Astra Group
                 </strong>
                 , shipping Node.js microservices for enterprise fleet and driver
-                management. Parallel focus: building AuraFlow AI as primary
-                portfolio project for remote backend roles.
+                management.
+                <strong className="text-neu-text font-medium">
+                  Parallel focus:
+                </strong>{" "}
+                building AuraFlow AI as primary portfolio project for remote
+                backend roles.
               </p>
             </div>
 
             {/* Currently Learning Card */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu group hover:shadow-neu-sm transition-all">
+            <div className="p-5 sm:p-8 rounded-3xl glass-card group hover:shadow-neu-sm transition-all">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-neu-bg shadow-neu-inset rounded-lg text-neu-accent">
+                <div className="p-2 glass-card-inset rounded-lg text-neu-accent">
                   <BrainCircuit size={20} />
                 </div>
                 <h3 className="text-xl font-bold text-neu-text">
@@ -1848,7 +1852,7 @@ export default function Portfolio() {
           </div>
 
           {/* Timeline Graph Visualization */}
-          <div className="p-6 sm:p-10 rounded-3xl bg-neu-bg shadow-neu mb-10 overflow-hidden">
+          <div className="p-6 sm:p-10 rounded-3xl glass-card mb-10 overflow-hidden">
             {/* Timeline track (Horizontal on desktop, vertical list on narrow screens) */}
             <div className="relative my-8 px-4 hidden md:block">
               {/* Connecting Line */}
@@ -1952,8 +1956,8 @@ export default function Portfolio() {
                     className={cn(
                       "px-3 py-2 rounded-xl text-xs font-mono font-bold uppercase transition-all flex items-center gap-1.5 border cursor-pointer",
                       isSelected
-                        ? "bg-neu-bg shadow-neu-inset text-neu-accent border-neu-accent/30"
-                        : "bg-neu-bg shadow-neu border-transparent text-neu-text-muted hover:text-neu-text",
+                        ? "glass-card-inset text-neu-accent border-neu-accent/30"
+                        : "glass-card border-transparent text-neu-text-muted hover:text-neu-text",
                     )}
                   >
                     <span className="opacity-60">{item.quarter}:</span>
@@ -1971,12 +1975,12 @@ export default function Portfolio() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.35, ease: "easeInOut" }}
-                className="mt-6 p-6 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/30 dark:border-gray-800/40 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                className="mt-6 p-6 sm:p-8 rounded-3xl glass-card-inset border border-gray-300/30 dark:border-gray-800/40 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
               >
                 {/* Tech Info */}
                 <div className="lg:col-span-7 space-y-5">
                   <div className="flex items-center gap-3">
-                    <div className="p-3.5 rounded-2xl bg-neu-bg shadow-neu text-neu-accent">
+                    <div className="p-3.5 rounded-2xl glass-card text-neu-accent">
                       {roadmapItems[selectedRoadmapIndex].icon}
                     </div>
                     <div>
@@ -2094,7 +2098,7 @@ export default function Portfolio() {
               stiffness: 200,
             }}
           >
-            <div className="p-2.5 rounded-full bg-neu-bg shadow-neu border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
+            <div className="p-2.5 rounded-full glass-card border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
               <Leaf size={16} className="animate-pulse" />
             </div>
           </motion.div>
@@ -2128,7 +2132,7 @@ export default function Portfolio() {
             </div>
 
             {/* Git Activity & Contribution Dashboard */}
-            <div className="p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu-inset space-y-6 max-w-full overflow-hidden">
+            <div className="p-5 sm:p-8 rounded-3xl glass-card-inset space-y-6 max-w-full overflow-hidden">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-300/30 dark:border-gray-700/30 pb-6">
                 <div>
                   <div className="flex items-center gap-2 text-neu-accent mb-1">
@@ -2392,17 +2396,17 @@ export default function Portfolio() {
 
                   {/* Heatmap Stats */}
                   <div className="flex flex-wrap gap-4 text-xs font-mono">
-                    <div className="px-3 py-1 rounded-lg bg-neu-bg shadow-neu-sm">
+                    <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">Total: </span>
                       <span className="text-neu-accent font-bold">
                         2,684 commits
                       </span>
                     </div>
-                    <div className="px-3 py-1 rounded-lg bg-neu-bg shadow-neu-sm">
+                    <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">Max Streak: </span>
                       <span className="text-green-500 font-bold">42 days</span>
                     </div>
-                    <div className="px-3 py-1 rounded-lg bg-neu-bg shadow-neu-sm">
+                    <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">
                         Avg Intensity:{" "}
                       </span>
@@ -2414,7 +2418,7 @@ export default function Portfolio() {
                 {/* Heatmap Grid Wrapper */}
                 <div
                   ref={heatmapRef}
-                  className="w-full relative p-3 sm:p-5 rounded-2xl bg-neu-bg shadow-neu-inset overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className="w-full relative p-3 sm:p-5 rounded-2xl glass-card-inset overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                   <div className="min-w-[740px] flex flex-col pt-6">
                     <div className="flex w-full">
@@ -2686,7 +2690,7 @@ export default function Portfolio() {
             </div>
 
             <motion.div
-              className="mt-10 rounded-3xl bg-neu-bg shadow-neu-inset p-4 sm:p-6 md:p-8 space-y-1 relative"
+              className="mt-10 rounded-3xl glass-card-inset p-4 sm:p-6 md:p-8 space-y-1 relative"
               variants={{
                 hidden: { opacity: 0 },
                 show: {
@@ -2876,7 +2880,7 @@ export default function Portfolio() {
               <div
                 key={`${t.id}-dup-${index}`}
                 className={cn(
-                  "flex-shrink-0 w-[85vw] sm:w-[440px] max-w-[400px] sm:max-w-none p-5 sm:p-8 rounded-3xl bg-neu-bg shadow-neu relative flex flex-col justify-between group transition-all duration-500 ease-out border border-white/5",
+                  "flex-shrink-0 w-[85vw] sm:w-[440px] max-w-[400px] sm:max-w-none p-5 sm:p-8 rounded-3xl glass-card relative flex flex-col justify-between group transition-all duration-500 ease-out border border-white/5",
                   "transform-gpu perspective-1000",
                   // Alternating rotation to create a natural 3D cylindrical rotation look
                   index % 2 === 0
@@ -2893,12 +2897,12 @@ export default function Portfolio() {
 
                 <div>
                   {/* Relationship Badge */}
-                  <div className="mb-6 inline-flex px-3 py-1 rounded-full bg-neu-bg shadow-neu-inset text-[10px] font-mono text-neu-accent font-semibold tracking-wide">
+                  <div className="mb-6 inline-flex px-3 py-1 rounded-full glass-card-inset text-[10px] font-mono text-neu-accent font-semibold tracking-wide">
                     ✦ {t.relationship}
                   </div>
 
                   {/* Testimonial Quote Content */}
-                  <div className="mb-6 p-5 rounded-2xl bg-neu-bg shadow-neu-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative">
+                  <div className="mb-6 p-5 rounded-2xl glass-card-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative">
                     &ldquo;{t.testimonial}&rdquo;
                   </div>
                 </div>
@@ -2906,7 +2910,7 @@ export default function Portfolio() {
                 <div>
                   {/* User Identity Footer of Card */}
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-300/30 dark:border-gray-700/30">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-neu-accent bg-neu-bg shadow-neu-sm flex-shrink-0 flex items-center justify-center">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-neu-accent glass-card-sm flex-shrink-0 flex items-center justify-center">
                       <span className="text-sm font-bold text-neu-text tracking-widest uppercase">
                         {t.name
                           .split(" ")
@@ -2933,7 +2937,7 @@ export default function Portfolio() {
                     {t.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2.5 py-1 bg-neu-bg shadow-neu-inset text-[10px] font-mono font-medium rounded-lg text-neu-text-muted"
+                        className="px-2.5 py-1 glass-card-inset text-[10px] font-mono font-medium rounded-lg text-neu-text-muted"
                       >
                         #{tag}
                       </span>
@@ -3151,7 +3155,7 @@ export default function Portfolio() {
                           return (
                             <span
                               key={tag}
-                              className="px-4 py-2 bg-neu-bg shadow-neu-sm text-neu-text rounded-xl text-xs font-mono font-medium flex items-center gap-2 hover:scale-[1.02] transition-transform"
+                              className="px-4 py-2 glass-card-sm text-neu-text rounded-xl text-xs font-mono font-medium flex items-center gap-2 hover:scale-[1.02] transition-transform"
                             >
                               {tag}{" "}
                               <span className="text-neu-accent font-bold text-[10px]">
@@ -3197,7 +3201,7 @@ export default function Portfolio() {
                               {selectedProject.stats.map((stat, idx) => (
                                 <div
                                   key={idx}
-                                  className="p-5 rounded-2xl bg-neu-bg shadow-neu flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"
+                                  className="p-5 rounded-2xl glass-card flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"
                                 >
                                   <span className="text-2xl sm:text-3xl font-bold font-display text-neu-text tracking-tight mb-1">
                                     {stat.value}
@@ -3384,7 +3388,7 @@ export default function Portfolio() {
                               e.stopPropagation();
                               setSelectedProject(proj);
                             }}
-                            className="p-5 rounded-2xl bg-neu-bg shadow-neu hover:shadow-neu-sm border border-gray-300/10 dark:border-zinc-800 cursor-pointer group hover:scale-[1.01] active:scale-95 transition-all flex items-center gap-4 text-left"
+                            className="p-5 rounded-2xl glass-card hover:shadow-neu-sm border border-gray-300/10 dark:border-zinc-800 cursor-pointer group hover:scale-[1.01] active:scale-95 transition-all flex items-center gap-4 text-left"
                           >
                             <div
                               className={cn(

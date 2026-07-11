@@ -20,9 +20,9 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-neu-bg flex items-center justify-center p-6 text-neu-text">
-      <div className="bg-neu-bg shadow-neu w-full max-w-md rounded-3xl p-8 border border-white/5">
+      <div className="glass-card w-full max-w-md rounded-3xl p-8 border border-white/5">
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-neu-bg shadow-neu-inset flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full glass-card-inset flex items-center justify-center">
             <Lock className="text-neu-accent" size={24} />
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function AdminLogin() {
                 setPassword(e.target.value);
                 setError(false);
               }}
-              className="w-full px-4 py-3 bg-neu-bg shadow-neu-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent"
+              className="w-full px-4 py-3 glass-card-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent"
               placeholder="Enter password..."
             />
             {error && <p className="text-red-500 text-xs mt-2">Incorrect password. Try &apos;admin123&apos;</p>}

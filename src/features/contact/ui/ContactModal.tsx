@@ -68,7 +68,7 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     type="text" 
                     required 
                     placeholder="E.g., Sarah Jenkins" 
-                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
+                    className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
                   />
                 </div>
                 <div>
@@ -77,13 +77,13 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     type="email" 
                     required 
                     placeholder="E.g., sarah@company.com" 
-                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
+                    className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Project Type</label>
                   <select 
-                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu text-neu-text focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm"
+                    className="w-full px-4 py-3 rounded-xl glass-card text-neu-text focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm"
                   >
                     <option value="contract">Freelance / Contract Project</option>
                     <option value="fulltime">Full-time Opportunity</option>
@@ -97,7 +97,7 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     rows={4} 
                     required 
                     placeholder="Briefly describe your project goals, stack, or role details..." 
-                    className="w-full px-4 py-3 rounded-xl bg-neu-bg shadow-neu-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20 text-sm"
+                    className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20 text-sm"
                   ></textarea>
                 </div>
                 

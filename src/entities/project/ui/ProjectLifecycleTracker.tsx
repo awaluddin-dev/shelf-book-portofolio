@@ -45,7 +45,7 @@ export default function ProjectLifecycleTracker({ phases, spineColor }: { phases
   };
 
   return (
-    <div className="p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
+    <div className="p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
       <div className="flex items-center justify-between mb-6">
         <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
           <Milestone size={14} className="text-neu-accent" /> Lifecycle & Milestones

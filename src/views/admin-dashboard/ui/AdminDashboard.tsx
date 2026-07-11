@@ -167,9 +167,9 @@ export default function AdminDashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Opportunities Card */}
-            <div className="bg-neu-bg shadow-neu rounded-3xl p-8 border border-white/5">
+            <div className="glass-card rounded-3xl p-8 border border-white/5">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-neu-bg shadow-neu-inset flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full glass-card-inset flex items-center justify-center">
                   <Briefcase className="text-neu-accent" size={20} />
                 </div>
                 <div>
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
                   <p className="text-xs text-neu-text-muted font-mono">Manage availability status</p>
                 </div>
               </div>
-              <div className="p-6 bg-neu-bg shadow-neu-inset rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-6 glass-card-inset rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className={cn(
                   "text-sm font-bold transition-colors duration-300",
                   status === 'available' ? "text-emerald-500" : "text-amber-500"
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
             </div>
             
             {/* Stat Card placeholder if needed */}
-            <div className="bg-neu-bg shadow-neu rounded-3xl p-8 border border-white/5 flex flex-col justify-center">
+            <div className="glass-card rounded-3xl p-8 border border-white/5 flex flex-col justify-center">
               <div className="text-sm text-neu-text-muted font-mono mb-2">Total Testimonials</div>
               <div className="text-4xl font-display font-bold text-neu-text">{testimonials.length}</div>
               <div className="text-xs text-neu-accent mt-2">{testimonials.filter((t: any) => t.status === 'pending').length} pending review</div>
@@ -207,13 +207,13 @@ export default function AdminDashboard() {
           </div>
 
           {/* Testimonials Table */}
-          <div className="bg-neu-bg shadow-neu rounded-3xl overflow-hidden border border-white/5">
+          <div className="glass-card rounded-3xl overflow-hidden border border-white/5">
             <div className="p-6 border-b border-gray-200 dark:border-zinc-800">
               <h2 className="text-lg font-bold">Testimonials Review</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-neu-bg shadow-neu-inset text-xs font-mono uppercase text-neu-text-muted">
+                <thead className="glass-card-inset text-xs font-mono uppercase text-neu-text-muted">
                   <tr>
                     <th className="px-6 py-4 font-bold">Name / Company</th>
                     <th className="px-6 py-4 font-bold">Status</th>
@@ -250,14 +250,14 @@ export default function AdminDashboard() {
                           <>
                             <button 
                               onClick={(e) => handleTestimonialAction(e, t.id, 'accepted')}
-                              className="p-2 rounded-xl bg-neu-bg shadow-neu text-emerald-500 hover:scale-105 active:scale-95 transition-all"
+                              className="p-2 rounded-xl glass-card text-emerald-500 hover:scale-105 active:scale-95 transition-all"
                               title="Accept"
                             >
                               <Check size={16} />
                             </button>
                             <button 
                               onClick={(e) => handleTestimonialAction(e, t.id, 'rejected')}
-                              className="p-2 rounded-xl bg-neu-bg shadow-neu text-red-500 hover:scale-105 active:scale-95 transition-all"
+                              className="p-2 rounded-xl glass-card text-red-500 hover:scale-105 active:scale-95 transition-all"
                               title="Reject"
                             >
                               <X size={16} />
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
               <X size={20} />
             </button>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-neu-bg shadow-neu-inset flex items-center justify-center text-neu-accent">
+              <div className="w-10 h-10 rounded-full glass-card-inset flex items-center justify-center text-neu-accent">
                 <MessageSquare size={18} />
               </div>
               <div>
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
                 <p className="text-xs text-neu-text-muted">{selectedTestimonial.role} @ {selectedTestimonial.company}</p>
               </div>
             </div>
-            <div className="p-5 bg-neu-bg shadow-neu-inset rounded-2xl mb-6 text-sm leading-relaxed text-neu-text-muted italic">
+            <div className="p-5 glass-card-inset rounded-2xl mb-6 text-sm leading-relaxed text-neu-text-muted italic">
               &quot;{selectedTestimonial.testimonial}&quot;
             </div>
             
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
               <div className="flex gap-4">
                 <button 
                   onClick={(e) => handleTestimonialAction(e, selectedTestimonial.id, 'rejected')}
-                  className="flex-1 py-3 rounded-xl font-bold text-red-500 bg-neu-bg shadow-neu hover:shadow-neu-sm active:scale-95 transition-all text-sm"
+                  className="flex-1 py-3 rounded-xl font-bold text-red-500 glass-card hover:shadow-neu-sm active:scale-95 transition-all text-sm"
                 >
                   Reject
                 </button>
