@@ -1,6 +1,0 @@
-sed -i 's/<span className="font-bold text-zinc-600 dark:text-zinc-400">0 commits<\/span>/<span className="font-bold text-zinc-600 dark:text-zinc-400 whitespace-nowrap">0 commits<\/span>/g' app/page.tsx
-sed -i 's/<span className="font-bold text-indigo-500 dark:text-emerald-500">1 - 2 commits<\/span>/<span className="font-bold text-indigo-500 dark:text-emerald-500 whitespace-nowrap">1 - 2 commits<\/span>/g' app/page.tsx
-sed -i 's/<span className="font-bold text-indigo-600 dark:text-emerald-400">3 - 4 commits<\/span>/<span className="font-bold text-indigo-600 dark:text-emerald-400 whitespace-nowrap">3 - 4 commits<\/span>/g' app/page.tsx
-sed -i 's/<span className="font-bold text-indigo-700 dark:text-emerald-300">5 - 7 commits<\/span>/<span className="font-bold text-indigo-700 dark:text-emerald-300 whitespace-nowrap">5 - 7 commits<\/span>/g' app/page.tsx
-sed -i 's/<span className="font-bold text-indigo-800 dark:text-emerald-200">8+ commits<\/span>/<span className="font-bold text-indigo-800 dark:text-emerald-200 whitespace-nowrap">8+ commits<\/span>/g' app/page.tsx
-sed -i 's/absolute top-full left-6 -translate-x-1\/2 -mt-\[5px\] w-2.5 h-2.5/absolute top-full left-1\/2 sm:left-6 -translate-x-1\/2 -mt-\[5px\] w-2.5 h-2.5/g' app/page.tsx
