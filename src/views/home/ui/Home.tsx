@@ -1098,7 +1098,7 @@ export default function Portfolio() {
           {/* Controls: Search & Filter */}
           <div className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
             <div className="relative flex-1 group">
-              <div className="absolute inset-y-0 left-0 w-10 justify-center flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
                 <Search size={18} />
               </div>
               <input

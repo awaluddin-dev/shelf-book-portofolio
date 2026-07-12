@@ -93,10 +93,7 @@ export default function AdminDashboard() {
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold font-display tracking-tight">Dashboard Overview</h1>
-            <button onClick={() => router.push('/')} className="text-sm text-neu-accent hover:underline font-mono">
-              &larr; Back to Portfolio
-            </button>
-          </div>
+            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Opportunities Card */}

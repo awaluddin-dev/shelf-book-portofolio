@@ -98,10 +98,7 @@ export default function AdminTestimoni() {
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold font-display tracking-tight">Testimonials Management</h1>
-            <button onClick={() => router.push('/')} className="text-sm text-neu-accent hover:underline font-mono">
-              &larr; Back to Portfolio
-            </button>
-          </div>
+            </div>
 
           {/* Testimonials Table */}
           <div className="glass-card rounded-3xl overflow-hidden border border-white/5">

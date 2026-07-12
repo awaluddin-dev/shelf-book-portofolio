@@ -130,10 +130,7 @@ export default function AdminWork() {
                 <button onClick={openAddModal} className="flex items-center gap-2 px-4 py-2 bg-neu-accent text-white rounded-xl hover:bg-neu-accent/90 transition-colors font-bold text-sm shadow-neu-sm">
                   <Plus size={16} /> Add New
                 </button>
-                <button onClick={() => router.push('/')} className="text-sm text-neu-accent hover:underline font-mono">
-                  &larr; Back to Portfolio
-                </button>
-            </div>
+                </div>
           </div>
 
           <div className="glass-card rounded-3xl overflow-hidden border border-white/5">
