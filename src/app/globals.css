@@ -47,39 +47,6 @@ body {
   color: var(--color-neu-text);
 }
 
-/* Custom smooth metric card transitions */
-.metric-card-normal {
-  box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
-  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.dark .metric-card-normal {
-  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25);
-}
-.metric-card-normal:hover {
-  border-color: var(--color-neu-accent) !important;
-  box-shadow: 0 10px 25px -5px rgba(63, 114, 175, 0.22), 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff !important;
-}
-.dark .metric-card-normal:hover {
-  border-color: var(--color-neu-accent) !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 173, 181, 0.25), 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25) !important;
-}
-
-.metric-card-savings {
-  box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
-  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.dark .metric-card-savings {
-  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25);
-}
-.metric-card-savings:hover {
-  border-color: rgba(16, 185, 129, 0.45) !important;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25), 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff !important;
-}
-.dark .metric-card-savings:hover {
-  border-color: rgba(16, 185, 129, 0.45) !important;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25), 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25) !important;
-}
-
 /* Explicit neumorphic transitions to prevent jumping on theme change */
 .shadow-neu {
   box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
@@ -189,3 +156,184 @@ body *,
 }
 
 
+
+
+
+
+/* Custom smooth metric card transitions */
+.metric-card-normal {
+  box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .metric-card-normal {
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25);
+}
+.metric-card-normal:hover {
+  border-color: var(--color-neu-accent) !important;
+  box-shadow: 0 10px 25px -5px rgba(63, 114, 175, 0.22), 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff !important;
+}
+.dark .metric-card-normal:hover {
+  border-color: var(--color-neu-accent) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 173, 181, 0.25), 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25) !important;
+}
+
+.metric-card-savings {
+  box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .metric-card-savings {
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25);
+}
+.metric-card-savings:hover {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25), 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff !important;
+}
+.dark .metric-card-savings:hover {
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25), 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25) !important;
+}
+
+/* Explicit neumorphic transitions to prevent jumping on theme change */
+.shadow-neu {
+  box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
+  transition: box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1), background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), border-color 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .shadow-neu {
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(57, 62, 70, 0.25);
+}
+
+.shadow-neu-inset {
+  box-shadow: inset 6px 6px 12px rgba(17, 45, 78, 0.08), inset -6px -6px 12px #ffffff;
+  transition: box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1), background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), border-color 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .shadow-neu-inset {
+  box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.5), inset -6px -6px 12px rgba(57, 62, 70, 0.25);
+}
+
+.shadow-neu-sm {
+  box-shadow: 4px 4px 8px rgba(17, 45, 78, 0.06), -4px -4px 8px #ffffff;
+  transition: box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1), background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), border-color 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .shadow-neu-sm {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(57, 62, 70, 0.25);
+}
+
+/* Smooth global transition for light/dark theme properties */
+body, 
+body *,
+.min-h-screen,
+.min-h-screen * {
+  transition-property: background-color, color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee:active,
+.animate-marquee:focus-within {
+  animation-play-state: paused;
+}
+
+@media print {
+  .fixed, button, form, .no-print, [role="dialog"], iframe { display: none !important; }
+  body, html, .min-h-screen {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 11pt !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0 !important;
+  }
+  .shadow-neu, .shadow-neu-inset, .shadow-neu-sm, .shadow-neu-modal {
+    box-shadow: none !important;
+    border: 1px solid #e4e4e7 !important;
+    background: #ffffff !important;
+  }
+  .text-neu-text-muted, .text-zinc-400, .text-gray-400, .text-neutral-400 {
+    color: #4b5563 !important;
+  }
+  .text-neu-accent {
+    color: #3b82f6 !important;
+  }
+}
+
+/* Glassy Gradients Implementation */
+.glass-card {
+  background: linear-gradient(135deg, rgba(219, 226, 239, 0.4) 0%, rgba(249, 247, 247, 0.6) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(17, 45, 78, 0.1);
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-card {
+  background: linear-gradient(135deg, rgba(57, 62, 70, 0.4) 0%, rgba(34, 40, 49, 0.7) 100%);
+  border: 1px solid rgba(238, 238, 238, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover {
+  border-color: rgba(63, 114, 175, 0.3);
+  box-shadow: 0 10px 40px 0 rgba(63, 114, 175, 0.15);
+}
+
+.dark .glass-card:hover {
+  border-color: rgba(0, 173, 181, 0.3);
+  box-shadow: 0 10px 40px 0 rgba(0, 173, 181, 0.2);
+}
+
+.glass-card-inset {
+  background: linear-gradient(135deg, rgba(219, 226, 239, 0.2) 0%, rgba(249, 247, 247, 0.4) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 2px 2px 8px rgba(17, 45, 78, 0.05);
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .glass-card-inset {
+  background: linear-gradient(135deg, rgba(57, 62, 70, 0.2) 0%, rgba(34, 40, 49, 0.5) 100%);
+  border: 1px solid rgba(238, 238, 238, 0.03);
+  box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-inset:hover {
+  background: linear-gradient(135deg, rgba(219, 226, 239, 0.3) 0%, rgba(249, 247, 247, 0.5) 100%);
+}
+
+.dark .glass-card-inset:hover {
+  background: linear-gradient(135deg, rgba(57, 62, 70, 0.3) 0%, rgba(34, 40, 49, 0.6) 100%);
+}
+
+/* Let's redefine glass-card-highlighted to match inset styling for simplicity, since home_content uses it */
+.glass-card-highlighted {
+  background: linear-gradient(135deg, rgba(219, 226, 239, 0.5) 0%, rgba(249, 247, 247, 0.7) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(17, 45, 78, 0.1);
+  transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .glass-card-highlighted {
+  background: linear-gradient(135deg, rgba(57, 62, 70, 0.5) 0%, rgba(34, 40, 49, 0.8) 100%);
+  border: 1px solid rgba(238, 238, 238, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,257 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { AdminSidebar } from '@/shared/ui/admin/AdminSidebar';
+import { useRouter } from 'next/navigation';
+import { Briefcase, LogOut, LayoutDashboard, Check, X, MessageSquare, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, Save, Plus, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/shared/lib/utils';
+import { Testimonial } from '@/entities/testimonial/model/data';
+
+export default function AdminDashboard() {
+  const [status, setStatus] = useState<'available' | 'busy'>('available');
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [heroConfig, setHeroConfig] = useState({ resumeUrl: '', expertise: '', grit: '', service: '' });
+  const [metrics, setMetrics] = useState<any[]>([]);
+  
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+  const [toastMessage, setToastMessage] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    if (localStorage.getItem('isAdmin') !== 'true') {
+      router.push('/admin/login');
+      return;
+    }
+
+    Promise.all([
+      fetch('/api/status').then(res => res.json()),
+      fetch('/api/testimonials?all=true').then(res => res.json()),
+      fetch('/api/hero').then(res => res.json())
+    ]).then(([statusData, testData, heroData]) => {
+      setStatus(statusData.status);
+      setTestimonials(testData.testimonials || []);
+      setHeroConfig(heroData.heroConfig || { resumeUrl: '', expertise: '', grit: '', service: '' });
+      setMetrics(heroData.metrics || []);
+      setLoading(false);
+    });
+  }, [router]);
+
+  const toggleStatus = async () => {
+    const nextStatus = status === 'available' ? 'busy' : 'available';
+    setStatus(nextStatus);
+    await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextStatus })
+    });
+  };
+
+  const saveHeroConfig = async () => {
+    try {
+      const res = await fetch('/api/hero', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heroConfig, metrics })
+      });
+      if (!res.ok) throw new Error('Failed');
+      setToastMessage({ message: 'Hero Section updated successfully', type: 'success' });
+    } catch (err) {
+      setToastMessage({ message: 'Failed to update hero section', type: 'error' });
+    }
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleMetricChange = (index: number, field: string, value: any) => {
+    const newMetrics = [...metrics];
+    newMetrics[index] = { ...newMetrics[index], [field]: value };
+    setMetrics(newMetrics);
+  };
+
+  const addMetric = () => {
+    setMetrics([...metrics, { id: 'm_' + Date.now(), val: '', label: '', icon: 'Code2', isSavings: false }]);
+  };
+
+  const removeMetric = (index: number) => {
+    const newMetrics = [...metrics];
+    newMetrics.splice(index, 1);
+    setMetrics(newMetrics);
+  };
+
+  if (loading) return null;
+
+  return (
+    <div className="min-h-screen bg-neu-bg flex text-neu-text">
+      {/* Sidebar */}
+      <AdminSidebar activePath="/admin/dashboard" />
+
+      {/* Main Content */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold font-display tracking-tight">Dashboard Overview</h1>
+            <button onClick={() => router.push('/')} className="text-sm text-neu-accent hover:underline font-mono">
+              &larr; Back to Portfolio
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Opportunities Card */}
+            <div className="glass-card rounded-3xl p-8 border border-white/5">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full glass-card-inset flex items-center justify-center">
+                  <Briefcase className="text-neu-accent" size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold">Opportunities</h2>
+                  <p className="text-xs text-neu-text-muted font-mono">Manage availability status</p>
+                </div>
+              </div>
+              <div className="p-6 glass-card-inset rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className={cn(
+                  "text-sm font-bold transition-colors duration-300",
+                  status === 'available' ? "text-emerald-500" : "text-amber-500"
+                )}>
+                  {status === 'available' ? 'Open to Opportunities' : 'Closed to Opportunities'}
+                </div>
+                <button
+                  onClick={toggleStatus}
+                  className="relative inline-flex h-8 w-16 items-center rounded-full bg-gray-200 dark:bg-zinc-850 shadow-inner transition-colors duration-200 focus:outline-none cursor-pointer"
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-200",
+                      status === 'available' ? "translate-x-9 bg-emerald-500" : "translate-x-1 bg-zinc-400"
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+            
+            {/* Stat Card placeholder if needed */}
+            <div className="glass-card rounded-3xl p-8 border border-white/5 flex flex-col justify-center">
+              <div className="text-sm text-neu-text-muted font-mono mb-2">Total Testimonials</div>
+              <div className="text-4xl font-display font-bold text-neu-text">{testimonials.length}</div>
+              <div className="text-xs text-neu-accent mt-2">{testimonials.filter((t: any) => t.status === 'pending').length} pending review</div>
+            </div>
+          </div>
+
+          {/* Hero Configuration Section */}
+          <div className="glass-card rounded-3xl p-8 border border-white/5">
+             <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-lg font-bold font-display">Hero & Intro Section</h2>
+                  <p className="text-xs font-mono text-neu-text-muted">Manage Resume Link, Core Pillars (Expertise/Grit/Service), and Metric Strip.</p>
+                </div>
+                <button onClick={saveHeroConfig} className="flex items-center gap-2 px-4 py-2 bg-neu-accent text-white rounded-xl hover:bg-neu-accent/90 transition-colors font-bold text-sm shadow-neu-sm">
+                  <Save size={16} /> Save Changes
+                </button>
+             </div>
+
+             <div className="space-y-6">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Resume URL (Download CV Link)</label>
+                  <input value={heroConfig.resumeUrl} onChange={e => setHeroConfig({...heroConfig, resumeUrl: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none" placeholder="https://github.com/..." />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Expertise Text</label>
+                  <textarea value={heroConfig.expertise} onChange={e => setHeroConfig({...heroConfig, expertise: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]" placeholder="..." />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Grit Text</label>
+                  <textarea value={heroConfig.grit} onChange={e => setHeroConfig({...heroConfig, grit: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]" placeholder="..." />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Service Text</label>
+                  <textarea value={heroConfig.service} onChange={e => setHeroConfig({...heroConfig, service: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]" placeholder="..." />
+                </div>
+
+                {/* Metric Strip Form */}
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-mono text-neu-text-muted">Metric Strip Items (Max 4 recommended)</label>
+                    <button type="button" onClick={addMetric} className="text-xs font-bold text-neu-accent hover:underline flex items-center gap-1">
+                      <Plus size={14} /> Add Metric
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {metrics.map((m, idx) => (
+                      <div key={idx} className="p-4 rounded-xl glass-card-inset border border-white/5 relative group">
+                        <button type="button" onClick={() => removeMetric(idx)} className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                          <Trash2 size={12} />
+                        </button>
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-mono text-neu-text-muted">Value (e.g. 5+ Years)</label>
+                              <input value={m.val} onChange={e => handleMetricChange(idx, 'val', e.target.value)} className="w-full px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 text-sm outline-none border border-transparent focus:border-neu-accent/50" />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-mono text-neu-text-muted">Label (e.g. EXPERIENCE)</label>
+                              <input value={m.label} onChange={e => handleMetricChange(idx, 'label', e.target.value)} className="w-full px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 text-sm outline-none border border-transparent focus:border-neu-accent/50" />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-mono text-neu-text-muted">Icon Name</label>
+                              <select value={m.icon} onChange={e => handleMetricChange(idx, 'icon', e.target.value)} className="w-full px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 text-sm outline-none border border-transparent focus:border-neu-accent/50">
+                                <option value="Code2">Code2</option>
+                                <option value="Briefcase">Briefcase</option>
+                                <option value="TrendingUp">TrendingUp</option>
+                                <option value="MapPin">MapPin</option>
+                                <option value="Cpu">Cpu</option>
+                                <option value="Zap">Zap</option>
+                                <option value="Activity">Activity</option>
+                                <option value="Award">Award</option>
+                                <option value="Terminal">Terminal</option>
+                                <option value="Server">Server</option>
+                                <option value="Database">Database</option>
+                                <option value="Box">Box</option>
+                                <option value="Layers">Layers</option>
+                                <option value="Cloud">Cloud</option>
+                              </select>
+                            </div>
+                            <div className="space-y-1 flex flex-col justify-end">
+                              <label className="flex items-center gap-2 text-xs font-mono text-neu-text-muted cursor-pointer py-1.5">
+                                <input type="checkbox" checked={m.isSavings} onChange={e => handleMetricChange(idx, 'isSavings', e.target.checked)} className="rounded bg-black/5 dark:bg-white/5 border-transparent text-neu-accent focus:ring-neu-accent" />
+                                Highlight (Savings)
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+             </div>
+          </div>
+
+        </div>
+      </main>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 50, x: "-50%" }}
+            className={cn(
+              "fixed bottom-8 left-1/2 z-[200] px-6 py-3.5 rounded-2xl font-mono text-xs shadow-neu border backdrop-blur-md flex items-center gap-2.5",
+              toastMessage.type === 'success' 
+                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                : "bg-red-500/10 text-red-500 border-red-500/20"
+            )}
+          >
+            {toastMessage.type === 'success' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+            <span>{toastMessage.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

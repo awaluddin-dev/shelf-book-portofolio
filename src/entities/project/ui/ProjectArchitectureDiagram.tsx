@@ -35,7 +35,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
     };
 
     return (
-      <div className="mb-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
+      <div className="mb-10 p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
           <div>
             <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
@@ -45,7 +45,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
               Hover over blueprint nodes to inspect real-time data flows and protocol handlers.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-xl bg-neu-bg shadow-neu-sm text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
+          <span className="px-3 py-1 rounded-xl glass-card-inset text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
             AuraFlow AI Active Pipeline
           </span>
         </div>
@@ -227,7 +227,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
         </div>
 
         {/* Dynamic description of hovered step */}
-        <div className="mt-6 p-5 rounded-2xl bg-neu-bg shadow-neu relative min-h-[96px] flex flex-col justify-center border border-white/5">
+        <div className="mt-6 p-5 rounded-2xl glass-card relative min-h-[96px] flex flex-col justify-center border border-white/5">
           {hoveredStep ? (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
@@ -245,7 +245,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
                   {steps[hoveredStep].desc}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-neu-bg shadow-neu-inset text-center md:col-span-1 border border-white/5">
+              <div className="p-3 rounded-xl glass-card-inset text-center md:col-span-1 border border-white/5">
                 <span className="text-[9px] font-mono text-neu-text-muted block uppercase">KPI Performance</span>
                 <span className="text-xs font-mono font-bold text-neu-accent mt-1 block">
                   {steps[hoveredStep].metrics}
@@ -287,7 +287,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
     };
 
     return (
-      <div className="mb-10 p-6 md:p-8 rounded-3xl bg-neu-bg shadow-neu-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
+      <div className="mb-10 p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
           <div>
             <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
@@ -297,7 +297,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
               Hover over blueprint nodes to inspect decoupling channels and pub/sub pipelines.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-xl bg-neu-bg shadow-neu-sm text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
+          <span className="px-3 py-1 rounded-xl glass-card-inset text-[10px] font-mono text-neu-accent uppercase font-bold tracking-widest select-none">
             Astra Group Enterprise Sync
           </span>
         </div>
@@ -450,7 +450,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
         </div>
 
         {/* Dynamic description of hovered step */}
-        <div className="mt-6 p-5 rounded-2xl bg-neu-bg shadow-neu relative min-h-[96px] flex flex-col justify-center border border-white/5">
+        <div className="mt-6 p-5 rounded-2xl glass-card relative min-h-[96px] flex flex-col justify-center border border-white/5">
           {hoveredStep ? (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
@@ -468,7 +468,7 @@ export default function ProjectArchitectureDiagram({ projectId, isDark }: { proj
                   {steps[hoveredStep].desc}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-neu-bg shadow-neu-inset text-center md:col-span-1 border border-white/5">
+              <div className="p-3 rounded-xl glass-card-inset text-center md:col-span-1 border border-white/5">
                 <span className="text-[9px] font-mono text-neu-text-muted block uppercase">KPI Performance</span>
                 <span className="text-xs font-mono font-bold text-neu-accent mt-1 block">
                   {steps[hoveredStep].metrics}
