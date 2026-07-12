@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from "react";
 import Image from "next/image";
+import { Activity, ArrowLeft, ArrowRight, ArrowUp, Award, BarChart2, Book, BookOpen, Box, BrainCircuit, Briefcase, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Cloud, Code2, Compass, Cpu, Database, Download, Eye, FileText, Filter, GitCommit, GitFork, Github, Globe, HandFist, Heart, Layers, Leaf, Linkedin, Mail, MapPin, MessageSquare, Milestone, Moon, Network, PenTool, Quote, Search, Server, Smile, Sparkles, Sun, Terminal, TrendingUp, Wrench, X, Zap } from 'lucide-react';
 
 import { useTheme } from "@/shared/ui/ThemeProvider";
 import {
@@ -12,58 +13,7 @@ import {
   useSpring,
   useScroll,
 } from "motion/react";
-import {
-  Search,
-  X,
-  BookOpen,
-  Terminal,
-  Code2,
-  Database,
-  Github,
-  Linkedin,
-  MapPin,
-  Globe,
-  Download,
-  PenTool,
-  Mail,
-  Moon,
-  Sun,
-  ArrowRight,
-  Book,
-  BrainCircuit,
-  Briefcase,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  ChevronUp,
-  Activity,
-  BarChart2,
-  GitCommit,
-  Quote,
-  MessageSquare,
-  Sparkles,
-  Eye,
-  ArrowLeft,
-  Network,
-  GitFork,
-  Cpu,
-  Layers,
-  FileText,
-  Filter,
-  Leaf,
-  ArrowUp,
-  Calendar,
-  Milestone,
-  Compass,
-  TrendingUp,
-  Award,
-  CheckCircle,
-  Smile,
-  Clock,
-  Wrench,
-  HandFist,
-  Heart,
-} from "lucide-react";
+
 import ReactMarkdown from "react-markdown";
 import {
   ResponsiveContainer,
@@ -117,6 +67,90 @@ export default function Portfolio() {
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
   const { isDark, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Dynamic API Data States
+  const [dynamicRoadmap, setDynamicRoadmap] = useState<any[]>([]);
+  const [dynamicProficiency, setDynamicProficiency] = useState<any[]>([]);
+  const [dynamicCurrentFocus, setDynamicCurrentFocus] = useState<any[]>([]);
+  const [dynamicHeroConfig, setDynamicHeroConfig] = useState<any>(null);
+  const [dynamicMetrics, setDynamicMetrics] = useState<any[]>([]);
+  const [dynamicProjects, setDynamicProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch Roadmap
+    fetch('/api/learning').then(res => res.json()).then(data => {
+      if (data.roadmap && data.roadmap.length > 0) setDynamicRoadmap(data.roadmap);
+    }).catch(console.error);
+    
+    // Fetch Proficiency
+    fetch('/api/proficiency').then(res => res.json()).then(data => {
+      if (data.proficiency && data.proficiency.length > 0) setDynamicProficiency(data.proficiency);
+    }).catch(console.error);
+
+    // Fetch Current Focus
+    fetch('/api/current').then(res => res.json()).then(data => {
+      if (data.currentFocus && data.currentFocus.length > 0) setDynamicCurrentFocus(data.currentFocus);
+    }).catch(console.error);
+
+    // Fetch Hero
+    fetch('/api/hero').then(res => res.json()).then(data => {
+      if (data.heroConfig) setDynamicHeroConfig(data.heroConfig);
+      if (data.metrics && data.metrics.length > 0) setDynamicMetrics(data.metrics);
+    }).catch(console.error);
+
+    // Fetch Projects
+    fetch('/api/projects').then(res => res.json()).then(data => {
+      if (data.projects) setDynamicProjects(data.projects);
+    }).catch(console.error);
+
+  }, []);
+  
+  // Use dynamic if available, fallback to static imports or defaults
+  const activeRoadmap = dynamicRoadmap.length > 0 ? dynamicRoadmap : roadmapItems;
+  const activeProficiency = dynamicProficiency.length > 0 ? dynamicProficiency : skillCategoriesList;
+  const activeCurrentFocus = dynamicCurrentFocus.length > 0 ? dynamicCurrentFocus : [
+    { title: 'Writing', icon: 'PenTool', description: '"I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs"', link: 'https://dev.to/awaluddin', linkText: 'Read on dev.to' },
+    { title: 'Current Work', icon: 'Code2', description: 'Building AuraFlow AI, an intelligent project management and estimation agent.', link: 'https://github.com/awaluddin-dev', linkText: 'View Repository' },
+    { title: 'Upcoming Tech', icon: 'Rocket', description: 'Deep diving into local LLM orchestration and vector database optimization.', link: '#experience', linkText: 'See Roadmap' }
+  ];
+
+  const activeHeroConfig = dynamicHeroConfig || {
+    resumeUrl: "https://github.com/awaluddin-dev",
+    expertise: "{activeHeroConfig.expertise}",
+    grit: "{activeHeroConfig.grit}",
+    service: "{activeHeroConfig.service}"
+  };
+
+  const activeMetrics = dynamicMetrics.length > 0 ? dynamicMetrics : [
+    { val: "5+ Years", label: "Engineering Experience", icon: "Code2", isSavings: false },
+    { val: "Enterprise & Fintech", label: "INDUSTRY EXPERIENCE", icon: "Briefcase", isSavings: false },
+    { val: "$18K/yr", label: "Infra Cost Savings", icon: "TrendingUp", isSavings: true },
+    { val: "@ Astra Group", label: "CURRENT CONTRACT", icon: "MapPin", isSavings: false }
+  ];
+
+  const renderIcon = (iconName: string, isSavings: boolean) => {
+    const props = { className: `w-5 h-5 sm:w-6 sm:h-6 ${isSavings ? 'text-emerald-500 dark:text-emerald-400' : 'text-neu-accent'}` };
+    switch (iconName) {
+      case 'Code2': return <Code2 {...props} />;
+      case 'Briefcase': return <Briefcase {...props} />;
+      case 'TrendingUp': return <TrendingUp {...props} />;
+      case 'MapPin': return <MapPin {...props} />;
+      case 'Cpu': return <Cpu {...props} />;
+      case 'Zap': return <Zap {...props} />;
+      case 'Activity': return <Activity {...props} />;
+      case 'Award': return <Award {...props} />;
+      case 'Terminal': return <Terminal {...props} />;
+      case 'Server': return <Server {...props} />;
+      case 'Database': return <Database {...props} />;
+      case 'Box': return <Box {...props} />;
+      case 'Layers': return <Layers {...props} />;
+      case 'Cloud': return <Cloud {...props} />;
+      default: return <Code2 {...props} />;
+    }
+  };
+
+
+
   const [chartType, setChartType] = useState<"temporal" | "repository">(
     "temporal",
   );
@@ -364,13 +398,17 @@ export default function Portfolio() {
     return months;
   }, [weeks, monthLabels]);
 
-  const categories = Array.from(new Set(projects.map((p) => p.category)));
+
+  // Fallback to static projects if API is slow or empty
+  const activeProjects = dynamicProjects.length > 0 ? dynamicProjects : projects;
+
+  const categories = Array.from(new Set((activeProjects || []).map((p) => p.category)));
 
   const filteredProjects = useMemo(() => {
-    const filtered = projects.filter((project) => {
+    const filtered = (activeProjects || []).filter((project) => {
       const matchesSearch =
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.tags.some((tag) =>
+        (project.tags || []).some((tag: string) =>
           tag.toLowerCase().includes(searchQuery.toLowerCase()),
         );
       const matchesCategory = selectedCategory
@@ -776,10 +814,7 @@ export default function Portfolio() {
                     <button
                       onClick={() => {
                         triggerToast("Professional CV view initiated!");
-                        window.open(
-                          "https://github.com/awaluddin-dev",
-                          "_blank",
-                        );
+                        window.open(activeHeroConfig.resumeUrl, "_blank");
                       }}
                       className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
                     >
@@ -808,8 +843,7 @@ export default function Portfolio() {
                         <span className="text-neu-accent font-extrabold mr-1.5">
                           →
                         </span>
-                        Async pipelines, event-driven architecture, and LLM
-                        integration for enterprise & fintech.
+                        {activeHeroConfig.expertise}
                       </p>
                     </div>
 
@@ -822,9 +856,7 @@ export default function Portfolio() {
                         <span className="text-neu-accent font-extrabold mr-1.5">
                           →
                         </span>
-                        Survived a solo OJK & BI regulatory audit as the only
-                        engineer. Moved from HVAC blueprints to production
-                        microservices in under 2 years.
+                        {activeHeroConfig.grit}
                       </p>
                     </div>
 
@@ -838,8 +870,7 @@ export default function Portfolio() {
                         <span className="text-neu-accent font-extrabold mr-1.5">
                           →
                         </span>
-                        I don&apos;t just ship code — I reduce costs, cut
-                        vendors, and leave systems better than I found them.
+                        {activeHeroConfig.service}
                       </p>
                     </div>
                   </motion.div>
@@ -999,37 +1030,7 @@ export default function Portfolio() {
           {/* Spaced Metric Cards - Move up metric strip & add space/gap between items */}
           <div className="max-w-7xl mx-auto w-full">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                {
-                  val: "5+ Years",
-                  label: "Engineering Experience",
-                  icon: (
-                    <Code2 className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
-                  ),
-                },
-                {
-                  val: "Enterprise & Fintech",
-                  label: "INDUSTRY EXPERIENCE",
-                  icon: (
-                    <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
-                  ),
-                },
-                {
-                  val: "$18K/yr",
-                  label: "Infra Cost Savings",
-                  icon: (
-                    <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 dark:text-emerald-400" />
-                  ),
-                  isSavings: true,
-                },
-                {
-                  val: "@ Astra Group",
-                  label: "CURRENT CONTRACT",
-                  icon: (
-                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-neu-accent" />
-                  ),
-                },
-              ].map((item, idx) => (
+              {(activeMetrics || []).map((item: any, idx: number) => (
                 <motion.div
                   key={idx}
                   whileHover={{
@@ -1045,7 +1046,7 @@ export default function Portfolio() {
                 >
                   {/* Left: Icon inside a soft circle */}
                   <div className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-card-inset flex items-center justify-center border border-white/5">
-                    {item.icon}
+                    {renderIcon(item.icon, item.isSavings)}
                   </div>
 
                   {/* Right: Numeric and Text info */}
@@ -1097,7 +1098,7 @@ export default function Portfolio() {
           {/* Controls: Search & Filter */}
           <div className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
             <div className="relative flex-1 group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
+              <div className="absolute inset-y-0 left-0 w-10 justify-center flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
                 <Search size={18} />
               </div>
               <input
@@ -1134,7 +1135,7 @@ export default function Portfolio() {
                   )}
                   <span className="relative z-10">All</span>
                 </button>
-                {categories.map((cat) => (
+                {(categories || []).map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
@@ -1245,7 +1246,7 @@ export default function Portfolio() {
                     >
                       All Projects
                     </button>
-                    {categories.map((cat) => (
+                    {(categories || []).map((cat) => (
                       <button
                         key={cat}
                         onClick={() => {
@@ -1472,7 +1473,7 @@ export default function Portfolio() {
 
                       {/* Horizontal Tech Stack Row */}
                       <div className="flex flex-wrap gap-2 mb-6">
-                        {focusedProject.tags.map((tag: string) => {
+                        {(focusedProject.tags || []).map((tag: string) => {
                           const { color, icon } = getTechIconAndColor(tag);
                           const count = getTagProjectCount(tag);
                           return (
@@ -1497,7 +1498,7 @@ export default function Portfolio() {
                       {focusedProject.stats &&
                         focusedProject.stats.length > 0 && (
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
-                            {focusedProject.stats.map(
+                            {(focusedProject.stats || []).map(
                               (stat: any, idx: number) => (
                                 <div
                                   key={idx}
@@ -1677,7 +1678,7 @@ export default function Portfolio() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {skillCategoriesList.map((category, catIdx) => (
+            {(activeProficiency || []).map((category: any, catIdx: number) => (
               <div
                 key={catIdx}
                 className="p-6 sm:p-8 rounded-3xl glass-card border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between"
@@ -1688,7 +1689,7 @@ export default function Portfolio() {
                   </h3>
 
                   <div className="flex flex-col">
-                    {category.skills.map((skill, skillIdx) => (
+                    {category.skills?.map((skill: any, skillIdx: number) => (
                       <div
                         key={skillIdx}
                         className="py-4 border-b border-gray-200/5 dark:border-zinc-800/20 last:border-b-0 flex justify-between items-center gap-4 group/item"
@@ -1863,14 +1864,14 @@ export default function Portfolio() {
                 className="absolute top-1/2 left-0 h-[3px] bg-neu-accent -translate-y-1/2 rounded-full origin-left"
                 initial={{ width: "0%" }}
                 animate={{
-                  width: `${(selectedRoadmapIndex / (roadmapItems.length - 1)) * 100}%`,
+                  width: `${(selectedRoadmapIndex / (activeRoadmap.length - 1)) * 100}%`,
                 }}
                 transition={{ type: "spring", stiffness: 120, damping: 20 }}
               />
 
               {/* Milestones wrapper */}
               <div className="relative flex justify-between">
-                {roadmapItems.map((item, index) => {
+                {(activeRoadmap || []).map((item: any, index: number) => {
                   const isSelected = selectedRoadmapIndex === index;
                   const isPast = index <= selectedRoadmapIndex;
                   return (
@@ -1947,7 +1948,7 @@ export default function Portfolio() {
 
             {/* Mobile simplified timeline view */}
             <div className="flex md:hidden flex-wrap gap-2 justify-center mb-6">
-              {roadmapItems.map((item, index) => {
+              {(activeRoadmap || []).map((item: any, index: number) => {
                 const isSelected = selectedRoadmapIndex === index;
                 return (
                   <button
@@ -1981,26 +1982,26 @@ export default function Portfolio() {
                 <div className="lg:col-span-7 space-y-5">
                   <div className="flex items-center gap-3">
                     <div className="p-3.5 rounded-2xl glass-card text-neu-accent">
-                      {roadmapItems[selectedRoadmapIndex].icon}
+                      {activeRoadmap[selectedRoadmapIndex].icon}
                     </div>
                     <div>
                       <div className="flex items-center gap-2.5 flex-wrap">
                         <span className="font-mono text-xs font-bold tracking-widest text-neu-accent uppercase">
-                          {roadmapItems[selectedRoadmapIndex].quarter}
+                          {activeRoadmap[selectedRoadmapIndex].quarter}
                         </span>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-white/50 dark:bg-black/30 border border-gray-300/40 dark:border-zinc-800 text-neu-accent/90">
                           <span className="w-1.5 h-1.5 rounded-full bg-neu-accent mr-1.5" />
-                          {roadmapItems[selectedRoadmapIndex].status}
+                          {activeRoadmap[selectedRoadmapIndex].status}
                         </span>
                       </div>
                       <h4 className="text-xl font-bold text-neu-text mt-1">
-                        {roadmapItems[selectedRoadmapIndex].tech}
+                        {activeRoadmap[selectedRoadmapIndex].tech}
                       </h4>
                     </div>
                   </div>
 
                   <p className="text-sm text-neu-text-muted leading-relaxed">
-                    {roadmapItems[selectedRoadmapIndex].description}
+                    {activeRoadmap[selectedRoadmapIndex].description}
                   </p>
 
                   <div className="flex items-center gap-6 pt-2">
@@ -2009,7 +2010,7 @@ export default function Portfolio() {
                         Estimated Depth
                       </span>
                       <span className="text-sm font-semibold text-neu-text">
-                        {roadmapItems[selectedRoadmapIndex].depth}
+                        {activeRoadmap[selectedRoadmapIndex].depth}
                       </span>
                     </div>
                     <div className="w-[1px] h-8 bg-gray-300/60 dark:bg-zinc-800" />
@@ -2033,8 +2034,8 @@ export default function Portfolio() {
                       Core Topics to Master
                     </span>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-neu-text-muted">
-                      {roadmapItems[selectedRoadmapIndex].topics.map(
-                        (topic, i) => (
+                      {activeRoadmap[selectedRoadmapIndex].topics.map(
+                        (topic: any, i: number) => (
                           <li key={i} className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-neu-accent/80 flex-shrink-0" />
                             <span>{topic}</span>
@@ -2050,8 +2051,8 @@ export default function Portfolio() {
                       Planned Prototype Projects
                     </span>
                     <ul className="space-y-2 text-xs text-neu-text-muted font-mono">
-                      {roadmapItems[selectedRoadmapIndex].projects.map(
-                        (proj, i) => (
+                      {(activeRoadmap[selectedRoadmapIndex].projects || []).map(
+                        (proj: any, i: number) => (
                           <li key={i} className="flex items-start gap-2.5">
                             <span className="mt-0.5 text-neu-accent">✦</span>
                             <span className="text-neu-text">{proj}</span>
@@ -2437,10 +2438,10 @@ export default function Portfolio() {
 
                       {/* Columns of weeks grouped by month */}
                       <div className="flex-1 flex gap-[3px] justify-between items-stretch">
-                        {monthsData.map((monthGroup, mIdx) => (
+                        {(monthsData || []).map((monthGroup, mIdx) => (
                           <div key={mIdx} className="flex shrink-0 gap-[3px]">
                             <div className="flex gap-[3px] shrink-0">
-                              {monthGroup.weeks.map((week, wIdxInMonth) => {
+                              {(monthGroup.weeks || []).map((week, wIdxInMonth) => {
                                 const isFirstWeekOfMonth = wIdxInMonth === 0;
                                 const isColInHoveredMonth =
                                   hoveredMonth !== null &&
@@ -2478,7 +2479,7 @@ export default function Portfolio() {
                                         {monthGroup.label}
                                       </span>
                                     )}
-                                    {week.map((day, dIdx) => {
+                                    {(week || []).map((day, dIdx) => {
                                       const levelColors = isDark
                                         ? [
                                             "bg-zinc-800/60 hover:bg-zinc-700",
@@ -2934,7 +2935,7 @@ export default function Portfolio() {
 
                   {/* Tags associated with endorsement */}
                   <div className="flex flex-wrap gap-1.5 mt-5">
-                    {t.tags.map((tag) => (
+                    {(t.tags || []).map((tag) => (
                       <span
                         key={tag}
                         className="px-2.5 py-1 glass-card-inset text-[10px] font-mono font-medium rounded-lg text-neu-text-muted"
@@ -3116,7 +3117,7 @@ export default function Portfolio() {
                         >
                           {/* Horizontal Tech Stack Row */}
                           <div className="relative z-10 flex flex-wrap gap-2.5 mb-4 mt-3">
-                            {selectedProject.tags.map((tag) => {
+                            {(selectedProject.tags || []).map((tag) => {
                               const { color, icon } = getTechIconAndColor(tag);
                               const count = getTagProjectCount(tag);
                               return (
@@ -3150,7 +3151,7 @@ export default function Portfolio() {
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 pb-6 border-b border-neu-text/10">
                       <div className="flex flex-wrap gap-2">
-                        {selectedProject.tags.map((tag) => {
+                        {(selectedProject.tags || []).map((tag) => {
                           const count = getTagProjectCount(tag);
                           return (
                             <span
@@ -3198,7 +3199,7 @@ export default function Portfolio() {
                               <Terminal size={14} /> Key Impact & Metrics
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              {selectedProject.stats.map((stat, idx) => (
+                              {(selectedProject.stats || []).map((stat, idx) => (
                                 <div
                                   key={idx}
                                   className="p-5 rounded-2xl glass-card flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"

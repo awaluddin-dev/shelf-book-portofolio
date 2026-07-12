@@ -14,7 +14,7 @@ interface SkillNode {
   connections: string[];
 }
 
-const skillNodes: SkillNode[] = [
+const defaultSkillNodes: SkillNode[] = [
   // ── ZONA HIJAU: Core Backend ──────────────────────────────────────────────
   // x: 80 (kolom 1) | 220 (kolom 2) | 360 (kolom 3, hanya dist-systems)
 
@@ -365,6 +365,19 @@ export default function SkillTree({
   isDark: boolean;
   isLoading?: boolean;
 }) {
+  const [nodes, setNodes] = useState<SkillNode[]>(defaultSkillNodes);
+
+  useEffect(() => {
+    fetch('/api/skills')
+      .then(res => res.json())
+      .then(data => {
+        if (data.skills && data.skills.length > 0) {
+          setNodes(data.skills);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const [hoveredNode, setHoveredNode] = useState<SkillNode | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -465,7 +478,7 @@ export default function SkillTree({
     )
       return true;
 
-    const sourceNode = skillNodes.find((n) => n.id === sourceId);
+    const sourceNode = nodes.find((n) => n.id === sourceId);
     if (
       sourceNode &&
       sourceNode.connections.includes(targetId) &&
@@ -512,12 +525,12 @@ export default function SkillTree({
 
   // Pre-calculate and memoize connection paths to optimize rendering
   const connectionPaths = useMemo(() => {
-    return skillNodes.flatMap((node) => {
+    return nodes.flatMap((node) => {
       const colors = getCategoryColor(node.category);
       const coords = getNodeCoords(node);
       return node.connections
         .map((connId) => {
-          const target = skillNodes.find((n) => n.id === connId);
+          const target = nodes.find((n) => n.id === connId);
           if (!target) return null;
           const targetCoords = getNodeCoords(target);
           const path = getBezierPath(
@@ -728,7 +741,7 @@ export default function SkillTree({
             })}
 
             {/* Render all interactive nodes */}
-            {skillNodes.map((node) => {
+            {nodes.map((node) => {
               const active = hoveredNode?.id === node.id;
               const anyActive = hoveredNode !== null;
               const connectedToActive = hoveredNode
