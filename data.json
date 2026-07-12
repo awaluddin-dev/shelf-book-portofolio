@@ -7,7 +7,7 @@
       "id": "cf_1",
       "title": "Writing",
       "icon": "PenTool",
-      "description": "\"I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs\"",
+      "description": "\"I Rewrote a Fintech Platform Alone \u2014 No Handover, No Team, No Docs\"",
       "link": "https://dev.to/awaluddin",
       "linkText": "Read on dev.to"
     },
@@ -36,31 +36,31 @@
         {
           "id": "ps_11",
           "name": "Node.js / TypeScript",
-          "subtext": "Production · 3+ yrs · SERA, Telkomsel, HDI",
+          "subtext": "Production \u00b7 3+ yrs \u00b7 SERA, Telkomsel, HDI",
           "status": "Production-ready"
         },
         {
           "id": "ps_12",
           "name": "NestJS",
-          "subtext": "Production · 2+ yrs · Microservices, SAP integration",
+          "subtext": "Production \u00b7 2+ yrs \u00b7 Microservices, SAP integration",
           "status": "Production-ready"
         },
         {
           "id": "ps_13",
           "name": "Go",
-          "subtext": "Production · 1 yr · IoT monitoring system",
+          "subtext": "Production \u00b7 1 yr \u00b7 IoT monitoring system",
           "status": "Production-ready"
         },
         {
           "id": "ps_14",
           "name": "REST API / Event-Driven",
-          "subtext": "Production · Applied across all roles",
+          "subtext": "Production \u00b7 Applied across all roles",
           "status": "Production-ready"
         },
         {
           "id": "ps_15",
           "name": "Python",
-          "subtext": "In use · LangGraph worker, scripting",
+          "subtext": "In use \u00b7 LangGraph worker, scripting",
           "status": "In Use"
         }
       ]
@@ -72,25 +72,25 @@
         {
           "id": "ps_21",
           "name": "LangGraph",
-          "subtext": "Building · AuraFlow AI project",
+          "subtext": "Building \u00b7 AuraFlow AI project",
           "status": "Building"
         },
         {
           "id": "ps_22",
           "name": "LangChain",
-          "subtext": "In use · Agent orchestration",
+          "subtext": "In use \u00b7 Agent orchestration",
           "status": "In Use"
         },
         {
           "id": "ps_23",
           "name": "OpenAI / Gemini API",
-          "subtext": "In use · LLM integration, multi-provider router",
+          "subtext": "In use \u00b7 LLM integration, multi-provider router",
           "status": "In Use"
         },
         {
           "id": "ps_24",
           "name": "Groq / Azure OpenAI",
-          "subtext": "Building · Fallback router design",
+          "subtext": "Building \u00b7 Fallback router design",
           "status": "Building"
         }
       ]
@@ -102,31 +102,31 @@
         {
           "id": "ps_31",
           "name": "PostgreSQL / SQL Server",
-          "subtext": "Production · 3+ yrs · SERA, HDI, Maccon",
+          "subtext": "Production \u00b7 3+ yrs \u00b7 SERA, HDI, Maccon",
           "status": "Production-ready"
         },
         {
           "id": "ps_32",
           "name": "Redis / BullMQ",
-          "subtext": "Production · Queue-based async pipelines",
+          "subtext": "Production \u00b7 Queue-based async pipelines",
           "status": "Production-ready"
         },
         {
           "id": "ps_33",
           "name": "Docker / Kubernetes",
-          "subtext": "Production · Bare-metal K8s at Telkomsel",
+          "subtext": "Production \u00b7 Bare-metal K8s at Telkomsel",
           "status": "Production-ready"
         },
         {
           "id": "ps_34",
           "name": "Azure (APIM, Service Bus, Key Vault)",
-          "subtext": "Production · Enterprise integration at SERA",
+          "subtext": "Production \u00b7 Enterprise integration at SERA",
           "status": "Production-ready"
         },
         {
           "id": "ps_35",
           "name": "MongoDB",
-          "subtext": "In use · SERA driver management system",
+          "subtext": "In use \u00b7 SERA driver management system",
           "status": "In Use"
         }
       ]
@@ -196,10 +196,10 @@
       "id": "nodejs",
       "title": "Node.js",
       "category": "Core Backend",
-      "level": "Production · 3+ yrs",
+      "level": "Production \u00b7 3+ yrs",
       "x": 80,
       "y": 80,
-      "details": "High-concurrency event-driven runtime across SERA, Telkomsel, and HDI.",
+      "details": "High-concurrency event-driven runtime across SERA, Telkomsel, and HDI \u2014 event loop optimization, stream piping, ESM module resolution, and multi-core clustering.",
       "connections": [
         "typescript",
         "nestjs"
@@ -209,10 +209,10 @@
       "id": "typescript",
       "title": "TypeScript",
       "category": "Core Backend",
-      "level": "Production · 3+ yrs",
+      "level": "Production \u00b7 3+ yrs",
       "x": 80,
       "y": 210,
-      "details": "Strict typing across all Node.js projects at SERA and HDI.",
+      "details": "Strict typing across all Node.js projects at SERA and HDI \u2014 DTO validation with class-validator, discriminated unions, generic service patterns, and interface-driven DI.",
       "connections": [
         "nestjs"
       ]
@@ -221,10 +221,10 @@
       "id": "nestjs",
       "title": "NestJS",
       "category": "Core Backend",
-      "level": "Production · 2+ yrs",
+      "level": "Production \u00b7 2+ yrs",
       "x": 80,
       "y": 340,
-      "details": "Enterprise backend framework at SERA and HDI.",
+      "details": "Enterprise backend framework at SERA and HDI \u2014 Guards, Interceptors, custom decorators, DI containers, native microservice transporters, and monorepo setups.",
       "connections": [
         "rest-api"
       ]
@@ -233,10 +233,10 @@
       "id": "go",
       "title": "Go",
       "category": "Core Backend",
-      "level": "Production · 1 yr",
+      "level": "Production \u00b7 1 yr",
       "x": 220,
       "y": 80,
-      "details": "IoT monitoring backend at Telkomsel.",
+      "details": "IoT monitoring backend at Telkomsel \u2014 goroutine concurrency, channel patterns, lightweight stateless service handlers, gRPC endpoints, and bare-metal deployment.",
       "connections": [
         "dist-systems"
       ]
@@ -245,10 +245,10 @@
       "id": "dist-systems",
       "title": "Dist. Systems",
       "category": "Core Backend",
-      "level": "Production · Enterprise",
+      "level": "Production \u00b7 Enterprise",
       "x": 220,
       "y": 210,
-      "details": "Event-driven microservice architecture at SERA.",
+      "details": "Event-driven microservice architecture at SERA \u2014 fault-tolerant messaging, circuit breaker patterns, saga-based payroll data flows, and distributed state management.",
       "connections": [
         "postgres",
         "redis"
@@ -258,10 +258,10 @@
       "id": "rest-api",
       "title": "REST API",
       "category": "Core Backend",
-      "level": "Production · All roles",
+      "level": "Production \u00b7 All roles",
       "x": 220,
       "y": 340,
-      "details": "REST API design across all engineering roles.",
+      "details": "REST API design across all engineering roles \u2014 versioning strategies, DTO contracts, standardized error responses, pagination patterns, and Swagger/OpenAPI documentation.",
       "connections": [
         "dist-systems"
       ]
@@ -270,10 +270,10 @@
       "id": "postgres",
       "title": "PostgreSQL",
       "category": "Infrastructure",
-      "level": "Production · 3+ yrs",
+      "level": "Production \u00b7 3+ yrs",
       "x": 460,
       "y": 80,
-      "details": "Primary database across HDI P2P lending, Maccon, and AuraFlow AI.",
+      "details": "Primary database across HDI P2P lending, Maccon, and AuraFlow AI \u2014 advanced indexing (B-Tree, GIN), JSONB, recursive CTEs, OCC locking, and TypeORM migrations.",
       "connections": [
         "redis"
       ]
@@ -282,80 +282,174 @@
       "id": "redis",
       "title": "Redis",
       "category": "Infrastructure",
-      "level": "Production · 2+ yrs",
+      "level": "Production \u00b7 2+ yrs",
       "x": 460,
       "y": 210,
-      "details": "Caching and task queues at SERA and Telkomsel.",
+      "details": "Distributed caching and queue backbone \u2014 BullMQ job management in AuraFlow AI, Redlock distributed locks, Pub/Sub channels, and cache-aside invalidation strategies.",
       "connections": [
-        "docker"
+        "bullmq"
       ]
+    },
+    {
+      "id": "bullmq",
+      "title": "BullMQ",
+      "category": "Infrastructure",
+      "level": "In Use \u00b7 AuraFlow",
+      "x": 460,
+      "y": 340,
+      "details": "Async job queue for AuraFlow AI pipeline \u2014 job prioritization, configurable retry policies, delayed execution, and concurrency control between Node.js gateway and Python worker.",
+      "connections": []
     },
     {
       "id": "docker",
       "title": "Docker",
       "category": "Infrastructure",
-      "level": "Production · 3+ yrs",
-      "x": 460,
-      "y": 340,
-      "details": "Containerization standard for all deployments.",
+      "level": "Production \u00b7 2+ yrs",
+      "x": 580,
+      "y": 80,
+      "details": "Containerization at Telkomsel and SERA \u2014 multi-stage builds, Compose for local dev environments, image layer optimization, and CI/CD environment parity via Jenkins.",
       "connections": [
-        "azure"
+        "k8s"
       ]
     },
     {
-      "id": "azure",
-      "title": "Azure",
+      "id": "k8s",
+      "title": "Kubernetes",
       "category": "Infrastructure",
-      "level": "Production · 2 yrs",
+      "level": "Production \u00b7 Telkomsel",
       "x": 580,
       "y": 210,
-      "details": "Cloud provider for SERA (APIM, Service Bus, Key Vault, AKS).",
+      "details": "Bare-metal K8s cluster at Telkomsel \u2014 physical node provisioning, Helm chart management, Ingress routing rules, ConfigMap/Secret management, and ArgoCD GitOps sync.",
       "connections": [
-        "ci-cd"
+        "argocd"
       ]
     },
     {
-      "id": "ci-cd",
-      "title": "CI/CD",
+      "id": "argocd",
+      "title": "ArgoCD",
       "category": "Infrastructure",
-      "level": "Production · 3+ yrs",
+      "level": "Production \u00b7 Telkomsel",
+      "x": 580,
+      "y": 340,
+      "details": "GitOps-based continuous deployment at Telkomsel \u2014 automated sync policies, environment-based rollback, promotion pipelines, and real-time application health monitoring.",
+      "connections": []
+    },
+    {
+      "id": "azure-servicebus",
+      "title": "Azure Svc Bus",
+      "category": "Infrastructure",
+      "level": "Production \u00b7 SERA",
       "x": 700,
-      "y": 210,
-      "details": "Automated pipelines using GitHub Actions, GitLab CI, Azure DevOps.",
+      "y": 80,
+      "details": "Enterprise message broker at SERA \u2014 SAP and Mekari Talenta integration via topics/subscriptions, dead-letter queue handling, session-based ordering, and retry policies.",
       "connections": [
-        "sys-design"
+        "azure-apim",
+        "python"
       ]
     },
     {
-      "id": "sys-design",
-      "title": "System Design",
-      "category": "Architecture",
-      "level": "Production · Core Skill",
-      "x": 920,
-      "y": 210,
-      "details": "End-to-end system design focusing on scalability, security, and maintainability.",
+      "id": "azure-apim",
+      "title": "Azure APIM",
+      "category": "Infrastructure",
+      "level": "Production \u00b7 SERA",
+      "x": 700,
+      "y": 340,
+      "details": "API management layer at SERA \u2014 policy-based authentication, rate limiting, request/response transformation, and backend abstraction for SAP and FMS 2.0 integrations.",
       "connections": [
+        "sap-integration"
+      ]
+    },
+    {
+      "id": "python",
+      "title": "Python",
+      "category": "AI & Integrations",
+      "level": "In Use \u00b7 AuraFlow",
+      "x": 880,
+      "y": 80,
+      "details": "AI worker runtime for AuraFlow \u2014 async scripting, Pydantic schema validation, structured logging (grep-friendly, no icons), and multi-threaded LangGraph agent execution.",
+      "connections": [
+        "langgraph",
         "langchain"
       ]
     },
     {
       "id": "langchain",
-      "title": "AI/LangChain",
-      "category": "Architecture",
-      "level": "Building · AuraFlow",
-      "x": 1040,
+      "title": "LangChain",
+      "category": "AI & Integrations",
+      "level": "In Use \u00b7 AuraFlow",
+      "x": 880,
+      "y": 210,
+      "details": "Agent tooling and chain composition for AuraFlow \u2014 prompt templates, structured output parsers, memory management, and tool-calling integration with LLM providers.",
+      "connections": [
+        "llm-router"
+      ]
+    },
+    {
+      "id": "sap-integration",
+      "title": "SAP Integration",
+      "category": "AI & Integrations",
+      "level": "Production \u00b7 SERA",
+      "x": 880,
+      "y": 340,
+      "details": "Enterprise SAP payroll data sync at SERA \u2014 integration via Azure Service Bus, idempotent message processing, field mapping to internal driver schemas, and error recovery flows.",
+      "connections": [
+        "mekari-talenta"
+      ]
+    },
+    {
+      "id": "langgraph",
+      "title": "LangGraph",
+      "category": "AI & Integrations",
+      "level": "Building \u00b7 AuraFlow",
+      "x": 1030,
       "y": 80,
-      "details": "Building agentic systems using LangChain, LangGraph, and OpenAI/Groq.",
+      "details": "Stateful multi-agent orchestration for AuraFlow AI \u2014 parse-validate loop with conditional branching, human-in-the-loop approval gates, and multi-provider LLM router integration.",
+      "connections": [
+        "llm-router"
+      ]
+    },
+    {
+      "id": "llm-router",
+      "title": "LLM Router",
+      "category": "AI & Integrations",
+      "level": "Building \u00b7 AuraFlow",
+      "x": 1030,
+      "y": 210,
+      "details": "Custom multi-provider abstraction layer for AuraFlow \u2014 sequential fallback across Claude, Gemini, OpenAI, Groq, and Azure OpenAI via environment-configurable LLM_PROVIDER_ORDER.",
+      "connections": [
+        "claude-api"
+      ]
+    },
+    {
+      "id": "mekari-talenta",
+      "title": "Mekari Talenta",
+      "category": "AI & Integrations",
+      "level": "Production \u00b7 SERA",
+      "x": 1030,
+      "y": 340,
+      "details": "HR and attendance data integration at SERA \u2014 webhook consumption, event-driven sync to driver management system, and reconciliation with SAP payroll outputs via Service Bus.",
       "connections": []
     },
     {
-      "id": "react",
-      "title": "React/Next.js",
-      "category": "Architecture",
-      "level": "Production · 2 yrs",
-      "x": 1040,
-      "y": 340,
-      "details": "Frontend frameworks for internal dashboards and this portfolio.",
+      "id": "claude-api",
+      "title": "Claude / Gemini",
+      "category": "AI & Integrations",
+      "level": "In Use \u00b7 AuraFlow",
+      "x": 1180,
+      "y": 80,
+      "details": "Primary LLM providers in AuraFlow router \u2014 structured JSON response parsing, multi-modal ingestion, token budget management, and retry-on-failure fallback to next provider.",
+      "connections": [
+        "vectordb"
+      ]
+    },
+    {
+      "id": "vectordb",
+      "title": "pgvector",
+      "category": "AI & Integrations",
+      "level": "Building \u00b7 Planned",
+      "x": 1180,
+      "y": 210,
+      "details": "Planned semantic search layer for AuraFlow RAG pipeline \u2014 pgvector extension on PostgreSQL, cosine similarity queries, embedding storage, and hybrid keyword+vector search.",
       "connections": []
     }
   ],
@@ -363,7 +457,7 @@
     "resumeUrl": "https://github.com/awaluddin-dev",
     "expertise": "Async pipelines, event-driven architecture, and LLM integration for enterprise & fintech.",
     "grit": "Survived a solo OJK & BI regulatory audit as the only engineer. Moved from HVAC blueprints to production microservices in under 2 years.",
-    "service": "I don't just ship code — I reduce costs, cut vendors, and leave systems better than I found them."
+    "service": "I don't just ship code \u2014 I reduce costs, cut vendors, and leave systems better than I found them."
   },
   "metrics": [
     {
@@ -561,7 +655,7 @@
           "description": "Stress-tested core transaction pathways up to 5,000 requests per second, achieving sub-15ms endpoint latency while maintaining absolute race-condition safety."
         }
       ],
-      "markdown": "\n# LedgerFlow\n**Digital Wallet API with Race Condition Prevention**\n\nLedgerFlow is a high-performance digital wallet API built to handle concurrent financial transactions without data anomalies.\n\n## Core Features\n- **Optimistic Concurrency Control (OCC)**: Implemented to strictly prevent race conditions during concurrent balance updates.\n- **In-Memory Caching**: Leveraged Redis for rapid session validation and idempotency key storage.\n- **Security**: JWT-based authentication with strict payload validation.\n\n### Technical Focus\nThe primary technical achievement is the robust handling of race conditions—a critical requirement in fintech—demonstrating a deep understanding of transactional integrity across distributed systems.\n"
+      "markdown": "\n# LedgerFlow\n**Digital Wallet API with Race Condition Prevention**\n\nLedgerFlow is a high-performance digital wallet API built to handle concurrent financial transactions without data anomalies.\n\n## Core Features\n- **Optimistic Concurrency Control (OCC)**: Implemented to strictly prevent race conditions during concurrent balance updates.\n- **In-Memory Caching**: Leveraged Redis for rapid session validation and idempotency key storage.\n- **Security**: JWT-based authentication with strict payload validation.\n\n### Technical Focus\nThe primary technical achievement is the robust handling of race conditions\u2014a critical requirement in fintech\u2014demonstrating a deep understanding of transactional integrity across distributed systems.\n"
     },
     {
       "id": "telkomsel-iot",
@@ -615,7 +709,7 @@
           "description": "Successfully migrated live IoT metric pipelines to bare-metal pods, maintaining 99.99% uptime while slashing cloud infrastructure costs by up to 70%."
         }
       ],
-      "markdown": "\n# Telkomsel IoT Monitoring\n**Bare-metal Kubernetes Deployment**\n\nBuilt and deployed an on-premise, bare-metal Kubernetes cluster tailored for an IoT monitoring system.\n\n## Impact & Architecture\n- **Cost Reduction**: Re-architecting from managed cloud to a bare-metal setup saved the client $1,800–$2,500 monthly.\n- **High Availability**: Configured robust node scheduling and self-healing for continuous IoT metric ingestion.\n- **Performance**: Tuned for high-throughput, low-latency sensor data processing.\n"
+      "markdown": "\n# Telkomsel IoT Monitoring\n**Bare-metal Kubernetes Deployment**\n\nBuilt and deployed an on-premise, bare-metal Kubernetes cluster tailored for an IoT monitoring system.\n\n## Impact & Architecture\n- **Cost Reduction**: Re-architecting from managed cloud to a bare-metal setup saved the client $1,800\u2013$2,500 monthly.\n- **High Availability**: Configured robust node scheduling and self-healing for continuous IoT metric ingestion.\n- **Performance**: Tuned for high-throughput, low-latency sensor data processing.\n"
     },
     {
       "id": "doeku-p2p",
@@ -669,7 +763,7 @@
           "description": "Engineered strict schema DTO validations and automated auditing ledger logging. Passed the comprehensive regulatory audits with zero findings."
         }
       ],
-      "markdown": "\n# Doeku P2P Lending\n**Solo Architecture Rewrite & Compliance**\n\nAs a solo developer, I led the complete architectural rewrite of a P2P lending platform, migrating it from a legacy Laravel monolith to scalable NestJS microservices.\n\n## The Problem\nThe legacy Laravel monolith was suffering from performance bottlenecks and tight coupling, making it incredibly difficult to implement new compliance rules mandated by OJK (Financial Services Authority) and Bank Indonesia (BI). Adding new features often broke existing transaction logic, and the company was facing an impending regulatory audit.\n\n## Architectural Decisions & Why\n- **Migration to NestJS**: Chose NestJS for its modularity and robust dependency injection, which allowed me to neatly separate domains (Identity, Ledger, Core Lending) that were previously entangled in Laravel.\n- **Event-Driven Microservices**: Used a message queue (BullMQ/Redis) for asynchronous tasks like sending loan disbursements and notifying users, ensuring that core API endpoints remained highly responsive.\n- **Strict Data Validation**: Implemented strict DTOs and validation pipes. This wasn't just for clean code—it was a regulatory necessity to ensure no malformed financial data could enter the system.\n\n## Trade-offs Considered\n- **Complexity vs. Speed**: Moving to microservices increased deployment complexity. Since I was a solo developer, I had to automate CI/CD heavily to compensate. A modular monolith was considered, but strict isolation was required by the audit team for the transaction ledger.\n\n## The Results\n- **Zero-Downtime Audit Success**: Engineered the entire system to pass strict regulatory audits by OJK and BI with zero critical findings.\n- **Performance**: Reduced average endpoint latency by 45%.\n- **Reliability**: Introduced robust error handling and tamper-proof audit trails, essential for financial compliance.\n"
+      "markdown": "\n# Doeku P2P Lending\n**Solo Architecture Rewrite & Compliance**\n\nAs a solo developer, I led the complete architectural rewrite of a P2P lending platform, migrating it from a legacy Laravel monolith to scalable NestJS microservices.\n\n## The Problem\nThe legacy Laravel monolith was suffering from performance bottlenecks and tight coupling, making it incredibly difficult to implement new compliance rules mandated by OJK (Financial Services Authority) and Bank Indonesia (BI). Adding new features often broke existing transaction logic, and the company was facing an impending regulatory audit.\n\n## Architectural Decisions & Why\n- **Migration to NestJS**: Chose NestJS for its modularity and robust dependency injection, which allowed me to neatly separate domains (Identity, Ledger, Core Lending) that were previously entangled in Laravel.\n- **Event-Driven Microservices**: Used a message queue (BullMQ/Redis) for asynchronous tasks like sending loan disbursements and notifying users, ensuring that core API endpoints remained highly responsive.\n- **Strict Data Validation**: Implemented strict DTOs and validation pipes. This wasn't just for clean code\u2014it was a regulatory necessity to ensure no malformed financial data could enter the system.\n\n## Trade-offs Considered\n- **Complexity vs. Speed**: Moving to microservices increased deployment complexity. Since I was a solo developer, I had to automate CI/CD heavily to compensate. A modular monolith was considered, but strict isolation was required by the audit team for the transaction ledger.\n\n## The Results\n- **Zero-Downtime Audit Success**: Engineered the entire system to pass strict regulatory audits by OJK and BI with zero critical findings.\n- **Performance**: Reduced average endpoint latency by 45%.\n- **Reliability**: Introduced robust error handling and tamper-proof audit trails, essential for financial compliance.\n"
     }
   ]
 }
