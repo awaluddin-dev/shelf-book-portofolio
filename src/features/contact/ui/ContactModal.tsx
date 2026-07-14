@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Send } from 'lucide-react';
+import { useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 
 interface ContactModalProps {
@@ -10,6 +11,31 @@ interface ContactModalProps {
 }
 
 export default function ContactModal({ isOpen, onClose, portfolioStatus, triggerToast }: ContactModalProps) {
+  const [formData, setFormData] = useState({ name: '', email: '', projectType: 'contract', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const res = await fetch('/api/contact/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!res.ok) throw new Error('Failed to send inquiry');
+      
+      triggerToast('Availability inquiry sent successfully! Thank you.');
+      onClose();
+      setFormData({ name: '', email: '', projectType: 'contract', message: '' });
+    } catch (error) {
+      triggerToast('Failed to send inquiry. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <>
       {/* Quick-Send Availability Inquiry Modal */}
@@ -56,11 +82,7 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
 
               <form 
                 className="space-y-4" 
-                onSubmit={(e) => { 
-                  e.preventDefault(); 
-                  onClose(); 
-                  triggerToast('Availability inquiry sent successfully! Thank you.'); 
-                }}
+                onSubmit={handleSubmit}
               >
                 <div>
                   <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Your Name</label>
@@ -68,6 +90,8 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     type="text" 
                     required 
                     placeholder="E.g., Sarah Jenkins" 
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
                   />
                 </div>
@@ -77,18 +101,22 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     type="email" 
                     required 
                     placeholder="E.g., sarah@company.com" 
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm" 
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-neu-text-muted mb-1.5 uppercase font-bold">Project Type</label>
                   <select 
+                    value={formData.projectType}
+                    onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl glass-card text-neu-text focus:outline-none focus:ring-0 transition-all border border-transparent focus:border-neu-accent/20 text-sm"
                   >
-                    <option value="contract">Freelance / Contract Project</option>
-                    <option value="fulltime">Full-time Opportunity</option>
-                    <option value="consulting">Architecture Advisory / Consulting</option>
-                    <option value="other">Other Inquiry</option>
+                    <option className="bg-white dark:bg-zinc-900 text-neu-text" value="contract">Freelance / Contract Project</option>
+                    <option className="bg-white dark:bg-zinc-900 text-neu-text" value="fulltime">Full-time Opportunity</option>
+                    <option className="bg-white dark:bg-zinc-900 text-neu-text" value="consulting">Architecture Advisory / Consulting</option>
+                    <option className="bg-white dark:bg-zinc-900 text-neu-text" value="other">Other Inquiry</option>
                   </select>
                 </div>
                 <div>
@@ -97,6 +125,8 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
                     rows={4} 
                     required 
                     placeholder="Briefly describe your project goals, stack, or role details..." 
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl glass-card-inset text-neu-text placeholder-neu-text-muted focus:outline-none focus:ring-0 transition-all resize-none border border-transparent focus:border-neu-accent/20 text-sm"
                   ></textarea>
                 </div>

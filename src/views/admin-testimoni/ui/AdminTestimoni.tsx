@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Loader } from '@/shared/ui/Loader';
 import { AdminSidebar } from '@/shared/ui/admin/AdminSidebar';
 import { useRouter } from 'next/navigation';
 import { Briefcase, LogOut, LayoutDashboard, Check, X, MessageSquare, ChevronRight, ChevronLeft, CheckCircle, AlertCircle } from 'lucide-react';
@@ -13,6 +14,7 @@ export default function AdminTestimoni() {
   const [status, setStatus] = useState<'available' | 'busy'>('available');
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,8 +38,8 @@ export default function AdminTestimoni() {
       fetch('/api/status').then(res => res.json()),
       fetch('/api/testimonials?all=true').then(res => res.json())
     ]).then(([statusData, testData]) => {
-      setStatus(statusData.status);
-      setTestimonials(testData.testimonials || []);
+      setStatus((statusData.data?.status || statusData.status));
+      setTestimonials(testData.data?.testimonials || testData.testimonials || (Array.isArray(testData.data) ? testData.data : (Array.isArray(testData) ? testData : [])));
       setLoading(false);
     });
   }, [router]);
@@ -47,7 +49,7 @@ export default function AdminTestimoni() {
     setStatus(nextStatus);
     await fetch('/api/status', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
       body: JSON.stringify({ status: nextStatus })
     });
   };
@@ -62,7 +64,7 @@ export default function AdminTestimoni() {
     try {
       const res = await fetch(`/api/testimonials/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ status: newStatus })
       });
       
@@ -72,7 +74,8 @@ export default function AdminTestimoni() {
     } catch (err) {
       setTestimonials(previousTestimonials);
       setToastMessage({ message: 'Failed to update testimonial', type: 'error' });
-    }
+      setIsProcessing(false);
+}
 
     setTimeout(() => setToastMessage(null), 3000);
     
@@ -86,7 +89,7 @@ export default function AdminTestimoni() {
     router.push('/admin/login');
   };
 
-  if (loading) return null;
+  if (loading) return <Loader fullScreen text="Loading..." />;
 
   return (
     <div className="min-h-screen bg-neu-bg flex text-neu-text">

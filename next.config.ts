@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`, // Proxy to Backend
+      },
+    ]
+  },
   // Allow access to remote image placeholder.
   images: {
     remotePatterns: [

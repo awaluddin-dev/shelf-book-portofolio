@@ -2,7 +2,62 @@
 
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from "react";
 import Image from "next/image";
-import { Activity, ArrowLeft, ArrowRight, ArrowUp, Award, BarChart2, Book, BookOpen, Box, BrainCircuit, Briefcase, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Cloud, Code2, Compass, Cpu, Database, Download, Eye, FileText, Filter, GitCommit, GitFork, Github, Globe, HandFist, Heart, Layers, Leaf, Linkedin, Mail, MapPin, MessageSquare, Milestone, Moon, Network, PenTool, Quote, Search, Server, Smile, Sparkles, Sun, Terminal, TrendingUp, Wrench, X, Zap } from 'lucide-react';
+import {
+  Activity,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Award,
+  BarChart2,
+  Book,
+  BookOpen,
+  Box,
+  BrainCircuit,
+  Briefcase,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Clock,
+  Cloud,
+  Code2,
+  Compass,
+  Cpu,
+  Database,
+  Download,
+  Eye,
+  FileText,
+  Filter,
+  GitCommit,
+  GitFork,
+  Github,
+  Globe,
+  HandFist,
+  Heart,
+  Layers,
+  Leaf,
+  Linkedin,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Milestone,
+  Moon,
+  Network,
+  PenTool,
+  Quote,
+  Search,
+  Server,
+  Smile,
+  Sparkles,
+  Sun,
+  Terminal,
+  TrendingUp,
+  Wrench,
+  X,
+  Zap,
+} from "lucide-react";
 
 import { useTheme } from "@/shared/ui/ThemeProvider";
 import {
@@ -48,10 +103,7 @@ import {
 } from "@/entities/skill/model/roadmap-data";
 import { experiencesList } from "@/entities/experience/model/experience-data";
 import { skillCategoriesList } from "@/entities/skill/model/skill-data";
-import {
-  commitActivityData,
-  repositoryBreakdownData,
-} from "@/entities/project/model/github-data";
+
 import ContactModal from "@/features/contact/ui/ContactModal";
 
 export default function Portfolio() {
@@ -75,81 +127,205 @@ export default function Portfolio() {
   const [dynamicHeroConfig, setDynamicHeroConfig] = useState<any>(null);
   const [dynamicMetrics, setDynamicMetrics] = useState<any[]>([]);
   const [dynamicProjects, setDynamicProjects] = useState<any[]>([]);
+  const [dynamicWork, setDynamicWork] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch Roadmap
-    fetch('/api/learning').then(res => res.json()).then(data => {
-      if (data.roadmap && data.roadmap.length > 0) setDynamicRoadmap(data.roadmap);
-    }).catch(console.error);
-    
+    fetch("/api/learning")
+      .then((res) => res.json())
+      .then((resData) => {
+        const payload = resData.data || resData;
+        const arr = payload.roadmap || (Array.isArray(payload) ? payload : []);
+        if (arr.length > 0) setDynamicRoadmap(arr);
+      })
+      .catch(console.error);
+
     // Fetch Proficiency
-    fetch('/api/proficiency').then(res => res.json()).then(data => {
-      if (data.proficiency && data.proficiency.length > 0) setDynamicProficiency(data.proficiency);
-    }).catch(console.error);
+    fetch("/api/proficiency")
+      .then((res) => res.json())
+      .then((resData) => {
+        const payload = resData.data || resData;
+        const arr =
+          payload.proficiency || (Array.isArray(payload) ? payload : []);
+        if (arr.length > 0) setDynamicProficiency(arr);
+      })
+      .catch(console.error);
 
     // Fetch Current Focus
-    fetch('/api/current').then(res => res.json()).then(data => {
-      if (data.currentFocus && data.currentFocus.length > 0) setDynamicCurrentFocus(data.currentFocus);
-    }).catch(console.error);
+    fetch("/api/current")
+      .then((res) => res.json())
+      .then((resData) => {
+        const payload = resData.data || resData;
+        const arr =
+          payload.currentFocus || (Array.isArray(payload) ? payload : []);
+        if (arr.length > 0) setDynamicCurrentFocus(arr);
+      })
+      .catch(console.error);
 
-    // Fetch Hero
-    fetch('/api/hero').then(res => res.json()).then(data => {
-      if (data.heroConfig) setDynamicHeroConfig(data.heroConfig);
-      if (data.metrics && data.metrics.length > 0) setDynamicMetrics(data.metrics);
-    }).catch(console.error);
+    // Fetch Hero with ETag caching
+    const cachedHeroEtag = typeof window !== 'undefined' ? localStorage.getItem('hero_etag') : null;
+    const cachedHeroData = typeof window !== 'undefined' ? localStorage.getItem('hero_data') : null;
+    const heroHeaders: Record<string, string> = {};
+    if (cachedHeroEtag && cachedHeroData) {
+      heroHeaders['If-None-Match'] = cachedHeroEtag;
+    }
+    
+    fetch("/api/hero", { headers: heroHeaders })
+      .then(async (res) => {
+        if (res.status === 304 && cachedHeroData) {
+          return JSON.parse(cachedHeroData);
+        }
+        const resData = await res.json();
+        const payload = resData.data || resData;
+        if (payload.meta?.etag && typeof window !== 'undefined') {
+          localStorage.setItem('hero_etag', payload.meta.etag);
+          localStorage.setItem('hero_data', JSON.stringify(resData));
+        }
+        return resData;
+      })
+      .then((resData) => {
+        const payload = resData.data || resData;
+        if (payload.heroConfig) setDynamicHeroConfig(payload.heroConfig);
+        const metricsArr =
+          payload.metrics || (Array.isArray(payload) ? payload : []);
+        if (metricsArr.length > 0) setDynamicMetrics(metricsArr);
+      })
+      .catch(console.error);
 
     // Fetch Projects
-    fetch('/api/projects').then(res => res.json()).then(data => {
-      if (data.projects) setDynamicProjects(data.projects);
-    }).catch(console.error);
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((resData) => {
+        const payload = resData.data || resData;
+        const arr = payload.projects || (Array.isArray(payload) ? payload : []);
+        if (arr.length > 0) setDynamicProjects(arr);
+      })
+      .catch(console.error);
 
+    // Fetch Work
+    fetch("/api/work")
+      .then((res) => res.json())
+      .then((resData) => {
+        const payload = resData.data || resData;
+        const arr =
+          payload.workExperience ||
+          payload.workExperiences ||
+          (Array.isArray(payload) ? payload : []);
+        if (arr.length > 0) setDynamicWork(arr);
+      })
+      .catch(console.error);
   }, []);
-  
+
   // Use dynamic if available, fallback to static imports or defaults
-  const activeRoadmap = dynamicRoadmap.length > 0 ? dynamicRoadmap : roadmapItems;
-  const activeProficiency = dynamicProficiency.length > 0 ? dynamicProficiency : skillCategoriesList;
-  const activeCurrentFocus = dynamicCurrentFocus.length > 0 ? dynamicCurrentFocus : [
-    { title: 'Writing', icon: 'PenTool', description: '"I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs"', link: 'https://dev.to/awaluddin', linkText: 'Read on dev.to' },
-    { title: 'Current Work', icon: 'Code2', description: 'Building AuraFlow AI, an intelligent project management and estimation agent.', link: 'https://github.com/awaluddin-dev', linkText: 'View Repository' },
-    { title: 'Upcoming Tech', icon: 'Rocket', description: 'Deep diving into local LLM orchestration and vector database optimization.', link: '#experience', linkText: 'See Roadmap' }
-  ];
+  const activeRoadmap =
+    dynamicRoadmap.length > 0 ? dynamicRoadmap : roadmapItems;
+  const activeProficiency =
+    dynamicProficiency.length > 0 ? dynamicProficiency : skillCategoriesList;
+  const activeWork = dynamicWork.length > 0 ? dynamicWork : experiencesList;
+  const activeCurrentFocus =
+    dynamicCurrentFocus.length > 0
+      ? dynamicCurrentFocus
+      : [
+          {
+            title: "Writing",
+            icon: "PenTool",
+            description:
+              '"I Rewrote a Fintech Platform Alone — No Handover, No Team, No Docs"',
+            link: "https://dev.to/awaluddin",
+            linkText: "Read on dev.to",
+          },
+          {
+            title: "Current Work",
+            icon: "Code2",
+            description:
+              "Building AuraFlow AI, an intelligent project management and estimation agent.",
+            link: "https://github.com/awaluddin-dev",
+            linkText: "View Repository",
+          },
+          {
+            title: "Upcoming Tech",
+            icon: "Rocket",
+            description:
+              "Deep diving into local LLM orchestration and vector database optimization.",
+            link: "#experience",
+            linkText: "See Roadmap",
+          },
+        ];
 
   const activeHeroConfig = dynamicHeroConfig || {
     resumeUrl: "https://github.com/awaluddin-dev",
     expertise: "{activeHeroConfig.expertise}",
     grit: "{activeHeroConfig.grit}",
-    service: "{activeHeroConfig.service}"
+    service: "{activeHeroConfig.service}",
   };
 
-  const activeMetrics = dynamicMetrics.length > 0 ? dynamicMetrics : [
-    { val: "5+ Years", label: "Engineering Experience", icon: "Code2", isSavings: false },
-    { val: "Enterprise & Fintech", label: "INDUSTRY EXPERIENCE", icon: "Briefcase", isSavings: false },
-    { val: "$18K/yr", label: "Infra Cost Savings", icon: "TrendingUp", isSavings: true },
-    { val: "@ Astra Group", label: "CURRENT CONTRACT", icon: "MapPin", isSavings: false }
-  ];
+  const activeMetrics =
+    dynamicMetrics.length > 0
+      ? dynamicMetrics
+      : [
+          {
+            val: "5+ Years",
+            label: "Engineering Experience",
+            icon: "Code2",
+            isSavings: false,
+          },
+          {
+            val: "Enterprise & Fintech",
+            label: "INDUSTRY EXPERIENCE",
+            icon: "Briefcase",
+            isSavings: false,
+          },
+          {
+            val: "$18K/yr",
+            label: "Infra Cost Savings",
+            icon: "TrendingUp",
+            isSavings: true,
+          },
+          {
+            val: "@ Astra Group",
+            label: "CURRENT CONTRACT",
+            icon: "MapPin",
+            isSavings: false,
+          },
+        ];
 
   const renderIcon = (iconName: string, isSavings: boolean) => {
-    const props = { className: `w-5 h-5 sm:w-6 sm:h-6 ${isSavings ? 'text-emerald-500 dark:text-emerald-400' : 'text-neu-accent'}` };
+    const props = {
+      className: `w-5 h-5 sm:w-6 sm:h-6 ${isSavings ? "text-emerald-500 dark:text-emerald-400" : "text-neu-accent"}`,
+    };
     switch (iconName) {
-      case 'Code2': return <Code2 {...props} />;
-      case 'Briefcase': return <Briefcase {...props} />;
-      case 'TrendingUp': return <TrendingUp {...props} />;
-      case 'MapPin': return <MapPin {...props} />;
-      case 'Cpu': return <Cpu {...props} />;
-      case 'Zap': return <Zap {...props} />;
-      case 'Activity': return <Activity {...props} />;
-      case 'Award': return <Award {...props} />;
-      case 'Terminal': return <Terminal {...props} />;
-      case 'Server': return <Server {...props} />;
-      case 'Database': return <Database {...props} />;
-      case 'Box': return <Box {...props} />;
-      case 'Layers': return <Layers {...props} />;
-      case 'Cloud': return <Cloud {...props} />;
-      default: return <Code2 {...props} />;
+      case "Code2":
+        return <Code2 {...props} />;
+      case "Briefcase":
+        return <Briefcase {...props} />;
+      case "TrendingUp":
+        return <TrendingUp {...props} />;
+      case "MapPin":
+        return <MapPin {...props} />;
+      case "Cpu":
+        return <Cpu {...props} />;
+      case "Zap":
+        return <Zap {...props} />;
+      case "Activity":
+        return <Activity {...props} />;
+      case "Award":
+        return <Award {...props} />;
+      case "Terminal":
+        return <Terminal {...props} />;
+      case "Server":
+        return <Server {...props} />;
+      case "Database":
+        return <Database {...props} />;
+      case "Box":
+        return <Box {...props} />;
+      case "Layers":
+        return <Layers {...props} />;
+      case "Cloud":
+        return <Cloud {...props} />;
+      default:
+        return <Code2 {...props} />;
     }
   };
-
-
 
   const [chartType, setChartType] = useState<"temporal" | "repository">(
     "temporal",
@@ -216,7 +392,12 @@ export default function Portfolio() {
   useEffect(() => {
     fetch("/api/testimonials")
       .then((res) => res.json())
-      .then((data) => setTestimonialsList(data.testimonials));
+      .then((data) => {
+        const payload = data.data || data;
+        const arr = payload.testimonials || (Array.isArray(payload) ? payload : []);
+        setTestimonialsList(arr);
+      })
+      .catch(console.error);
   }, []);
   const [portfolioStatus, setPortfolioStatus] = useState<"available" | "busy">(
     "available",
@@ -281,76 +462,70 @@ export default function Portfolio() {
     };
   }, []);
 
-  const contributionData = useMemo(() => {
-    const data = [];
-    const endDate = new Date(2026, 6, 4); // July 4, 2026
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 370); // ~53 weeks
+  const [contributionData, setContributionData] = useState<any[][]>([]);
+  const [timelineData, setTimelineData] = useState<any[]>([]);
+  const [repoData, setRepoData] = useState<any[]>([]);
 
-    let currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-      const dayOfWeek = currentDate.getDay();
-      const dateString = currentDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-
-      const seed =
-        currentDate.getDate() +
-        currentDate.getMonth() * 31 +
-        currentDate.getFullYear() * 365;
-      const x = Math.sin(seed) * 10000;
-      const rand = x - Math.floor(x);
-
-      let count = 0;
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      if (isWeekend) {
-        if (rand > 0.78) {
-          count = Math.floor(rand * 3) + 1;
+  useEffect(() => {
+    fetch("/api/github/contributions/awaluddin-dev")
+      .then((res) => res.json())
+      .then((data) => {
+        const payload = data.data || data;
+        if (payload && payload.calendar) {
+          setContributionData(payload.calendar);
+          setTimelineData(payload.timeline || []);
+          setRepoData(payload.repositories || []);
+        } else {
+          // Fallback if API hasn't updated yet or returns old format
+          setContributionData(Array.isArray(payload) ? payload : []);
         }
-      } else {
-        if (rand > 0.15) {
-          count = Math.floor(rand * 8) + 1;
-          if (rand > 0.88) count += Math.floor(rand * 5);
-        }
-      }
-
-      let level = 0;
-      if (count > 0) {
-        if (count <= 2) level = 1;
-        else if (count <= 4) level = 2;
-        else if (count <= 7) level = 3;
-        else level = 4;
-      }
-
-      data.push({
-        date: dateString,
-        count,
-        level,
-        dayOfWeek,
-        month: currentDate.getMonth(),
-      });
-
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return data;
+      })
+      .catch(console.error);
   }, []);
 
-  const weeks = useMemo(() => {
-    const w = [];
-    for (let i = 0; i < contributionData.length; i += 7) {
-      w.push(contributionData.slice(i, i + 7));
-    }
-    return w;
-  }, [contributionData]);
+  const weeks = contributionData; // backend now returns array of weeks directly
+
+  const heatmapStats = useMemo(() => {
+    let total = 0;
+    let currentStreak = 0;
+    let max = 0;
+    let activeDays = 0;
+    let totalDays = 0;
+    
+    weeks.forEach(week => {
+      if (!Array.isArray(week)) return;
+      week.forEach(day => {
+        if (!day) return;
+        totalDays++;
+        if (day.count > 0) {
+          total += day.count;
+          currentStreak++;
+          activeDays++;
+        } else {
+          if (currentStreak > max) max = currentStreak;
+          currentStreak = 0;
+        }
+      });
+    });
+    if (currentStreak > max) max = currentStreak;
+    
+    const intensity = totalDays > 0 ? (activeDays / totalDays) * 100 : 0;
+    
+    return {
+      total,
+      maxStreak: max,
+      avgIntensity: intensity.toFixed(1)
+    };
+  }, [weeks]);
 
   const monthLabels = useMemo(() => {
     const labels: { index: number; label: string; monthNum: number }[] = [];
     let prevMonth = -1;
     weeks.forEach((week, index) => {
-      if (week[0]) {
-        const currentMonth = week[0].month;
+      if (!Array.isArray(week)) return;
+      const firstValidDay = week.find(d => d !== null);
+      if (firstValidDay) {
+        const currentMonth = firstValidDay.month;
         if (currentMonth !== prevMonth) {
           const monthName = new Date(2026, currentMonth, 1).toLocaleDateString(
             "en-US",
@@ -398,11 +573,13 @@ export default function Portfolio() {
     return months;
   }, [weeks, monthLabels]);
 
-
   // Fallback to static projects if API is slow or empty
-  const activeProjects = dynamicProjects.length > 0 ? dynamicProjects : projects;
+  const activeProjects =
+    dynamicProjects.length > 0 ? dynamicProjects : projects;
 
-  const categories = Array.from(new Set((activeProjects || []).map((p) => p.category)));
+  const categories = Array.from(
+    new Set((activeProjects || []).map((p) => p.category)),
+  );
 
   const filteredProjects = useMemo(() => {
     const filtered = (activeProjects || []).filter((project) => {
@@ -449,7 +626,7 @@ export default function Portfolio() {
       }
       return 0;
     });
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, selectedCategory, sortBy, activeProjects]);
 
   const handlePrevProject = () => {
     if (!selectedProject) return;
@@ -564,7 +741,7 @@ export default function Portfolio() {
         initial={{ y: 100, x: "-50%", opacity: 0 }}
         animate={{ y: 0, x: "-50%", opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="fixed bottom-6 left-1/2 z-50 w-auto max-w-[95vw] sm:max-w-lg md:max-w-none p-1.5 rounded-2xl flex flex-nowrap items-center transition-all duration-300 group overflow-hidden"
+        className="fixed bottom-6 left-1/2 z-50 w-auto max-w-[95vw] sm:max-w-lg md:max-w-none p-1.5 rounded-2xl flex flex-nowrap items-center transition-all duration-300 group"
         style={{
           boxShadow: isDark
             ? "0 8px 30px rgba(0, 173, 181, 0.12), inset 0 0 12px rgba(0, 173, 181, 0.04)"
@@ -811,11 +988,10 @@ export default function Portfolio() {
                       View Projects
                     </button>
 
-                    <button
-                      onClick={() => {
-                        triggerToast("Professional CV view initiated!");
-                        window.open(activeHeroConfig.resumeUrl, "_blank");
-                      }}
+                    <a
+                      href="/cv.pdf"
+                      download="Awaluddin_CV.pdf"
+                      onClick={() => triggerToast("Downloading CV...")}
                       className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
                     >
                       <Download
@@ -823,7 +999,7 @@ export default function Portfolio() {
                         className="group-hover:scale-110 transition-transform text-neu-accent group-hover:text-white"
                       />{" "}
                       Download CV
-                    </button>
+                    </a>
                   </motion.div>
 
                   {/* Pillars: Expertise, Grit, and Service */}
@@ -1028,9 +1204,15 @@ export default function Portfolio() {
           </div>
 
           {/* Spaced Metric Cards - Move up metric strip & add space/gap between items */}
+          {activeMetrics.length > 0 && (
           <div className="max-w-7xl mx-auto w-full">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {(activeMetrics || []).map((item: any, idx: number) => (
+            <div className={cn("grid gap-4 sm:gap-6", 
+              activeMetrics.length === 1 ? "grid-cols-1" : "grid-cols-2",
+              activeMetrics.length === 1 ? "lg:grid-cols-1" : 
+              activeMetrics.length === 2 ? "lg:grid-cols-2" : 
+              activeMetrics.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+            )}>
+              {activeMetrics.map((item: any, idx: number) => (
                 <motion.div
                   key={idx}
                   whileHover={{
@@ -1058,7 +1240,7 @@ export default function Portfolio() {
                           "text-emerald-500 dark:text-emerald-400",
                       )}
                     >
-                      {item.val}
+                      {item.value || item.val}
                     </span>
                     <span className="text-[10px] sm:text-xs font-sans font-semibold text-neu-text-muted leading-tight uppercase tracking-wide">
                       {item.label}
@@ -1068,6 +1250,7 @@ export default function Portfolio() {
               ))}
             </div>
           </div>
+          )}
         </header>
 
         {/* Projects Section with Intersection Observer Animations */}
@@ -1098,7 +1281,7 @@ export default function Portfolio() {
           {/* Controls: Search & Filter */}
           <div className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
             <div className="relative flex-1 group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neu-text-muted group-focus-within:text-neu-accent transition-colors z-10">
                 <Search size={18} />
               </div>
               <input
@@ -1599,7 +1782,7 @@ export default function Portfolio() {
       <section id="proficiency" className="scroll-mt-20">
         {/* Technical Proficiency Sub-section */}
         <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
+          className="max-w-7xl mx-auto mb-24"
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -1741,7 +1924,7 @@ export default function Portfolio() {
 
         {/* Professional Insights & Focus Section */}
         <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
+          className="max-w-7xl mx-auto mb-24"
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -1830,7 +2013,7 @@ export default function Portfolio() {
 
         {/* Learning Roadmap Sub-section (Moved below Professional Insights & Focus) */}
         <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
+          className="max-w-7xl mx-auto mb-24"
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -2069,7 +2252,7 @@ export default function Portfolio() {
 
         {/* Skill Tree Section */}
         <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
+          className="max-w-7xl mx-auto"
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -2109,7 +2292,7 @@ export default function Portfolio() {
       {/* Experience Section */}
       <section id="experience" className="scroll-mt-20">
         <motion.div
-          className="max-w-7xl mx-auto mt-24 mb-24"
+          className="max-w-7xl mx-auto"
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -2232,7 +2415,7 @@ export default function Portfolio() {
                     minHeight={1}
                   >
                     <AreaChart
-                      data={commitActivityData}
+                      data={timelineData}
                       margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                     >
                       <defs>
@@ -2314,7 +2497,7 @@ export default function Portfolio() {
                     minHeight={1}
                   >
                     <BarChart
-                      data={repositoryBreakdownData}
+                      data={repoData}
                       margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                     >
                       <CartesianGrid
@@ -2400,18 +2583,18 @@ export default function Portfolio() {
                     <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">Total: </span>
                       <span className="text-neu-accent font-bold">
-                        2,684 commits
+                        {heatmapStats.total.toLocaleString()} contributions
                       </span>
                     </div>
                     <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">Max Streak: </span>
-                      <span className="text-green-500 font-bold">42 days</span>
+                      <span className="text-green-500 font-bold">{heatmapStats.maxStreak} days</span>
                     </div>
                     <div className="px-3 py-1 rounded-lg glass-card-sm">
                       <span className="text-neu-text-muted">
-                        Avg Intensity:{" "}
+                        Active Days:{" "}
                       </span>
-                      <span className="text-neu-accent font-bold">96.8%</span>
+                      <span className="text-neu-accent font-bold">{heatmapStats.avgIntensity}%</span>
                     </div>
                   </div>
                 </div>
@@ -2441,115 +2624,121 @@ export default function Portfolio() {
                         {(monthsData || []).map((monthGroup, mIdx) => (
                           <div key={mIdx} className="flex shrink-0 gap-[3px]">
                             <div className="flex gap-[3px] shrink-0">
-                              {(monthGroup.weeks || []).map((week, wIdxInMonth) => {
-                                const isFirstWeekOfMonth = wIdxInMonth === 0;
-                                const isColInHoveredMonth =
-                                  hoveredMonth !== null &&
-                                  week.some(
-                                    (day) => day.month === hoveredMonth,
-                                  );
+                              {(monthGroup.weeks || []).map(
+                                (week, wIdxInMonth) => {
+                                  const isFirstWeekOfMonth = wIdxInMonth === 0;
+                                  const isColInHoveredMonth =
+                                    hoveredMonth !== null &&
+                                    week.some(
+                                      (day) => day.month === hoveredMonth,
+                                    );
 
-                                return (
-                                  <div
-                                    key={wIdxInMonth}
-                                    className={cn(
-                                      "flex flex-col gap-[3px] shrink-0 relative pt-10 px-[1px] rounded-md transition-all duration-300",
-                                      isColInHoveredMonth
-                                        ? "bg-neu-accent/[0.04] dark:bg-neu-accent/[0.08] ring-1 ring-neu-accent/15 scale-[1.02] z-10"
-                                        : hoveredMonth !== null
-                                          ? "opacity-30"
-                                          : "",
-                                    )}
-                                  >
-                                    {isFirstWeekOfMonth && (
-                                      <span
-                                        onMouseEnter={() =>
-                                          setHoveredMonth(monthGroup.monthNum)
-                                        }
-                                        onMouseLeave={() =>
-                                          setHoveredMonth(null)
-                                        }
-                                        className={cn(
-                                          "absolute top-0 left-0 text-[10px] sm:text-[10px] font-mono text-neu-text-muted whitespace-nowrap cursor-pointer transition-all duration-200 hover:text-neu-accent select-none",
-                                          hoveredMonth === monthGroup.monthNum
-                                            ? "text-neu-accent font-bold"
+                                  return (
+                                    <div
+                                      key={wIdxInMonth}
+                                      className={cn(
+                                        "flex flex-col gap-[3px] shrink-0 relative pt-10 px-[1px] rounded-md transition-all duration-300",
+                                        isColInHoveredMonth
+                                          ? "bg-neu-accent/[0.04] dark:bg-neu-accent/[0.08] ring-1 ring-neu-accent/15 scale-[1.02] z-10"
+                                          : hoveredMonth !== null
+                                            ? "opacity-30"
                                             : "",
-                                        )}
-                                      >
-                                        {monthGroup.label}
-                                      </span>
-                                    )}
-                                    {(week || []).map((day, dIdx) => {
-                                      const levelColors = isDark
-                                        ? [
-                                            "bg-zinc-800/60 hover:bg-zinc-700",
-                                            "bg-emerald-950 hover:bg-emerald-900",
-                                            "bg-emerald-800 hover:bg-emerald-700",
-                                            "bg-emerald-500 hover:bg-emerald-400",
-                                            "bg-emerald-400 hover:bg-emerald-300",
-                                          ]
-                                        : [
-                                            "bg-gray-200 hover:bg-gray-300",
-                                            "bg-indigo-100 hover:bg-indigo-200",
-                                            "bg-indigo-300 hover:bg-indigo-400",
-                                            "bg-indigo-500 hover:bg-indigo-600",
-                                            "bg-indigo-600 hover:bg-indigo-700",
-                                          ];
-
-                                      const isCellFilteredOut =
-                                        selectedLevelFilter !== null &&
-                                        day.level !== selectedLevelFilter;
-                                      const isCellFilteredIn =
-                                        selectedLevelFilter !== null &&
-                                        day.level === selectedLevelFilter;
-
-                                      return (
-                                        <div
-                                          key={dIdx}
-                                          onTouchStart={() =>
-                                            handleTouchStart(day.date)
+                                      )}
+                                    >
+                                      {isFirstWeekOfMonth && (
+                                        <span
+                                          onMouseEnter={() =>
+                                            setHoveredMonth(monthGroup.monthNum)
                                           }
-                                          onTouchEnd={handleTouchEnd}
-                                          onTouchCancel={handleTouchEnd}
-                                          onTouchMove={handleTouchMove}
+                                          onMouseLeave={() =>
+                                            setHoveredMonth(null)
+                                          }
                                           className={cn(
-                                            "w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] transition-all duration-150 cursor-pointer relative group/cell",
-                                            levelColors[day.level],
-                                            isCellFilteredOut
-                                              ? "opacity-15 scale-90"
-                                              : "",
-                                            isCellFilteredIn ||
-                                              activeTooltipDate === day.date
-                                              ? "ring-2 ring-neu-accent scale-110 z-10"
+                                            "absolute top-0 left-0 text-[10px] sm:text-[10px] font-mono text-neu-text-muted whitespace-nowrap cursor-pointer transition-all duration-200 hover:text-neu-accent select-none",
+                                            hoveredMonth === monthGroup.monthNum
+                                              ? "text-neu-accent font-bold"
                                               : "",
                                           )}
                                         >
-                                          {/* Premium Mini Tooltip */}
+                                          {monthGroup.label}
+                                        </span>
+                                      )}
+                                      {(week || []).map((day, dIdx) => {
+                                        const levelColors = isDark
+                                          ? [
+                                              "bg-zinc-800/60 hover:bg-zinc-700",
+                                              "bg-emerald-950 hover:bg-emerald-900",
+                                              "bg-emerald-800 hover:bg-emerald-700",
+                                              "bg-emerald-500 hover:bg-emerald-400",
+                                              "bg-emerald-400 hover:bg-emerald-300",
+                                            ]
+                                          : [
+                                              "bg-gray-200 hover:bg-gray-300",
+                                              "bg-indigo-100 hover:bg-indigo-200",
+                                              "bg-indigo-300 hover:bg-indigo-400",
+                                              "bg-indigo-500 hover:bg-indigo-600",
+                                              "bg-indigo-600 hover:bg-indigo-700",
+                                            ];
+
+                                        const isCellFilteredOut =
+                                          selectedLevelFilter !== null &&
+                                          day.level !== selectedLevelFilter;
+                                        const isCellFilteredIn =
+                                          selectedLevelFilter !== null &&
+                                          day.level === selectedLevelFilter;
+
+                                        return (
+                                          day === null ? (
+                                            <div key={dIdx} className="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] opacity-0 pointer-events-none" />
+                                          ) : (
                                           <div
+                                            key={dIdx}
+                                            onTouchStart={() =>
+                                              handleTouchStart(day.date)
+                                            }
+                                            onTouchEnd={handleTouchEnd}
+                                            onTouchCancel={handleTouchEnd}
+                                            onTouchMove={handleTouchMove}
                                             className={cn(
-                                              "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-black/95 dark:bg-neutral-900 text-white text-[9px] font-mono whitespace-nowrap transition-all duration-150 z-50 shadow-lg border border-white/10 pointer-events-none",
-                                              activeTooltipDate === day.date
-                                                ? "opacity-100 translate-y-0 scale-100"
-                                                : "opacity-0 translate-y-1 scale-95 group-hover/cell:opacity-100 group-hover/cell:translate-y-0 group-hover/cell:scale-100 group-hover/cell:delay-200",
+                                              "w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-[2px] transition-all duration-150 cursor-pointer relative group/cell",
+                                              levelColors[day.level],
+                                              isCellFilteredOut
+                                                ? "opacity-15 scale-90"
+                                                : "",
+                                              isCellFilteredIn ||
+                                                activeTooltipDate === day.date
+                                                ? "ring-2 ring-neu-accent scale-110 z-10"
+                                                : "",
                                             )}
                                           >
-                                            <span className="text-neu-accent font-bold">
-                                              {day.count}{" "}
-                                              {day.count === 1
-                                                ? "contribution"
-                                                : "contributions"}
-                                            </span>
-                                            <br />
-                                            <span className="text-gray-400">
-                                              {day.date}
-                                            </span>
+                                            {/* Premium Mini Tooltip */}
+                                            <div
+                                              className={cn(
+                                                "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-black/95 dark:bg-neutral-900 text-white text-[9px] font-mono whitespace-nowrap transition-all duration-150 z-50 shadow-lg border border-white/10 pointer-events-none",
+                                                activeTooltipDate === day.date
+                                                  ? "opacity-100 translate-y-0 scale-100"
+                                                  : "opacity-0 translate-y-1 scale-95 group-hover/cell:opacity-100 group-hover/cell:translate-y-0 group-hover/cell:scale-100 group-hover/cell:delay-200",
+                                              )}
+                                            >
+                                              <span className="text-neu-accent font-bold">
+                                                {day.count}{" "}
+                                                {day.count === 1
+                                                  ? "contribution"
+                                                  : "contributions"}
+                                              </span>
+                                              <br />
+                                              <span className="text-gray-400">
+                                                {day.date}
+                                              </span>
+                                            </div>
                                           </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                );
-                              })}
+                                          )
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                },
+                              )}
                             </div>
                           </div>
                         ))}
@@ -2594,51 +2783,49 @@ export default function Portfolio() {
                           <span className="flex items-center gap-2 whitespace-nowrap">
                             <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-100 dark:bg-emerald-950"></span>
                             <span className="text-zinc-500 dark:text-zinc-400">
-                              Level 1: Low
+                              Level 1
                             </span>
                           </span>
                           <span className="font-bold text-indigo-500 dark:text-emerald-500 whitespace-nowrap">
-                            1 - 2 commits
+                            1st Quartile
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <span className="flex items-center gap-2 whitespace-nowrap">
                             <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-300 dark:bg-emerald-800"></span>
                             <span className="text-zinc-500 dark:text-zinc-400">
-                              Level 2: Medium
+                              Level 2
                             </span>
                           </span>
                           <span className="font-bold text-indigo-600 dark:text-emerald-400 whitespace-nowrap">
-                            3 - 4 commits
+                            2nd Quartile
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <span className="flex items-center gap-2 whitespace-nowrap">
                             <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-500 dark:bg-emerald-500"></span>
                             <span className="text-zinc-500 dark:text-zinc-400">
-                              Level 3: High
+                              Level 3
                             </span>
                           </span>
                           <span className="font-bold text-indigo-700 dark:text-emerald-300 whitespace-nowrap">
-                            5 - 7 commits
+                            3rd Quartile
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <span className="flex items-center gap-2 whitespace-nowrap">
                             <span className="w-3.5 h-3.5 rounded-[4px] bg-indigo-600 dark:bg-emerald-400"></span>
                             <span className="text-zinc-500 dark:text-zinc-400">
-                              Level 4: Very High
+                              Level 4
                             </span>
                           </span>
                           <span className="font-bold text-indigo-800 dark:text-emerald-200 whitespace-nowrap">
-                            8+ commits
+                            4th Quartile
                           </span>
                         </div>
                       </div>
                       <div className="mt-3 pt-2 border-t border-zinc-200 dark:border-white/5 text-[9px] text-zinc-400 leading-normal">
-                        ℹ Values are simulated based on realistic developer
-                        commit distributions, reflecting live velocity and
-                        delivery metrics.
+                        ℹ Colors correspond to GitHub's relative quartile distribution. Data is pulled live via GitHub GraphQL API.
                       </div>
                       <div className="absolute top-full left-1/2 sm:left-6 -translate-x-1/2 -mt-[5px] w-2.5 h-2.5 rotate-45 bg-white/95 dark:bg-zinc-900/95 border-r border-b border-zinc-200 dark:border-white/10"></div>
                     </div>
@@ -2715,7 +2902,7 @@ export default function Portfolio() {
                 </div>
               </div>
 
-              {experiencesList.map((job, idx) => {
+              {activeWork.map((job, idx) => {
                 const isActive = activeExpIdx === idx;
                 return (
                   <div
@@ -2814,7 +3001,7 @@ export default function Portfolio() {
                                   Core Contributions & Technical Delivery
                                 </span>
                                 <ul className="space-y-2.5">
-                                  {job.bullets.map((bullet, bIdx) => (
+                                  {job.bullets.map((bullet: string, bIdx: number) => (
                                     <li
                                       key={bIdx}
                                       className="flex items-start gap-2.5 text-xs sm:text-sm text-neu-text-muted leading-relaxed font-light"
@@ -3199,19 +3386,21 @@ export default function Portfolio() {
                               <Terminal size={14} /> Key Impact & Metrics
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              {(selectedProject.stats || []).map((stat, idx) => (
-                                <div
-                                  key={idx}
-                                  className="p-5 rounded-2xl glass-card flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"
-                                >
-                                  <span className="text-2xl sm:text-3xl font-bold font-display text-neu-text tracking-tight mb-1">
-                                    {stat.value}
-                                  </span>
-                                  <span className="text-xs font-mono text-neu-text-muted">
-                                    {stat.label}
-                                  </span>
-                                </div>
-                              ))}
+                              {(selectedProject.stats || []).map(
+                                (stat, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="p-5 rounded-2xl glass-card flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"
+                                  >
+                                    <span className="text-2xl sm:text-3xl font-bold font-display text-neu-text tracking-tight mb-1">
+                                      {stat.value}
+                                    </span>
+                                    <span className="text-xs font-mono text-neu-text-muted">
+                                      {stat.label}
+                                    </span>
+                                  </div>
+                                ),
+                              )}
                             </div>
                           </div>
                         )}

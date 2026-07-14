@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Loader } from '@/shared/ui/Loader';
 import { AdminSidebar } from '@/shared/ui/admin/AdminSidebar';
 import { useRouter } from 'next/navigation';
 import { Briefcase, LogOut, LayoutDashboard, MessageSquare, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, Edit, Trash2, Plus, Network, Rocket, Layers, Cpu, X } from 'lucide-react';
@@ -11,6 +12,7 @@ import { cn } from '@/shared/lib/utils';
 export default function AdminCurrent() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -37,7 +39,7 @@ export default function AdminCurrent() {
     try {
       const res = await fetch('/api/current');
       const data = await res.json();
-      setItems(data.currentFocus || []);
+      setItems(data.data?.currentFocus || data.currentFocus || (Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : [])));
     } catch (e) {}
     setLoading(false);
   };
@@ -56,6 +58,7 @@ export default function AdminCurrent() {
   };
 
   const handleSave = async (e: React.FormEvent) => {
+    setIsProcessing(true);
     e.preventDefault();
     try {
       const url = editingItem ? `/api/current/${editingItem.id}` : '/api/current';
@@ -63,7 +66,7 @@ export default function AdminCurrent() {
       
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(formData)
       });
       
@@ -76,14 +79,16 @@ export default function AdminCurrent() {
     } catch (err) {
       setToastMessage({ message: 'Failed to save current focus', type: 'error' });
     }
+    setIsProcessing(false);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleDelete = async (id: string) => {
+    setIsProcessing(true);
     if (!confirm('Are you sure you want to delete this item?')) return;
     
     try {
-      const res = await fetch(`/api/current/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/current/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       if (!res.ok) throw new Error('Failed to delete');
       
       setToastMessage({ message: 'Successfully deleted item', type: 'success' });
@@ -91,6 +96,7 @@ export default function AdminCurrent() {
     } catch (err) {
       setToastMessage({ message: 'Failed to delete item', type: 'error' });
     }
+    setIsProcessing(false);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
@@ -112,7 +118,7 @@ export default function AdminCurrent() {
     setShowModal(true);
   };
 
-  if (loading) return null;
+  if (loading) return <Loader fullScreen text="Loading..." />;
 
   return (
     <div className="min-h-screen bg-neu-bg flex text-neu-text">

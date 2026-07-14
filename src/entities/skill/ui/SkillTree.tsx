@@ -365,14 +365,27 @@ export default function SkillTree({
   isDark: boolean;
   isLoading?: boolean;
 }) {
-  const [nodes, setNodes] = useState<SkillNode[]>(defaultSkillNodes);
+  const [nodes, setNodes] = useState<SkillNode[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
     fetch('/api/skills')
       .then(res => res.json())
       .then(data => {
-        if (data.skills && data.skills.length > 0) {
-          setNodes(data.skills);
+        const skillsArray = data.data?.skills || data.skills || (Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []));
+        const parsed = (skillsArray || []).map((n: any) => {
+          let conns = n.connections || [];
+          if (typeof conns === 'string') {
+            try {
+              conns = JSON.parse(conns);
+            } catch {
+              conns = conns.split(',').map((s: string) => s.trim()).filter(Boolean);
+            }
+          }
+          return { ...n, connections: conns };
+        });
+        if (parsed && parsed.length > 0) {
+          setNodes(parsed);
         }
       })
       .catch(console.error);
@@ -550,7 +563,7 @@ export default function SkillTree({
         })
         .filter((item): item is NonNullable<typeof item> => item !== null);
     });
-  }, [getBezierPath, getCategoryColor, getNodeCoords]);
+  }, [nodes, getBezierPath, getCategoryColor, getNodeCoords]);
 
   if (isLoading) {
     return (

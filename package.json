@@ -10,6 +10,7 @@
     "clean": "next clean"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20.19.43",
