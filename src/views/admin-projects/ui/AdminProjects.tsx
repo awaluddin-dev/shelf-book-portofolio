@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Loader } from '@/shared/ui/Loader';
 import { AdminSidebar } from '@/shared/ui/admin/AdminSidebar';
 import { useRouter } from 'next/navigation';
 import { Briefcase, Edit, Trash2, Plus, X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
@@ -10,6 +11,7 @@ import { cn } from '@/shared/lib/utils';
 export default function AdminProjects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -33,7 +35,7 @@ export default function AdminProjects() {
     try {
       const res = await fetch('/api/projects');
       const data = await res.json();
-      setProjects(data.projects || []);
+      setProjects(data.data?.projects || data.projects || (Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : [])));
     } catch (error) {
       console.error(error);
     } finally {
@@ -60,13 +62,13 @@ export default function AdminProjects() {
       if (editingId) {
         await fetch(`/api/projects/${editingId}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify(payload)
         });
       } else {
         await fetch('/api/projects', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify(payload)
         });
       }
@@ -78,9 +80,10 @@ export default function AdminProjects() {
   };
 
   const handleDelete = async (id: string) => {
+    setIsProcessing(true);
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      await fetch(`/api/projects/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       fetchData();
     } catch (error) {
       console.error(error);
@@ -94,7 +97,7 @@ export default function AdminProjects() {
         title: proj.title || '',
         subtitle: proj.subtitle || '',
         category: proj.category || '',
-        tags: (proj.tags || []).join(', '),
+        tags: (proj.data?.tags || proj.tags || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : []))).join(', '),
         spineColor: proj.spineColor || 'bg-indigo-600',
         coverColor: proj.coverColor || 'bg-indigo-900',
         spineText: proj.spineText || '',
@@ -102,8 +105,8 @@ export default function AdminProjects() {
         demoUrl: proj.demoUrl || '',
         github: proj.github || '',
         markdown: proj.markdown || '',
-        stats: proj.stats || [],
-        phases: proj.phases || []
+        stats: proj.data?.stats || proj.stats || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : [])),
+        phases: proj.data?.phases || proj.phases || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : []))
       });
     } else {
       setEditingId(null);
@@ -136,7 +139,7 @@ export default function AdminProjects() {
     setFormData({...formData, phases: newPhases});
   };
 
-  if (loading) return null;
+  if (loading) return <Loader fullScreen text="Loading..." />;
 
   return (
     <div className="min-h-screen bg-neu-bg flex text-neu-text">
