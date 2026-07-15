@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "motion/react";
 import { X, Sparkles, Send } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/shared/lib/utils';
@@ -54,7 +54,7 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 160, damping: 22 }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
               className="bg-neu-bg rounded-3xl shadow-neu-modal w-full max-w-lg p-6 sm:p-8 relative border border-white/5"
             >
               <button 

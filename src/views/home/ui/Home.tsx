@@ -81,13 +81,16 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
-import { projects } from "@/entities/testimonial/model/data";
 import { Testimonial } from "@/entities/testimonial/model/data";
 import { cn } from "@/shared/lib/utils";
 
 import { getTechIconAndColor } from "@/shared/lib/tech-icons";
 import SkillTree from "@/entities/skill/ui/SkillTree";
+import P5Background from "@/shared/ui/P5Background";
 import ProjectArchitectureDiagram from "@/entities/project/ui/ProjectArchitectureDiagram";
 import {
   getTagProjectCount,
@@ -101,21 +104,15 @@ import {
   legendLevels,
   roadmapItems,
 } from "@/entities/skill/model/roadmap-data";
-import { experiencesList } from "@/entities/experience/model/experience-data";
-import { skillCategoriesList } from "@/entities/skill/model/skill-data";
 
 import ContactModal from "@/features/contact/ui/ContactModal";
 
 export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedProject, setSelectedProject] = useState<
-    (typeof projects)[0] | null
-  >(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isBannerMinimized, setIsBannerMinimized] = useState(false);
-  const [focusedProject, setFocusedProject] = useState<
-    (typeof projects)[0] | null
-  >(null);
+  const [focusedProject, setFocusedProject] = useState<any>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
   const { isDark, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -219,9 +216,8 @@ export default function Portfolio() {
   // Use dynamic if available, fallback to static imports or defaults
   const activeRoadmap =
     dynamicRoadmap.length > 0 ? dynamicRoadmap : roadmapItems;
-  const activeProficiency =
-    dynamicProficiency.length > 0 ? dynamicProficiency : skillCategoriesList;
-  const activeWork = dynamicWork.length > 0 ? dynamicWork : experiencesList;
+  const activeProficiency = dynamicProficiency;
+  const activeWork = dynamicWork;
   const activeCurrentFocus =
     dynamicCurrentFocus.length > 0
       ? dynamicCurrentFocus
@@ -465,6 +461,8 @@ export default function Portfolio() {
   const [contributionData, setContributionData] = useState<any[][]>([]);
   const [timelineData, setTimelineData] = useState<any[]>([]);
   const [repoData, setRepoData] = useState<any[]>([]);
+  const [languageData, setLanguageData] = useState<any[]>([]);
+  const [hoveredLang, setHoveredLang] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/github/contributions/awaluddin-dev")
@@ -475,6 +473,7 @@ export default function Portfolio() {
           setContributionData(payload.calendar);
           setTimelineData(payload.timeline || []);
           setRepoData(payload.repositories || []);
+          setLanguageData(payload.languages || []);
         } else {
           // Fallback if API hasn't updated yet or returns old format
           setContributionData(Array.isArray(payload) ? payload : []);
@@ -573,9 +572,7 @@ export default function Portfolio() {
     return months;
   }, [weeks, monthLabels]);
 
-  // Fallback to static projects if API is slow or empty
-  const activeProjects =
-    dynamicProjects.length > 0 ? dynamicProjects : projects;
+  const activeProjects = dynamicProjects;
 
   const categories = Array.from(
     new Set((activeProjects || []).map((p) => p.category)),
@@ -615,14 +612,14 @@ export default function Portfolio() {
         if (yearA !== yearB) {
           return yearB - yearA;
         }
-        return projects.indexOf(a) - projects.indexOf(b);
+        return activeProjects.indexOf(a) - activeProjects.indexOf(b);
       } else if (sortBy === "oldest") {
         const yearA = getEarliestYear(a.date);
         const yearB = getEarliestYear(b.date);
         if (yearA !== yearB) {
           return yearA - yearB;
         }
-        return projects.indexOf(a) - projects.indexOf(b);
+        return activeProjects.indexOf(a) - activeProjects.indexOf(b);
       }
       return 0;
     });
@@ -1864,9 +1861,10 @@ export default function Portfolio() {
             {(activeProficiency || []).map((category: any, catIdx: number) => (
               <div
                 key={catIdx}
-                className="p-6 sm:p-8 rounded-3xl glass-card border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between"
+                className="p-6 sm:p-8 rounded-3xl glass-card border border-white/5 dark:border-zinc-800/30 flex flex-col justify-between relative overflow-hidden group/card"
               >
-                <div>
+                <P5Background isDark={isDark} />
+                <div className="relative z-10">
                   <h3 className="font-mono text-xs font-extrabold uppercase tracking-widest text-neu-accent border-b border-gray-200/10 dark:border-zinc-800/30 pb-3.5 mb-4">
                     {category.title}
                   </h3>
@@ -2877,6 +2875,105 @@ export default function Portfolio() {
               </div>
             </div>
 
+            {/* Most Used Languages Section */}
+            {languageData && languageData.length > 0 && (
+              <motion.div
+                className="mt-8 rounded-3xl glass-card-inset p-4 sm:p-6 md:p-8 relative"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="flex items-center justify-between mb-6 border-b border-gray-300/20 dark:border-zinc-800/20 pb-4">
+                  <div className="flex items-center gap-2">
+                    <Code2 size={16} className="text-neu-accent" />
+                    <h3 className="text-lg font-display font-bold text-neu-text tracking-tight">Most Used Languages</h3>
+                  </div>
+                  <span className="text-[10px] font-mono text-neu-text-muted bg-neu-bg/50 px-2 py-1 rounded-md">Live from GitHub</span>
+                </div>
+
+                {/* Donut Chart & Language Cards */}
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-6">
+                  <div className="w-full md:w-1/3 flex justify-center items-center h-[240px] relative">
+                    <PieChart width={240} height={240}>
+                      <Pie
+                        data={languageData}
+                        cx={120}
+                        cy={120}
+                        innerRadius={0}
+                        outerRadius={105}
+                        paddingAngle={2}
+                        dataKey="percentage"
+                        stroke="none"
+                        isAnimationActive={true}
+                      >
+                        {languageData.map((entry, index) => {
+                          const isHovered = hoveredLang === entry.name;
+                          const isOtherHovered = hoveredLang !== null && !isHovered;
+                          return (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.color} 
+                              className="cursor-pointer focus:outline-none" 
+                              style={{ 
+                                outline: 'none', 
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                opacity: isOtherHovered ? 0.3 : 1,
+                                filter: isHovered ? `brightness(1.2) drop-shadow(0px 0px 8px ${entry.color})` : 'none',
+                                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                                transformOrigin: '120px 120px'
+                              }} 
+                              onMouseEnter={() => setHoveredLang(entry.name)}
+                              onMouseLeave={() => setHoveredLang(null)}
+                            />
+                          );
+                        })}
+                      </Pie>
+
+                    </PieChart>
+                  </div>
+                  
+                  <div className="w-full md:w-2/3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
+                  {languageData.map((lang, idx) => {
+                    const isHovered = hoveredLang === lang.name;
+                    const isOtherHovered = hoveredLang !== null && !isHovered;
+                    return (
+                    <motion.div
+                      key={idx}
+                      whileHover={{ y: -2 }}
+                      onMouseEnter={() => setHoveredLang(lang.name)}
+                      onMouseLeave={() => setHoveredLang(null)}
+                      className={cn(
+                        "relative flex flex-col gap-1 p-3 rounded-2xl border shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer group",
+                        isHovered 
+                          ? "border-neu-accent bg-neu-accent/5 scale-[1.02]" 
+                          : "bg-neu-bg border-gray-200/50 dark:border-zinc-800/30",
+                        isOtherHovered ? "opacity-40" : "opacity-100"
+                      )}
+                    >
+                      {idx === 0 && (
+                        <div className="absolute -top-2 -right-2 bg-neu-accent text-white font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10 flex items-center gap-1">
+                          TOP 1
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full shadow-sm"
+                            style={{ backgroundColor: lang.color }}
+                          />
+                          <span className="text-xs font-bold text-neu-text group-hover:text-neu-accent transition-colors">{lang.name}</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono text-neu-text-muted">{lang.percentage.toFixed(1)}%</span>
+                    </motion.div>
+                    );
+                  })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             <motion.div
               className="mt-10 rounded-3xl glass-card-inset p-4 sm:p-6 md:p-8 space-y-1 relative"
               variants={{
@@ -2904,6 +3001,7 @@ export default function Portfolio() {
 
               {activeWork.map((job, idx) => {
                 const isActive = activeExpIdx === idx;
+                const isPresent = job.years.toLowerCase().includes("present");
                 return (
                   <div
                     key={idx}
@@ -2917,11 +3015,23 @@ export default function Portfolio() {
                         isActive
                           ? "bg-white/80 dark:bg-zinc-800/30 shadow-neu border-transparent"
                           : "hover:bg-white/40 dark:hover:bg-zinc-800/10",
+                        isPresent && !isActive ? "bg-neu-accent/5 border border-neu-accent/20" : ""
                       )}
                     >
+                      {/* Highlight Badge for Present */}
+                      {isPresent && (
+                        <div className="absolute -top-2 -left-2 bg-neu-accent text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                          CURRENT
+                        </div>
+                      )}
+                      
                       {/* Column 1: Dates & Duration */}
                       <div className="col-span-3 flex flex-col justify-center text-left">
-                        <span className="font-mono font-bold text-sm sm:text-base text-neu-text group-hover:text-neu-accent transition-colors">
+                        <span className={cn(
+                          "font-mono font-bold text-sm sm:text-base group-hover:text-neu-accent transition-colors",
+                          isPresent ? "text-neu-accent" : "text-neu-text"
+                        )}>
                           {job.years}
                         </span>
                         <span className="text-[10px] font-mono text-neu-text-muted mt-0.5 uppercase tracking-wider">
@@ -3030,7 +3140,7 @@ export default function Portfolio() {
       {/* Testimonials Section */}
       <motion.section
         id="endorse"
-        className="max-w-7xl mx-auto mb-24 overflow-visible scroll-mt-20"
+        className="max-w-7xl mx-auto mt-24 mb-24 overflow-visible scroll-mt-20"
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
@@ -3304,7 +3414,7 @@ export default function Portfolio() {
                         >
                           {/* Horizontal Tech Stack Row */}
                           <div className="relative z-10 flex flex-wrap gap-2.5 mb-4 mt-3">
-                            {(selectedProject.tags || []).map((tag) => {
+                            {(selectedProject.tags || []).map((tag: string) => {
                               const { color, icon } = getTechIconAndColor(tag);
                               const count = getTagProjectCount(tag);
                               return (
@@ -3338,7 +3448,7 @@ export default function Portfolio() {
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 pb-6 border-b border-neu-text/10">
                       <div className="flex flex-wrap gap-2">
-                        {(selectedProject.tags || []).map((tag) => {
+                        {(selectedProject.tags || []).map((tag: string) => {
                           const count = getTagProjectCount(tag);
                           return (
                             <span
@@ -3387,7 +3497,7 @@ export default function Portfolio() {
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               {(selectedProject.stats || []).map(
-                                (stat, idx) => (
+                                (stat: any, idx: number) => (
                                   <div
                                     key={idx}
                                     className="p-5 rounded-2xl glass-card flex flex-col justify-between items-start text-left border border-white/5 hover:shadow-neu-sm transition-all hover:-translate-y-1"
