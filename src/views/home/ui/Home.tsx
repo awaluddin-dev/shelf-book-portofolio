@@ -1,4 +1,5 @@
 "use client";
+import { testimonials as mockTestimonials } from '@/entities/testimonial/model/data';
 
 import { useState, useEffect, useRef, useMemo, memo, useCallback } from "react";
 import Image from "next/image";
@@ -390,10 +391,15 @@ export default function Portfolio() {
       .then((res) => res.json())
       .then((data) => {
         const payload = data.data || data;
-        const arr = payload.testimonials || (Array.isArray(payload) ? payload : []);
+        let arr = payload.testimonials || (Array.isArray(payload) ? payload : []);
+        arr = arr.filter((t: any) => t.status === 'accepted' || !t.status);
+        
         setTestimonialsList(arr);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setTestimonialsList(mockTestimonials);
+      });
   }, []);
   const [portfolioStatus, setPortfolioStatus] = useState<"available" | "busy">(
     "available",
@@ -925,6 +931,18 @@ export default function Portfolio() {
         <header className="flex flex-col gap-10 md:gap-14 py-8 md:py-12">
           {/* Main Grid Content - equal-height containers on large screens */}
           <div className="max-w-7xl mx-auto w-full">
+            {isLoading ? (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch animate-pulse">
+                <div className="lg:col-span-8 flex flex-col gap-8 h-full py-2">
+                  <div className="h-20 bg-neu-accent/10 rounded-2xl w-2/3"></div>
+                  <div className="h-32 bg-neu-accent/5 rounded-2xl w-full"></div>
+                  <div className="h-12 bg-neu-accent/5 rounded-xl w-1/2"></div>
+                </div>
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                  <div className="h-[400px] bg-neu-accent/5 rounded-3xl w-full"></div>
+                </div>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
               <div className="lg:col-span-8 flex flex-col justify-between h-full py-2">
                 <div className="flex flex-col gap-y-8 md:gap-y-10">
@@ -1198,6 +1216,7 @@ export default function Portfolio() {
                 </motion.div>
               </div>
             </div>
+          )}
           </div>
 
           {/* Spaced Metric Cards - Move up metric strip & add space/gap between items */}
@@ -3188,45 +3207,37 @@ export default function Portfolio() {
                   "hover:border-blue-500 hover:shadow-[0_25px_50px_-12px_rgba(59,130,246,0.3)] dark:hover:border-emerald-400 dark:hover:shadow-[0_25px_50px_-12px_rgba(74,222,128,0.3)]",
                 )}
               >
-                {/* Floating Quote Icon */}
-                <div className="absolute top-6 right-6 text-neu-accent/15 group-hover:text-neu-accent/30 transition-colors">
-                  <Quote size={36} />
-                </div>
-
                 <div>
-                  {/* Relationship Badge */}
-                  <div className="mb-6 inline-flex px-3 py-1 rounded-full glass-card-inset text-[10px] font-mono text-neu-accent font-semibold tracking-wide">
-                    ✦ {t.relationship}
-                  </div>
+                  {/* Link Badge (if exists) */}
+                  {t.url && (
+                    <div className="mb-6 inline-flex px-3 py-1 rounded-full glass-card-inset text-[10px] font-mono text-neu-accent font-semibold tracking-wide hover:bg-neu-accent/20 transition-colors">
+                      ✦ Verifiable URL Profile
+                    </div>
+                  )}
 
                   {/* Testimonial Quote Content */}
-                  <div className="mb-6 p-5 rounded-2xl glass-card-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative">
-                    &ldquo;{t.testimonial}&rdquo;
+                  <div className="mb-6 relative z-10">
+                    <div className="absolute -top-3 -left-2 text-neu-accent/30 group-hover:text-neu-accent/60 transition-colors z-10 pointer-events-none">
+                      <Quote size={32} />
+                    </div>
+                    <div className="p-5 pt-8 rounded-2xl glass-card-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative bg-neu-bg/40">
+                      &ldquo;{t.testimonial}&rdquo;
+                    </div>
                   </div>
                 </div>
 
-                <div>
+                <div className="relative z-10">
                   {/* User Identity Footer of Card */}
-                  <div className="flex items-center gap-4 pt-4 border-t border-gray-300/30 dark:border-gray-700/30">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-neu-accent glass-card-sm flex-shrink-0 flex items-center justify-center">
-                      <span className="text-sm font-bold text-neu-text tracking-widest uppercase">
-                        {t.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .substring(0, 2)}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-neu-text leading-tight">
+                  <div className="pt-4 border-t border-gray-300/30 dark:border-gray-700/30 flex flex-col gap-1">
+                    {t.url ? (
+                      <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-base font-bold text-neu-text hover:text-neu-accent hover:underline transition-colors relative z-20">
                         {t.name}
-                      </h4>
-                      <p className="text-xs font-semibold text-neu-accent mt-0.5">
-                        {t.role}
-                      </p>
-                      <p className="text-[11px] font-mono text-neu-text-muted mt-0.5">
-                        {t.company}
-                      </p>
+                      </a>
+                    ) : (
+                      <span className="text-base font-bold text-neu-text">{t.name}</span>
+                    )}
+                    <div className="text-xs text-neu-text-muted">
+                      <span className="italic">{t.role}</span> at <span className="font-bold">{t.company}</span>
                     </div>
                   </div>
 

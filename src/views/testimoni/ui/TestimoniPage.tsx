@@ -10,7 +10,7 @@ export default function SubmitTestimonial({ params }: { params: Promise<{ token:
     name: '',
     role: '',
     company: '',
-    relationship: '',
+    url: '',
     testimonial: ''
   });
   const [submitted, setSubmitted] = useState(false);
@@ -28,18 +28,36 @@ export default function SubmitTestimonial({ params }: { params: Promise<{ token:
     );
   }
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg(null);
     try {
-      await fetch('/api/testimonials', {
+      const etag = localStorage.getItem('testimoniEtag');
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (etag) headers['X-Submit-ETag'] = etag;
+
+      const res = await fetch('/api/testimonials', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(formData)
       });
+
+      if (res.status === 429) {
+        throw new Error('Anda telah mengirimkan testimoni hari ini. Silakan coba lagi besok.');
+      }
+
+      if (!res.ok) throw new Error('Failed to submit testimonial');
+
+      const responseEtag = res.headers.get('X-Submit-ETag');
+      if (responseEtag) localStorage.setItem('testimoniEtag', responseEtag);
+
       setSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setErrorMsg(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
     }
     setLoading(false);
   };
@@ -96,14 +114,19 @@ export default function SubmitTestimonial({ params }: { params: Promise<{ token:
               <input required type="text" className="w-full px-4 py-3 glass-card-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent text-sm" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} placeholder="e.g. Acme Corp" />
             </div>
             <div>
-              <label className="block text-xs font-mono font-bold uppercase tracking-wider mb-2">Relationship</label>
-              <input required type="text" className="w-full px-4 py-3 glass-card-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent text-sm" value={formData.relationship} onChange={e => setFormData({...formData, relationship: e.target.value})} placeholder="e.g. Managed Awaluddin directly" />
+              <label className="block text-xs font-mono font-bold uppercase tracking-wider mb-2">LinkedIn / Website URL (Optional)</label>
+              <input type="url" className="w-full px-4 py-3 glass-card-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent text-sm" value={formData.url} onChange={e => setFormData({...formData, url: e.target.value})} placeholder="https://linkedin.com/in/..." />
             </div>
           </div>
           <div>
             <label className="block text-xs font-mono font-bold uppercase tracking-wider mb-2">Endorsement</label>
             <textarea required rows={4} className="w-full px-4 py-3 glass-card-inset rounded-xl focus:outline-none focus:ring-1 focus:ring-neu-accent text-sm resize-none" value={formData.testimonial} onChange={e => setFormData({...formData, testimonial: e.target.value})} placeholder="Write your testimonial here..." />
           </div>
+          {errorMsg && (
+            <div className="text-red-500 text-sm font-mono p-3 glass-card-inset rounded-xl border border-red-500/20">
+              {errorMsg}
+            </div>
+          )}
           <button disabled={loading} type="submit" className="w-full mt-4 flex items-center justify-center gap-2 py-3 px-4 bg-neu-accent text-white rounded-xl shadow-neu hover:scale-[1.02] active:scale-95 transition-all font-bold disabled:opacity-70">
             {loading ? 'Submitting...' : 'Submit Endorsement'} <ArrowRight size={18} />
           </button>

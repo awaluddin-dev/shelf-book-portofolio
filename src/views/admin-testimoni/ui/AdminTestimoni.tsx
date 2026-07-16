@@ -89,8 +89,6 @@ export default function AdminTestimoni() {
     router.push('/admin/login');
   };
 
-  if (loading) return <Loader fullScreen text="Loading..." />;
-
   return (
     <div className="min-h-screen bg-neu-bg flex text-neu-text">
       {/* Sidebar */}
@@ -98,7 +96,15 @@ export default function AdminTestimoni() {
 
       {/* Main Content */}
       <main className="flex-1 p-8 overflow-y-auto">
-        <div className="max-w-5xl mx-auto space-y-8">
+        {loading ? (
+          <div className="max-w-5xl mx-auto space-y-6 p-6 w-full animate-pulse">
+            <div className="h-10 bg-white/5 rounded-xl w-1/4"></div>
+            <div className="h-20 bg-white/5 rounded-2xl w-full"></div>
+            <div className="h-64 bg-white/5 rounded-3xl w-full"></div>
+            <div className="h-20 bg-white/5 rounded-2xl w-full"></div>
+          </div>
+        ) : (
+          <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold font-display tracking-tight">Testimonials Management</h1>
             </div>
@@ -203,6 +209,7 @@ export default function AdminTestimoni() {
 
           </div>
         </div>
+      )}
       </main>
 
       {/* Modal */}
@@ -222,6 +229,11 @@ export default function AdminTestimoni() {
               <div>
                 <h3 className="text-lg font-bold font-display">{selectedTestimonial.name}</h3>
                 <p className="text-xs text-neu-text-muted">{selectedTestimonial.role} @ {selectedTestimonial.company}</p>
+                {selectedTestimonial.url && (
+                  <a href={selectedTestimonial.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-mono text-neu-accent hover:underline break-all">
+                    {selectedTestimonial.url}
+                  </a>
+                )}
               </div>
             </div>
             <div className="p-5 glass-card-inset rounded-2xl mb-6 text-sm leading-relaxed text-neu-text-muted italic">

@@ -19,19 +19,30 @@ export default function ContactModal({ isOpen, onClose, portfolioStatus, trigger
     setIsSubmitting(true);
     
     try {
+      const etag = localStorage.getItem('inquiryEtag');
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (etag) headers['X-Submit-ETag'] = etag;
+
       const res = await fetch('/api/contact/inquiry', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(formData)
       });
       
+      if (res.status === 429) {
+        throw new Error('Anda telah mengirimkan pesan hari ini. Silakan coba lagi besok.');
+      }
+      
       if (!res.ok) throw new Error('Failed to send inquiry');
       
+      const responseEtag = res.headers.get('X-Submit-ETag');
+      if (responseEtag) localStorage.setItem('inquiryEtag', responseEtag);
+
       triggerToast('Availability inquiry sent successfully! Thank you.');
       onClose();
       setFormData({ name: '', email: '', projectType: 'contract', message: '' });
-    } catch (error) {
-      triggerToast('Failed to send inquiry. Please try again later.');
+    } catch (error: any) {
+      triggerToast(error.message || 'Failed to send inquiry. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
