@@ -337,3 +337,86 @@ body *,
   border: 1px solid rgba(238, 238, 238, 0.1);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
+
+
+/* Custom styling for dropdown options to match theme without affecting the transparent select box */
+select {
+  color-scheme: light dark;
+}
+
+select option {
+  background-color: var(--theme-bg, #09090b); /* Fallback for dark mode */
+  color: var(--theme-text, #f4f4f5);
+}
+
+@media (prefers-color-scheme: light) {
+  select option {
+    background-color: #f4f4f5;
+    color: #09090b;
+  }
+}
+
+.dark select option {
+  background-color: #09090b;
+  color: #f4f4f5;
+}
+
+/* ==========================================================================
+   Accessibility: High Contrast Mode
+   Overrides neumorphic shadows with solid high-contrast borders
+   ========================================================================== */
+@media (prefers-contrast: more) {
+  .glass-card,
+  .glass-card-inset,
+  .glass-card-highlighted,
+  .shadow-neu-sm,
+  .shadow-neu-inset {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background: transparent !important;
+    border: 2px solid #000 !important;
+  }
+  
+  .dark .glass-card,
+  .dark .glass-card-inset,
+  .dark .glass-card-highlighted,
+  .dark .shadow-neu-sm,
+  .dark .shadow-neu-inset {
+    border: 2px solid #fff !important;
+  }
+}
+
+/* Fallback class for manual toggle if needed */
+.high-contrast .glass-card,
+.high-contrast .glass-card-inset,
+.high-contrast .glass-card-highlighted,
+.high-contrast .shadow-neu-sm,
+.high-contrast .shadow-neu-inset {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  background: transparent !important;
+  border: 2px solid #000 !important;
+}
+
+.dark.high-contrast .glass-card,
+.dark.high-contrast .glass-card-inset,
+.dark.high-contrast .glass-card-highlighted,
+.dark.high-contrast .shadow-neu-sm,
+.dark.high-contrast .shadow-neu-inset {
+  border: 2px solid #fff !important;
+}
+
+/* ==========================================================================
+   Accessibility: Reduced Motion
+   Overrides transitions and animations for users with vestibular sensitivities
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

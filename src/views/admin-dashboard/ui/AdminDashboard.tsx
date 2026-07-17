@@ -159,7 +159,7 @@ export default function AdminDashboard() {
       ...metrics,
       {
         id: "m_" + Date.now(),
-        val: "",
+        value: "",
         label: "",
         icon: "Code2",
         isSavings: false,
@@ -348,9 +348,9 @@ export default function AdminDashboard() {
                               Value (e.g. 5+ Years)
                             </label>
                             <input
-                              value={m.val}
+                              value={m.value || ""}
                               onChange={(e) =>
-                                handleMetricChange(idx, "val", e.target.value)
+                                handleMetricChange(idx, "value", e.target.value)
                               }
                               className="w-full px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 text-sm outline-none border border-transparent focus:border-neu-accent/50"
                             />

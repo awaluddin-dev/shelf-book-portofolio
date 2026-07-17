@@ -1,132 +1,161 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/shared/lib/utils';
-import { Code2, Terminal, Cpu, Database, Play, Compass, Layers, Activity, Milestone } from 'lucide-react';
+import { Code2, Terminal, Cpu, Database, Play, Compass, Layers, Activity, Milestone, ExternalLink } from 'lucide-react';
+import EmptyState from '@/shared/ui/EmptyState';
 
-export default function ProjectLifecycleTracker({ phases, spineColor }: { phases: any[]; spineColor: string }) {
+export default function ProjectLifecycleTracker({ projectId, spineColor }: { projectId: string; spineColor: string }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [phases, setPhases] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const getPhaseMeta = (index: number) => {
-    switch (index) {
-      case 0:
-        return {
-          stage: "Planning & Spec",
-          icon: <Compass size={16} className="text-purple-500" />,
-          borderColor: "group-hover:border-purple-500",
-          glowColor: "rgba(168,85,247,0.15)",
-          colorClass: "text-purple-500 bg-purple-500/10 border-purple-500/20"
-        };
-      case 1:
-        return {
-          stage: "Architecture & Design",
-          icon: <Layers size={16} className="text-blue-500" />,
-          borderColor: "group-hover:border-blue-500",
-          glowColor: "rgba(59,130,246,0.15)",
-          colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20"
-        };
-      case 2:
-        return {
-          stage: "Execution & Code",
-          icon: <Code2 size={16} className="text-emerald-500" />,
-          borderColor: "group-hover:border-emerald-500",
-          glowColor: "rgba(16,185,129,0.15)",
-          colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
-        };
-      case 3:
-      default:
-        return {
-          stage: "Testing & Launch",
-          icon: <Activity size={16} className="text-rose-500" />,
-          borderColor: "group-hover:border-rose-500",
-          glowColor: "rgba(244,63,94,0.15)",
-          colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/20"
-        };
+  useEffect(() => {
+    fetch('/api/lifecycle')
+      .then(res => res.json())
+      .then(data => {
+        const arr = data.data || data;
+        const projectPhases = (Array.isArray(arr) ? arr : [])
+          .filter(p => p.projectId === projectId)
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        setPhases(projectPhases);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [projectId]);
+
+  const getPhaseMeta = (stage: string, index: number) => {
+    const s = stage?.toLowerCase() || '';
+    if (s.includes('plan')) {
+      return {
+        icon: <Compass size={16} className="text-purple-500" />,
+        borderColor: "group-hover:border-purple-500",
+        glowColor: "rgba(168,85,247,0.15)",
+        colorClass: "text-purple-500 bg-purple-500/10 border-purple-500/20"
+      };
     }
+    if (s.includes('arch') || s.includes('design')) {
+      return {
+        icon: <Layers size={16} className="text-blue-500" />,
+        borderColor: "group-hover:border-blue-500",
+        glowColor: "rgba(59,130,246,0.15)",
+        colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20"
+      };
+    }
+    if (s.includes('exec') || s.includes('code')) {
+      return {
+        icon: <Code2 size={16} className="text-emerald-500" />,
+        borderColor: "group-hover:border-emerald-500",
+        glowColor: "rgba(16,185,129,0.15)",
+        colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
+      };
+    }
+    return {
+      icon: <Activity size={16} className="text-rose-500" />,
+      borderColor: "group-hover:border-rose-500",
+      glowColor: "rgba(244,63,94,0.15)",
+      colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/20"
+    };
   };
 
+  if (loading) {
+    return <div className="h-40 flex items-center justify-center text-neu-text-muted animate-pulse">Loading Lifecycle...</div>;
+  }
+
+  if (phases.length === 0) {
+    return <EmptyState message="No lifecycle phases defined for this project" />;
+  }
+
   return (
-    <div className="p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 dark:border-zinc-800/20 relative overflow-hidden transition-all duration-300">
-      <div className="flex items-center justify-between mb-6">
-        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
-          <Milestone size={14} className="text-neu-accent" /> Lifecycle & Milestones
-        </h4>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-bold uppercase tracking-wider animate-pulse">
-          Active Production
-        </span>
+    <div className="mb-10 p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 relative overflow-hidden">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8 relative z-10">
+        <div>
+          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider flex items-center gap-2">
+            <Milestone size={14} /> Project Lifecycle
+          </h4>
+          <p className="text-xs font-mono text-neu-text-muted mt-1">
+            Tracking execution from concept to deployment.
+          </p>
+        </div>
       </div>
 
-      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-        <div className="flex relative min-w-max pt-6">
-          {/* Horizontal connecting line */}
-          <div className="absolute top-[1.375rem] left-0 right-0 h-[2px] bg-gray-200 dark:bg-zinc-800" />
-          
-          {phases.map((phase, idx) => {
-            const meta = getPhaseMeta(idx);
-            const isHovered = hoveredIndex === idx;
+      {/* Timeline Container */}
+      <div className="relative z-10 pl-4 md:pl-8 border-l border-white/5 space-y-8">
+        {phases.map((phase, i) => {
+          const meta = getPhaseMeta(phase.stage, i);
+          const isHovered = hoveredIndex === i;
 
-            return (
-              <motion.div
-                key={idx}
-                onMouseEnter={() => setHoveredIndex(idx)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className="relative group cursor-default transition-all duration-300 w-72 flex-shrink-0 mr-8"
+          return (
+            <motion.div
+              key={phase.id}
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="relative group cursor-pointer"
+            >
+              {/* Timeline Dot with Glow */}
+              <div 
+                className={cn(
+                  "absolute -left-[30px] md:-left-[46px] top-1 w-6 h-6 rounded-full glass-card-inset flex items-center justify-center border transition-all duration-300",
+                  meta.borderColor
+                )}
+                style={{ 
+                  boxShadow: isHovered ? `0 0 15px ${meta.glowColor}` : 'none',
+                  borderColor: isHovered ? undefined : 'rgba(255,255,255,0.05)'
+                }}
               >
-                {/* Timeline Dot */}
-                <div 
-                  className={cn(
-                    "absolute left-6 -top-3 w-5 h-5 rounded-full bg-neu-bg border-2 flex items-center justify-center shadow-neu transition-all duration-300 z-10",
-                    isHovered ? "scale-125 border-neu-accent" : "border-gray-300 dark:border-zinc-700"
-                  )}
-                  style={{
-                    boxShadow: isHovered ? `0 0 12px ${meta.glowColor}` : undefined
-                  }}
-                >
-                  <div className={cn(
-                    "w-2 h-2 rounded-full transition-colors duration-300",
-                    isHovered ? "bg-neu-accent" : "bg-gray-400 dark:bg-zinc-600"
-                  )} />
+                <div className={cn(
+                  "w-2 h-2 rounded-full transition-transform duration-300", 
+                  isHovered ? "scale-150" : "scale-100"
+                )} style={{ backgroundColor: isHovered ? meta.glowColor.replace('0.15', '1') : 'rgba(255,255,255,0.2)' }} />
+              </div>
+
+              {/* Phase Card */}
+              <div className="flex flex-col md:flex-row gap-4 md:items-start group-hover:translate-x-2 transition-transform duration-300">
+                
+                {/* Stage Badge & Date */}
+                <div className="flex-shrink-0 w-40 pt-1">
+                  <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider mb-2 border", meta.colorClass)}>
+                    {meta.icon}
+                    {phase.stage}
+                  </div>
+                  <div className="text-xs font-mono text-neu-text-muted font-medium">
+                    {phase.date}
+                  </div>
                 </div>
 
-                <div 
-                  className={cn(
-                    "mt-4 p-4 rounded-2xl bg-neu-bg border border-transparent transition-all duration-300 text-left h-full flex flex-col",
-                    isHovered ? "shadow-neu-sm border-gray-200 dark:border-zinc-800 scale-[1.02]" : "shadow-none"
-                  )}
-                >
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className={cn("text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded border flex items-center gap-1", meta.colorClass)}>
-                      {meta.icon}
-                      {meta.stage}
-                    </span>
-                    
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-neu-text-muted">
-                      • {phase.date}
-                    </span>
-                  </div>
-
-                  <h5 className="text-sm font-display font-bold text-neu-text group-hover:text-neu-accent transition-colors">
+                {/* Content */}
+                <div className="flex-1">
+                  <h5 className={cn("text-base font-bold font-display mb-2 transition-colors", isHovered ? "text-neu-text" : "text-neu-text-muted")}>
                     {phase.title}
                   </h5>
-
-                  <p className="text-xs text-neu-text-muted mt-2 leading-relaxed font-light flex-grow">
+                  <p className="text-sm font-light leading-relaxed text-neu-text-muted/80">
                     {phase.description}
                   </p>
-
-                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/40 flex items-center justify-between text-[10px] font-mono">
-                    <span className="text-emerald-500 font-bold flex items-center gap-1">
-                      ✓ Verified
-                    </span>
-                    <span className="text-neu-text-muted font-medium">
-                      Gate {idx + 1}/4 Complete
-                    </span>
-                  </div>
+                  
+                  {phase.evidentUrl && (
+                    <a 
+                      href={phase.evidentUrl} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="inline-flex items-center gap-2 text-xs font-mono font-bold text-blue-500 hover:text-blue-600 mt-3 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink size={12} /> View Evidence
+                    </a>
+                  )}
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
 }
-
