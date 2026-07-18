@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "rm -rf .next && NODE_ENV=production next build",
+    "build:prod": "dotenv -e .env.prod.local -- pnpm run build",
     "start": "next start",
+    "start:prod": "dotenv -e .env.prod.local -- next start",
     "lint": "eslint .",
     "clean": "next clean"
   },
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@types/p5": "^1.7.7",
+    "dotenv-cli": "^11.0.0",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.8"
   }
