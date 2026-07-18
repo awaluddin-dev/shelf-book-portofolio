@@ -298,6 +298,8 @@ export default function Portfolio() {
       className: `${customSize ? "" : "w-5 h-5 sm:w-6 sm:h-6"} ${isSavings ? "text-emerald-500 dark:text-emerald-400" : "text-neu-accent"}`,
     };
     switch (iconName) {
+      case "BrainCircuit":
+        return <BrainCircuit {...props} />;
       case "Code2":
         return <Code2 {...props} />;
       case "Briefcase":
@@ -951,13 +953,13 @@ export default function Portfolio() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
-                <div className="lg:col-span-8 flex flex-col justify-center h-full py-2">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div className="lg:col-span-8 flex flex-col justify-center py-2">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="flex flex-col gap-y-6 md:gap-y-8 w-full h-full bg-neu-bg p-6 md:p-10 rounded-3xl shadow-neu border border-white/5"
+                    className="flex flex-col gap-y-6 md:gap-y-8 w-full bg-neu-bg p-6 md:p-10 rounded-3xl shadow-neu border border-white/5"
                   >
                     {/* Headline */}
                     <motion.h1
@@ -994,6 +996,29 @@ export default function Portfolio() {
                         notebooks.
                       </motion.p>
                     </div>
+
+                    {/* Stack Badge Row */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex flex-wrap gap-2 mt-5 mb-6 md:mt-6 md:mb-8"
+                    >
+                      {[
+                        "Node.js",
+                        "Go",
+                        "Python",
+                        "LangGraph",
+                        "PostgreSQL",
+                      ].map((tech) => (
+                        <span
+                          key={tech}
+                          className="px-3 py-1.5 text-[11px] md:text-xs font-mono text-neutral-400 bg-white/5 border border-white/10 rounded-full"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </motion.div>
 
                     {/* CTA Buttons - Move CTA Button above Connection Terminal */}
                     <motion.div
@@ -1033,8 +1058,8 @@ export default function Portfolio() {
                   </motion.div>
                 </div>
 
-                {/* Side CTA & Connection Terminal - matches left column height on desktop */}
-                <div className="lg:col-span-4 flex flex-col justify-between h-full py-2 gap-6">
+                {/* Side CTA & Connection Terminal */}
+                <div className="lg:col-span-4 flex flex-col justify-center py-2 gap-6">
                   {/* Connection Terminal Card */}
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -2154,7 +2179,11 @@ export default function Portfolio() {
                 <div className="lg:col-span-7 space-y-5">
                   <div className="flex items-center gap-3">
                     <div className="p-3.5 rounded-2xl glass-card text-neu-accent">
-                      {activeRoadmap[selectedRoadmapIndex].icon}
+                      {renderIcon(
+                        activeRoadmap[selectedRoadmapIndex].icon,
+                        false,
+                        24,
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2.5 flex-wrap">
@@ -3530,130 +3559,126 @@ export default function Portfolio() {
                           </div>
                         )}
 
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        {/* Left Column (System Specifications Markdown block) */}
-                        <div className="lg:col-span-7 space-y-8">
-                          {/* System Specifications Markdown block */}
-                          <div
-                            className="prose prose-slate max-w-none font-sans
+                      <div className="w-full pt-8">
+                        {/* System Specifications Markdown block */}
+                        <div
+                          className="prose prose-slate max-w-none font-sans
                             prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-neu-text
                             prose-h1:text-3xl prose-h2:text-2xl prose-h2:border-b prose-h2:border-neu-text/10 prose-h2:pb-2
                             prose-p:text-neu-text-muted prose-p:leading-relaxed
                             prose-a:text-neu-accent prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
                             prose-li:text-neu-text-muted prose-strong:text-neu-text"
-                          >
-                            <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
-                              <FileText size={14} className="text-neu-accent" />{" "}
-                              System Specifications & In-depth Overview
-                            </h4>
-                            <ReactMarkdown
-                              components={{
-                                code({ className, children, ...props }: any) {
-                                  const match = /language-(\w+)/.exec(
-                                    className || "",
+                        >
+                          <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <FileText size={14} className="text-neu-accent" />{" "}
+                            System Specifications & In-depth Overview
+                          </h4>
+                          <ReactMarkdown
+                            components={{
+                              code({ className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(
+                                  className || "",
+                                );
+
+                                // Custom high-fidelity inline highlighting logic for the project spec sheets
+                                const highlightCode = (
+                                  code: string,
+                                  lang: string,
+                                ) => {
+                                  if (!code) return "";
+                                  // Escape HTML tags to prevent rendering issues
+                                  let html = code
+                                    .replace(/&/g, "&amp;")
+                                    .replace(/</g, "&lt;")
+                                    .replace(/>/g, "&gt;")
+                                    .replace(/"/g, "&quot;")
+                                    .replace(/'/g, "&#039;");
+
+                                  // Apply custom theme colors to the code block tokens
+                                  const keywords =
+                                    /\b(const|let|var|function|return|import|export|from|class|extends|if|else|for|while|async|await|try|catch|def|elif|print|public|private|protected|interface|new|this|package|void|string|number|boolean|any|type|implements)\b/g;
+                                  html = html.replace(
+                                    keywords,
+                                    '<span class="text-purple-400 dark:text-purple-400 font-medium">$1</span>',
                                   );
 
-                                  // Custom high-fidelity inline highlighting logic for the project spec sheets
-                                  const highlightCode = (
-                                    code: string,
-                                    lang: string,
-                                  ) => {
-                                    if (!code) return "";
-                                    // Escape HTML tags to prevent rendering issues
-                                    let html = code
-                                      .replace(/&/g, "&amp;")
-                                      .replace(/</g, "&lt;")
-                                      .replace(/>/g, "&gt;")
-                                      .replace(/"/g, "&quot;")
-                                      .replace(/'/g, "&#039;");
+                                  const strings = /(["'`])(.*?)\1/g;
+                                  html = html.replace(
+                                    strings,
+                                    '<span class="text-emerald-400 dark:text-emerald-400">$1$2$1</span>',
+                                  );
 
-                                    // Apply custom theme colors to the code block tokens
-                                    const keywords =
-                                      /\b(const|let|var|function|return|import|export|from|class|extends|if|else|for|while|async|await|try|catch|def|elif|print|public|private|protected|interface|new|this|package|void|string|number|boolean|any|type|implements)\b/g;
-                                    html = html.replace(
-                                      keywords,
-                                      '<span class="text-purple-400 dark:text-purple-400 font-medium">$1</span>',
-                                    );
+                                  const comments = /(\/\/.*|#.*)/g;
+                                  html = html.replace(
+                                    comments,
+                                    '<span class="text-zinc-500 italic">$1</span>',
+                                  );
 
-                                    const strings = /(["'`])(.*?)\1/g;
-                                    html = html.replace(
-                                      strings,
-                                      '<span class="text-emerald-400 dark:text-emerald-400">$1$2$1</span>',
-                                    );
+                                  const numbers = /\b(\d+)\b/g;
+                                  html = html.replace(
+                                    numbers,
+                                    '<span class="text-amber-400 dark:text-amber-400">$1</span>',
+                                  );
 
-                                    const comments = /(\/\/.*|#.*)/g;
-                                    html = html.replace(
-                                      comments,
-                                      '<span class="text-zinc-500 italic">$1</span>',
-                                    );
+                                  const builtins =
+                                    /\b(console|log|error|window|document|process|env|true|false|null|undefined)\b/g;
+                                  html = html.replace(
+                                    builtins,
+                                    '<span class="text-rose-400 dark:text-rose-400 font-medium">$1</span>',
+                                  );
 
-                                    const numbers = /\b(\d+)\b/g;
-                                    html = html.replace(
-                                      numbers,
-                                      '<span class="text-amber-400 dark:text-amber-400">$1</span>',
-                                    );
+                                  return html;
+                                };
 
-                                    const builtins =
-                                      /\b(console|log|error|window|document|process|env|true|false|null|undefined)\b/g;
-                                    html = html.replace(
-                                      builtins,
-                                      '<span class="text-rose-400 dark:text-rose-400 font-medium">$1</span>',
-                                    );
-
-                                    return html;
-                                  };
-
-                                  return match ? (
-                                    <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
-                                      <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                                        <span>{match[1]}</span>
-                                        <button
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(
-                                              String(children),
-                                            );
-                                          }}
-                                          className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
-                                        >
-                                          Copy
-                                        </button>
-                                      </div>
-                                      <pre className="p-5 overflow-x-auto font-mono text-sm leading-relaxed text-zinc-300 select-text bg-transparent m-0">
-                                        <code
-                                          className={`language-${match[1]}`}
-                                          dangerouslySetInnerHTML={{
-                                            __html: highlightCode(
-                                              String(children).replace(
-                                                /\n$/,
-                                                "",
-                                              ),
-                                              match[1],
-                                            ),
-                                          }}
-                                        />
-                                      </pre>
+                                return match ? (
+                                  <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
+                                    <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                                      <span>{match[1]}</span>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(
+                                            String(children),
+                                          );
+                                        }}
+                                        className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
+                                      >
+                                        Copy
+                                      </button>
                                     </div>
-                                  ) : (
-                                    <code
-                                      className={cn(
-                                        "bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium",
-                                        className,
-                                      )}
-                                      {...props}
-                                    >
-                                      {children}
-                                    </code>
-                                  );
-                                },
-                              }}
-                            >
-                              {selectedProject.markdown}
-                            </ReactMarkdown>
-                          </div>
+                                    <pre className="p-5 overflow-x-auto font-mono text-sm leading-relaxed text-zinc-300 select-text bg-transparent m-0">
+                                      <code
+                                        className={`language-${match[1]}`}
+                                        dangerouslySetInnerHTML={{
+                                          __html: highlightCode(
+                                            String(children).replace(/\n$/, ""),
+                                            match[1],
+                                          ),
+                                        }}
+                                      />
+                                    </pre>
+                                  </div>
+                                ) : (
+                                  <code
+                                    className={cn(
+                                      "bg-neutral-200 dark:bg-zinc-850 text-neu-text px-1.5 py-0.5 rounded text-xs font-mono font-medium",
+                                      className,
+                                    )}
+                                    {...props}
+                                  >
+                                    {children}
+                                  </code>
+                                );
+                              },
+                            }}
+                          >
+                            {selectedProject.markdown}
+                          </ReactMarkdown>
                         </div>
+                      </div>
 
+                      <div className="w-full pt-8">
                         {/* Right Column (Sidebar with Key metrics, visual blueprints, lifecycle tracker) */}
-                        <div className="lg:col-span-5 space-y-8">
+                        <div className="mb-10 p-6 md:p-8 rounded-3xl glass-card-inset border border-gray-300/10 relative overflow-hidden transition-all duration-300">
                           {/* Vertical Project Lifecycle Tracker */}
                           <div className="w-full bg-neu-bg p-6 md:p-8 rounded-3xl shadow-neu-inset">
                             <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
