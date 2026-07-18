@@ -27,10 +27,7 @@ import { Testimonial } from "@/entities/testimonial/model/data";
 export default function AdminDashboard() {
   const [status, setStatus] = useState<"available" | "busy">("available");
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [heroConfig, setHeroConfig] = useState({
-    expertise: "",
-    grit: "",
-    service: "",
+  const [heroConfig, setHeroConfig] = useState<any>({
   });
   const [metrics, setMetrics] = useState<any[]>([]);
 
@@ -88,11 +85,7 @@ export default function AdminDashboard() {
       );
       const actualHeroConfig = heroData.data?.heroConfig || heroData.heroConfig;
       setHeroConfig(
-        actualHeroConfig || {
-          expertise: "",
-          grit: "",
-          service: "",
-        },
+        actualHeroConfig || {}
       );
       setMetrics(
         heroData.data?.metrics ||
@@ -262,7 +255,7 @@ export default function AdminDashboard() {
                   Hero & Intro Section
                 </h2>
                 <p className="text-xs font-mono text-neu-text-muted">
-                  Manage Core Pillars (Expertise/Grit/Service) and Metric Strip.
+                  Manage Metric Strip.
                 </p>
               </div>
               <button
@@ -274,46 +267,6 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-6">
-              <div className="space-y-1">
-                <label className="text-xs font-mono text-neu-text-muted">
-                  Expertise Text
-                </label>
-                <textarea
-                  value={heroConfig.expertise}
-                  onChange={(e) =>
-                    setHeroConfig({ ...heroConfig, expertise: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]"
-                  placeholder="..."
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-mono text-neu-text-muted">
-                  Grit Text
-                </label>
-                <textarea
-                  value={heroConfig.grit}
-                  onChange={(e) =>
-                    setHeroConfig({ ...heroConfig, grit: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]"
-                  placeholder="..."
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-mono text-neu-text-muted">
-                  Service Text
-                </label>
-                <textarea
-                  value={heroConfig.service}
-                  onChange={(e) =>
-                    setHeroConfig({ ...heroConfig, service: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm font-medium border border-white/5 focus:border-neu-accent outline-none min-h-[80px]"
-                  placeholder="..."
-                />
-              </div>
-
               {/* Metric Strip Form */}
               <div className="pt-6 border-t border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
