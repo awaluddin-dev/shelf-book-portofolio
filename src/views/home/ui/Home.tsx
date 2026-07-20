@@ -216,7 +216,14 @@ export default function Portfolio() {
           payload.workExperience ||
           payload.workExperiences ||
           (Array.isArray(payload) ? payload : []);
-        if (arr.length > 0) setDynamicWork(arr);
+        if (arr.length > 0) {
+          arr.sort((a: any, b: any) => {
+            const yearA = parseInt(a.years.split('-')[0].trim()) || 0;
+            const yearB = parseInt(b.years.split('-')[0].trim()) || 0;
+            return yearB - yearA;
+          });
+          setDynamicWork(arr);
+        }
       })
       .catch(console.error);
   }, []);

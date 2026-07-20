@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css'; // Global styles
 import { ThemeProvider } from '@/shared/ui/ThemeProvider';
+import { ButtonSprinkles } from '@/shared/ui/ButtonSprinkles';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body className="antialiased selection:bg-neu-accent/30" suppressHydrationWarning>
         <ThemeProvider>
           {children}
+          <ButtonSprinkles />
         </ThemeProvider>
       </body>
     </html>
