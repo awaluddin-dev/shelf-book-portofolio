@@ -58,6 +58,11 @@ import {
   X,
   Zap,
   Activity,
+  Lightbulb,
+  Target,
+  BicepsFlexed,
+  BriefcaseBusiness,
+  MessageCircle,
 } from "lucide-react";
 
 import { useTheme } from "@/shared/ui/ThemeProvider";
@@ -938,7 +943,7 @@ export default function Portfolio() {
 
       {/* Combined Section 1: Intro & Projects */}
       <section id="hero" className="scroll-mt-20 mb-20 md:mb-32">
-        <header className="min-h-[85vh] lg:min-h-screen flex flex-col justify-start py-16 md:py-24 lg:py-0">
+        <header className="min-h-[85vh] lg:min-h-[85vh] flex flex-col justify-start py-16 md:py-24 lg:py-0">
           {/* Main Grid Content - equal-height containers on large screens */}
           <div className="max-w-7xl mx-auto w-full">
             {isLoading ? (
@@ -1265,6 +1270,33 @@ export default function Portfolio() {
             )}
           </div>
         </header>
+
+        {/* Animated subtle divider with a centered 'leaf' icon */}
+        <div className="relative max-w-7xl mx-auto my-16 flex items-center justify-center select-none overflow-hidden">
+          <motion.div
+            className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/30 dark:via-emerald-500/20 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="relative px-4 bg-neu-bg z-10"
+            initial={{ scale: 0.5, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{
+              duration: 0.6,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+            }}
+          >
+            <div className="p-2.5 rounded-full glass-card border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
+              <BookOpen size={16} className="animate-pulse" />
+            </div>
+          </motion.div>
+        </div>
 
         {/* Projects Section with Intersection Observer Animations */}
         <motion.div
@@ -1618,7 +1650,7 @@ export default function Portfolio() {
                                 Author
                               </span>
                               <span className="text-[9px] font-mono font-bold text-white/80 leading-none">
-                                A. AWALUDDIN
+                                AWALUDDIN
                               </span>
                             </div>
                             <div className="p-1.5 rounded-lg bg-black/20 border border-white/10 text-white/80">
@@ -1789,6 +1821,33 @@ export default function Portfolio() {
             </div>
           </div>
         </motion.div>
+
+        {/* Animated subtle divider with a centered 'leaf' icon */}
+        <div className="relative max-w-7xl mx-auto my-16 flex items-center justify-center select-none overflow-hidden">
+          <motion.div
+            className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/30 dark:via-emerald-500/20 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="relative px-4 bg-neu-bg z-10"
+            initial={{ scale: 0.5, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{
+              duration: 0.6,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+            }}
+          >
+            <div className="p-2.5 rounded-full glass-card border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
+              <Wrench size={16} className="animate-pulse" />
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Combined Section 2: Stack, Learning, Philosophy & Career */}
@@ -2301,7 +2360,7 @@ export default function Portfolio() {
             }}
           >
             <div className="p-2.5 rounded-full glass-card border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
-              <Leaf size={16} className="animate-pulse" />
+              <BriefcaseBusiness size={16} className="animate-pulse" />
             </div>
           </motion.div>
         </div>
@@ -3179,6 +3238,32 @@ export default function Portfolio() {
             </motion.div>
           </div>
         </motion.div>
+        {/* Animated subtle divider with a centered 'leaf' icon */}
+        <div className="relative max-w-7xl mx-auto my-16 flex items-center justify-center select-none overflow-hidden">
+          <motion.div
+            className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-indigo-500/30 dark:via-emerald-500/20 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="relative px-4 bg-neu-bg z-10"
+            initial={{ scale: 0.5, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{
+              duration: 0.6,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+            }}
+          >
+            <div className="p-2.5 rounded-full glass-card border border-white/5 flex items-center justify-center text-indigo-500 dark:text-emerald-400 hover:rotate-12 transition-transform duration-300">
+              <MessageCircle size={16} className="animate-pulse" />
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Testimonials Section */}
@@ -3560,6 +3645,41 @@ export default function Portfolio() {
                         )}
 
                       <div className="w-full pt-8">
+                        {/* New Sections: Reason to Build & Business Problem */}
+                        {(selectedProject.reasonToBuild ||
+                          selectedProject.problemSolved) && (
+                          <div className="flex flex-col md:flex-row gap-6 mb-8">
+                            {selectedProject.reasonToBuild && (
+                              <div className="flex-1 bg-neu-bg p-6 rounded-3xl shadow-neu-inset border border-white/5">
+                                <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                                  <Lightbulb
+                                    size={14}
+                                    className="text-neu-accent"
+                                  />{" "}
+                                  Why I Built This
+                                </h4>
+                                <p className="text-neu-text-muted text-sm leading-relaxed whitespace-pre-wrap">
+                                  {selectedProject.reasonToBuild}
+                                </p>
+                              </div>
+                            )}
+                            {selectedProject.problemSolved && (
+                              <div className="flex-1 bg-neu-bg p-6 rounded-3xl shadow-neu-inset border border-white/5">
+                                <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-4 flex items-center gap-2">
+                                  <Target
+                                    size={14}
+                                    className="text-neu-accent"
+                                  />{" "}
+                                  Business Problem Solved
+                                </h4>
+                                <p className="text-neu-text-muted text-sm leading-relaxed whitespace-pre-wrap">
+                                  {selectedProject.problemSolved}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* System Specifications Markdown block */}
                         <div
                           className="prose prose-slate max-w-none font-sans
