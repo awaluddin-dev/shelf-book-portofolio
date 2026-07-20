@@ -425,30 +425,48 @@ export default function SkillTree({
       switch (node.id) {
         case "nodejs":
           return { x: 75, y: 60 };
-        case "nestjs":
+        case "go":
+          return { x: 245, y: 60 };
+        case "typescript":
           return { x: 75, y: 140 };
-        case "microservices":
-          return { x: 75, y: 220 };
-        case "apigateway":
-          return { x: 245, y: 100 };
         case "dist-systems":
-          return { x: 245, y: 180 };
+          return { x: 245, y: 140 };
+        case "nestjs":
+          return { x: 75, y: 220 };
+        case "rest-api":
+          return { x: 245, y: 220 };
         case "postgres":
           return { x: 75, y: 300 };
+        case "docker":
+          return { x: 245, y: 300 };
         case "redis":
           return { x: 75, y: 380 };
-        case "azure":
-          return { x: 75, y: 460 };
         case "k8s":
           return { x: 245, y: 380 };
-        case "python":
+        case "bullmq":
+          return { x: 75, y: 460 };
+        case "argocd":
+          return { x: 245, y: 460 };
+        case "azure-servicebus":
           return { x: 75, y: 540 };
-        case "llm-orchestration":
+        case "azure-apim":
+          return { x: 245, y: 540 };
+        case "python":
           return { x: 75, y: 620 };
-        case "langgraph":
+        case "sap-integration":
+          return { x: 245, y: 620 };
+        case "langchain":
           return { x: 75, y: 700 };
+        case "mekari-talenta":
+          return { x: 245, y: 700 };
+        case "langgraph":
+          return { x: 75, y: 780 };
+        case "llm-router":
+          return { x: 245, y: 780 };
+        case "claude-api":
+          return { x: 75, y: 860 };
         case "vectordb":
-          return { x: 245, y: 580 };
+          return { x: 245, y: 860 };
         default:
           return { x: node.x, y: node.y };
       }
@@ -679,11 +697,11 @@ export default function SkillTree({
         <div
           className={cn(
             "relative",
-            isMobile ? "w-full max-w-[320px] h-[760px]" : "w-full h-[420px]",
+            isMobile ? "w-full max-w-[320px] h-[940px]" : "w-full h-[420px]",
           )}
         >
           <svg
-            viewBox={isMobile ? "0 0 320 760" : "0 0 1260 400"}
+            viewBox={isMobile ? "0 0 320 940" : "0 0 1260 400"}
             className="w-full h-full absolute inset-0 z-0 overflow-visible"
           >
             <defs>

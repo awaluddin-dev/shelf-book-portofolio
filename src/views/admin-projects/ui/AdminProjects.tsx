@@ -25,7 +25,7 @@ export default function AdminProjects() {
   
   const defaultForm = {
     title: '', subtitle: '', category: '', tags: '', spineColor: 'bg-indigo-600', coverColor: 'bg-indigo-900',
-    spineText: '', date: '', demoUrl: '', github: '', markdown: '',
+    spineText: '', date: '', demoUrl: '', github: '', markdown: '', reasonToBuild: '', problemSolved: '',
     stats: [] as {label: string, value: string}[],
     phases: [] as {date: string, title: string, description: string}[]
   };
@@ -105,6 +105,8 @@ export default function AdminProjects() {
         demoUrl: proj.demoUrl || '',
         github: proj.github || '',
         markdown: proj.markdown || '',
+        reasonToBuild: proj.reasonToBuild || '',
+        problemSolved: proj.problemSolved || '',
         stats: proj.data?.stats || proj.stats || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : [])),
         phases: proj.data?.phases || proj.phases || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : []))
       });
