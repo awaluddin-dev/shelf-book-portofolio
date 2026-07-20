@@ -65,6 +65,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+import { CircuitBoardBg } from "@/shared/ui/CircuitBoardBg";
 import { useTheme } from "@/shared/ui/ThemeProvider";
 import {
   motion,
@@ -753,7 +754,7 @@ export default function Portfolio() {
   }, [selectedProject, showInquiryModal, isFilterModalOpen]);
 
   return (
-    <div className="min-h-screen bg-neu-bg text-neu-text p-6 md:p-12 lg:p-24 font-sans transition-colors duration-300 relative">
+    <div className="min-h-screen bg-neu-bg text-neu-text px-6 pb-6 md:px-12 md:pb-12 lg:px-24 lg:pb-24 pt-[2.7rem] font-sans transition-colors duration-300 relative">
       {/* Animated Scroll Progress Bar */}
       <motion.div
         id="scroll-progress"
@@ -949,10 +950,12 @@ export default function Portfolio() {
       </motion.div>
 
       {/* Combined Section 1: Intro & Projects */}
-      <section id="hero" className="scroll-mt-20 mb-20 md:mb-32">
-        <header className="min-h-[85vh] lg:min-h-[85vh] flex flex-col justify-start py-16 md:py-24 lg:py-0">
+      <section id="hero" className="relative z-0 mb-16 md:mb-24 w-full">
+        <header className="relative z-10 min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center pt-6 md:pt-9 lg:pt-12 pb-16 md:pb-20 lg:pb-24 w-full overflow-hidden">
+          <CircuitBoardBg />
+          
           {/* Main Grid Content - equal-height containers on large screens */}
-          <div className="max-w-7xl mx-auto w-full">
+          <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-2 md:mt-4 lg:mt-0">
             {isLoading ? (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch animate-pulse">
                 <div className="lg:col-span-8 flex flex-col gap-8 h-full py-2">
@@ -971,7 +974,7 @@ export default function Portfolio() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="flex flex-col gap-y-6 md:gap-y-8 w-full bg-neu-bg p-6 md:p-10 rounded-3xl shadow-neu border border-white/5"
+                    className="flex flex-col gap-y-6 md:gap-y-8 w-full bg-neu-bg/20 dark:bg-neu-bg/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-neu border border-black/5 dark:border-white/5"
                   >
                     {/* Headline */}
                     <motion.h1
@@ -1077,7 +1080,7 @@ export default function Portfolio() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="flex flex-col gap-4 w-full bg-neu-bg p-5 rounded-3xl shadow-neu border border-white/5"
+                    className="flex flex-col gap-4 w-full bg-neu-bg/20 dark:bg-neu-bg/40 backdrop-blur-md p-5 rounded-3xl shadow-neu border border-black/5 dark:border-white/5"
                   >
                     <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-neu-accent mb-1">
                       <Terminal size={14} /> Connection Terminal
