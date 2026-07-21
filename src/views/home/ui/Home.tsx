@@ -104,7 +104,7 @@ import {
   getRelatedProjects,
   TECHNICAL_IMAGERY,
 } from "@/entities/project/model/projects-data";
-import ProjectGalleryShowcase from "@/entities/project/ui/ProjectGalleryShowcase";
+import MermaidDiagram from "@/shared/ui/MermaidDiagram";
 import ProjectLifecycleTracker from "@/entities/project/ui/ProjectLifecycleTracker";
 import BookItem from "@/entities/project/ui/BookItem";
 import {
@@ -953,7 +953,7 @@ export default function Portfolio() {
       <section id="hero" className="relative z-0 mb-16 md:mb-24 w-full">
         <header className="relative z-10 min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center pt-6 md:pt-9 lg:pt-12 pb-16 md:pb-20 lg:pb-24 w-full overflow-hidden">
           <CircuitBoardBg />
-          
+
           {/* Main Grid Content - equal-height containers on large screens */}
           <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-2 md:mt-4 lg:mt-0">
             {isLoading ? (
@@ -1308,8 +1308,8 @@ export default function Portfolio() {
             {/* Tooltip */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 w-48 sm:w-64 text-center">
               <div className="bg-neu-text text-neu-bg text-xs px-3 py-2 rounded-lg shadow-lg border border-neu-accent font-mono italic">
-                "A shelf built from real problems, late nights, and systems that
-                had to work."
+                &quot;A shelf built from real problems, late nights, and systems
+                that had to work.&quot;
               </div>
             </div>
           </motion.div>
@@ -1866,8 +1866,8 @@ export default function Portfolio() {
             {/* Tooltip */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 w-48 sm:w-64 text-center">
               <div className="bg-neu-text text-neu-bg text-xs px-3 py-2 rounded-lg shadow-lg border border-neu-accent font-mono italic">
-                "From HVAC schematics to distributed systems — the tools change,
-                the obsession doesn't."
+                &quot;From HVAC schematics to distributed systems — the tools
+                change, the obsession doesn&apos;t.&quot;
               </div>
             </div>
           </motion.div>
@@ -2389,8 +2389,8 @@ export default function Portfolio() {
             {/* Tooltip */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 w-48 sm:w-64 text-center">
               <div className="bg-neu-text text-neu-bg text-xs px-3 py-2 rounded-lg shadow-lg border border-neu-accent font-mono italic">
-                "Every system I've built carries the weight of the problems it
-                was meant to solve."
+                &quot;Every system I&apos;ve built carries the weight of the
+                problems it was meant to solve.&quot;
               </div>
             </div>
           </motion.div>
@@ -3296,8 +3296,8 @@ export default function Portfolio() {
             {/* Tooltip */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 w-48 sm:w-64 text-center">
               <div className="bg-neu-text text-neu-bg text-xs px-3 py-2 rounded-lg shadow-lg border border-neu-accent font-mono italic">
-                "The words of those I've crossed paths with often become the
-                fuel that drives me to keep creating."
+                &quot;The words of those I&apos;ve crossed paths with often
+                become the fuel that drives me to keep creating.&quot;
               </div>
             </div>
           </motion.div>
@@ -3789,6 +3789,13 @@ export default function Portfolio() {
                                 };
 
                                 return match ? (
+                                  // Mermaid diagram — rendered as interactive SVG
+                                  match[1] === "mermaid" ? (
+                                    <MermaidDiagram
+                                      key={String(children)}
+                                      chart={String(children).replace(/\n$/, "")}
+                                    />
+                                  ) : (
                                   <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
                                     <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                                       <span>{match[1]}</span>
@@ -3815,6 +3822,7 @@ export default function Portfolio() {
                                       />
                                     </pre>
                                   </div>
+                                  )
                                 ) : (
                                   <code
                                     className={cn(
@@ -3856,20 +3864,11 @@ export default function Portfolio() {
                           <Layers size={14} /> System Architecture
                         </h4>
                         <ProjectArchitectureDiagram
-                          projectId={selectedProject.id}
+                          project={selectedProject}
                           isDark={isDark}
                         />
                       </div>
 
-                      {/* Interactive High-Quality Unsplash Image Gallery/Blueprint Showcase */}
-                      <div className="w-full pt-8 pb-4">
-                        <h4 className="text-sm font-mono font-bold text-neu-accent uppercase tracking-wider mb-6 flex items-center gap-2">
-                          <Eye size={14} /> Visual Showcase
-                        </h4>
-                        <ProjectGalleryShowcase
-                          projectId={selectedProject.id}
-                        />
-                      </div>
                     </div>
 
                     {/* Related Projects Section */}

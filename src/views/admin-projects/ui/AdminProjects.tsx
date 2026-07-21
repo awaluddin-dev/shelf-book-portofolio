@@ -26,6 +26,7 @@ export default function AdminProjects() {
   const defaultForm = {
     title: '', subtitle: '', category: '', tags: '', spineColor: 'bg-indigo-600', coverColor: 'bg-indigo-900',
     spineText: '', date: '', demoUrl: '', github: '', markdown: '', reasonToBuild: '', problemSolved: '',
+    featuredImage: '', blueprintImage: '', metricsImage: '', architectureImage: '',
     stats: [] as {label: string, value: string}[],
     phases: [] as {date: string, title: string, description: string}[]
   };
@@ -107,6 +108,10 @@ export default function AdminProjects() {
         markdown: proj.markdown || '',
         reasonToBuild: proj.reasonToBuild || '',
         problemSolved: proj.problemSolved || '',
+        featuredImage: proj.featuredImage || '',
+        blueprintImage: proj.blueprintImage || '',
+        metricsImage: proj.metricsImage || '',
+        architectureImage: proj.architectureImage || '',
         stats: proj.data?.stats || proj.stats || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : [])),
         phases: proj.data?.phases || proj.phases || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : []))
       });
@@ -308,8 +313,25 @@ export default function AdminProjects() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-mono text-neu-text-muted">GitHub URL (Optional)</label>
+                    <label className="text-xs font-mono text-neu-text-muted">GitHub URL</label>
                     <input value={formData.github} onChange={e => setFormData({...formData, github: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono text-neu-text-muted">Featured Image URL (Public)</label>
+                    <input value={formData.featuredImage} onChange={e => setFormData({...formData, featuredImage: e.target.value})} placeholder="/assets/image.jpg or https://..." className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono text-neu-text-muted">Blueprint Image URL (Public)</label>
+                    <input value={formData.blueprintImage} onChange={e => setFormData({...formData, blueprintImage: e.target.value})} placeholder="/assets/blueprint.jpg or https://..." className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono text-neu-text-muted">Metrics Image URL (Public)</label>
+                    <input value={formData.metricsImage} onChange={e => setFormData({...formData, metricsImage: e.target.value})} placeholder="/assets/metrics.jpg or https://..." className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                  </div>
+                  <div className="col-span-full space-y-1">
+                    <label className="text-xs font-mono text-neu-accent font-bold flex items-center gap-1.5">⚡ Architecture Diagram (Excalidraw Export)</label>
+                    <input value={formData.architectureImage} onChange={e => setFormData({...formData, architectureImage: e.target.value})} placeholder="/assets/architecture.svg or /assets/diagram.png" className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-neu-accent/20" />
+                    <p className="text-[10px] text-neu-text-muted font-mono pl-1">Export your Excalidraw diagram as SVG/PNG, place it in /public/assets/, then paste the path here.</p>
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-mono text-neu-text-muted">Demo URL (Optional)</label>
