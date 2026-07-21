@@ -47,6 +47,14 @@ body {
   color: var(--color-neu-text);
 }
 
+/* Scale down the layout for 1280-1439px screens to mimic 1440x900 */
+@media screen and (min-width: 1280px) and (max-width: 1439px) {
+  html {
+    font-size: 14px; /* Slightly reduce base font size to fit more content */
+    zoom: 0.9;       /* Chrome/Safari specific scaling to mimic larger screens */
+  }
+}
+
 /* Explicit neumorphic transitions to prevent jumping on theme change */
 .shadow-neu {
   box-shadow: 8px 8px 16px rgba(17, 45, 78, 0.08), -8px -8px 16px #ffffff;
