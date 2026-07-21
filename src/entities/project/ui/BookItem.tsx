@@ -72,9 +72,12 @@ export default function BookItem({
         <div
           className={cn(
             "w-20 md:w-20 h-80 shadow-neu relative flex flex-col justify-between p-3 border border-white/40 overflow-hidden",
-            project.spineColor
+            !project.spineColor?.startsWith('#') && !project.spineColor?.startsWith('rgb') ? project.spineColor : ""
           )}
-          style={{ transform: "translateZ(10px)" }}
+          style={{ 
+            transform: "translateZ(10px)",
+            ...(project.spineColor?.startsWith('#') || project.spineColor?.startsWith('rgb') ? { backgroundColor: project.spineColor } : {})
+          }}
         >
           {/* Spine Details */}
           <div className="w-full h-1 bg-black/10 rounded-full mb-2 shadow-inner"></div>

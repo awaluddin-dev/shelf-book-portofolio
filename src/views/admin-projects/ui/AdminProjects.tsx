@@ -24,7 +24,7 @@ export default function AdminProjects() {
   const [editingId, setEditingId] = useState<string | null>(null);
   
   const defaultForm = {
-    title: '', subtitle: '', category: '', tags: '', spineColor: 'bg-indigo-600', coverColor: 'bg-indigo-900',
+    title: '', subtitle: '', category: '', tags: '', spineColor: '#4f46e5', coverColor: '#312e81',
     spineText: '', date: '', demoUrl: '', github: '', markdown: '', reasonToBuild: '', problemSolved: '',
     architectureImage: '',
     stats: [] as {label: string, value: string}[],
@@ -99,8 +99,8 @@ export default function AdminProjects() {
         subtitle: proj.subtitle || '',
         category: proj.category || '',
         tags: (proj.data?.tags || proj.tags || (Array.isArray(proj.data) ? proj.data : (Array.isArray(proj) ? proj : []))).join(', '),
-        spineColor: proj.spineColor || 'bg-indigo-600',
-        coverColor: proj.coverColor || 'bg-indigo-900',
+        spineColor: proj.spineColor || '#4f46e5',
+        coverColor: proj.coverColor || '#312e81',
         spineText: proj.spineText || '',
         date: proj.date || '',
         demoUrl: proj.demoUrl || '',
@@ -295,12 +295,18 @@ export default function AdminProjects() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-mono text-neu-text-muted">Spine Color (Tailwind class)</label>
-                    <input required value={formData.spineColor} onChange={e => setFormData({...formData, spineColor: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                    <label className="text-xs font-mono text-neu-text-muted uppercase">Spine Color</label>
+                    <div className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl glass-card-inset">
+                      <input type="color" required value={formData.spineColor} onChange={e => setFormData({...formData, spineColor: e.target.value})} className="w-8 h-8 rounded cursor-pointer border-none bg-transparent p-0" />
+                      <span className="text-sm font-mono text-neu-text">{formData.spineColor}</span>
+                    </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-mono text-neu-text-muted">Cover Color</label>
-                    <input required value={formData.coverColor} onChange={e => setFormData({...formData, coverColor: e.target.value})} className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent" />
+                    <label className="text-xs font-mono text-neu-text-muted uppercase">Cover Color</label>
+                    <div className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl glass-card-inset">
+                      <input type="color" required value={formData.coverColor} onChange={e => setFormData({...formData, coverColor: e.target.value})} className="w-8 h-8 rounded cursor-pointer border-none bg-transparent p-0" />
+                      <span className="text-sm font-mono text-neu-text">{formData.coverColor}</span>
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-mono text-neu-text-muted">Spine Text</label>

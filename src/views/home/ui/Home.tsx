@@ -1558,8 +1558,11 @@ export default function Portfolio() {
                   <div
                     className={cn(
                       "absolute -inset-10 opacity-15 blur-[120px] rounded-full z-0 pointer-events-none transition-all duration-500",
-                      focusedProject.spineColor,
+                      !focusedProject.spineColor?.startsWith('#') && !focusedProject.spineColor?.startsWith('rgb') ? focusedProject.spineColor : ""
                     )}
+                    style={{
+                      ...(focusedProject.spineColor?.startsWith('#') || focusedProject.spineColor?.startsWith('rgb') ? { backgroundColor: focusedProject.spineColor } : {})
+                    }}
                   ></div>
 
                   {/* Magnified Centered Book (Cover & Side View with realistic 3D styling) */}
@@ -1614,9 +1617,11 @@ export default function Portfolio() {
                       <div
                         className={cn(
                           "w-[200px] md:w-[240px] h-[280px] md:h-[340px] rounded-r-xl shadow-2xl relative flex flex-col justify-between p-6 border-y border-r border-white/20 overflow-hidden z-20",
-                          focusedProject.coverColor ||
-                            focusedProject.spineColor,
+                          !(focusedProject.coverColor || focusedProject.spineColor)?.startsWith('#') && !(focusedProject.coverColor || focusedProject.spineColor)?.startsWith('rgb') ? (focusedProject.coverColor || focusedProject.spineColor) : ""
                         )}
+                        style={{
+                          ...((focusedProject.coverColor || focusedProject.spineColor)?.startsWith('#') || (focusedProject.coverColor || focusedProject.spineColor)?.startsWith('rgb') ? { backgroundColor: focusedProject.coverColor || focusedProject.spineColor } : {})
+                        }}
                       >
                         {/* Glossy overlay sheen */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-black/15 via-transparent to-white/10 pointer-events-none z-10" />
@@ -3498,8 +3503,11 @@ export default function Portfolio() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className={cn(
                       "relative overflow-hidden flex-shrink-0",
-                      selectedProject.coverColor,
+                      !selectedProject.coverColor?.startsWith('#') && !selectedProject.coverColor?.startsWith('rgb') ? selectedProject.coverColor : ""
                     )}
+                    style={{
+                      ...(selectedProject.coverColor?.startsWith('#') || selectedProject.coverColor?.startsWith('rgb') ? { backgroundColor: selectedProject.coverColor } : {})
+                    }}
                   >
                     {/* The High-Quality Unsplash Background Image */}
                     <div className="absolute inset-0 z-0">
