@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Briefcase, LogOut, LayoutDashboard, MessageSquare, ChevronRight, ChevronLeft, Network, Rocket, Layers, Cpu, ArrowLeft, BookOpen, Palette, Eye, Milestone } from "lucide-react";
+import { Briefcase, LogOut, LayoutDashboard, MessageSquare, ChevronRight, ChevronLeft, Network, Rocket, Layers, Cpu, ArrowLeft, BookOpen, Palette, Milestone } from "lucide-react";
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/shared/lib/utils';
 
@@ -16,7 +16,6 @@ export function AdminSidebar({ activePath }: { activePath: string }) {
   const navItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/projects', icon: BookOpen, label: 'Projects' },
-    { path: '/admin/showcase', icon: Eye, label: 'Visual Showcase' },
     { path: '/admin/architecture', icon: Layers, label: 'Architecture' },
     { path: '/admin/lifecycle', icon: Milestone, label: 'Lifecycle' },
     { path: '/admin/testimoni', icon: MessageSquare, label: 'Testimonials' },

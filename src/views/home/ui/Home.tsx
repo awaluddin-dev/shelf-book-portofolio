@@ -1051,7 +1051,7 @@ export default function Portfolio() {
                       </button>
 
                       <a
-                        href="/assets/resume/cv.pdf"
+                        href="/assets/resume/Awaluddin_cv.pdf"
                         download="Awaluddin_CV.pdf"
                         onClick={() => triggerToast("Downloading CV...")}
                         className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"

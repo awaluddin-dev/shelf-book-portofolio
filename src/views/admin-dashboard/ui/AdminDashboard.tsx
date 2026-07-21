@@ -27,8 +27,7 @@ import { Testimonial } from "@/entities/testimonial/model/data";
 export default function AdminDashboard() {
   const [status, setStatus] = useState<"available" | "busy">("available");
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [heroConfig, setHeroConfig] = useState<any>({
-  });
+  const [heroConfig, setHeroConfig] = useState<any>({ name: '', role: '' });
   const [metrics, setMetrics] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -255,7 +254,7 @@ export default function AdminDashboard() {
                   Hero & Intro Section
                 </h2>
                 <p className="text-xs font-mono text-neu-text-muted">
-                  Manage Metric Strip.
+                  Manage your display name, role, and metric strip.
                 </p>
               </div>
               <button
@@ -267,6 +266,28 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-6">
+              {/* Name & Role */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Display Name</label>
+                  <input
+                    value={heroConfig.name || ''}
+                    onChange={(e) => setHeroConfig({ ...heroConfig, name: e.target.value })}
+                    placeholder="Your full name"
+                    className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Role / Title</label>
+                  <input
+                    value={heroConfig.role || ''}
+                    onChange={(e) => setHeroConfig({ ...heroConfig, role: e.target.value })}
+                    placeholder="e.g. Backend Engineer"
+                    className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent"
+                  />
+                </div>
+              </div>
+
               {/* Metric Strip Form */}
               <div className="pt-6 border-t border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
