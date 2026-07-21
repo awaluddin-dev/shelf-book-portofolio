@@ -200,6 +200,12 @@ export default function Portfolio() {
           (Array.isArray(payload) ? payload : []);
         if (arr.length > 0) {
           arr.sort((a: any, b: any) => {
+            const isPresentA = a.years.toLowerCase().includes("present") || a.years.toLowerCase().includes("current") || a.years.toLowerCase().includes("now");
+            const isPresentB = b.years.toLowerCase().includes("present") || b.years.toLowerCase().includes("current") || b.years.toLowerCase().includes("now");
+            
+            if (isPresentA && !isPresentB) return -1;
+            if (!isPresentA && isPresentB) return 1;
+
             const yearA = parseInt(a.years.split("-")[0].trim()) || 0;
             const yearB = parseInt(b.years.split("-")[0].trim()) || 0;
             return yearB - yearA;
@@ -3304,8 +3310,8 @@ export default function Portfolio() {
 
           <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
             <p className="text-sm font-mono text-neu-text-muted max-w-sm md:text-right">
-              Verifiable recommendations from engineering leaders who have
-              worked with {dynamicHeroConfig?.name || "Awaluddin"}.
+              Verifiable recommendations from colleagues, partners, and clients who have
+              worked with me.
             </p>
           </div>
         </div>
