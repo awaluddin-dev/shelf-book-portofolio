@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Briefcase, LogOut, LayoutDashboard, MessageSquare, ChevronRight, ChevronLeft, Network, Rocket, Layers, Cpu, ArrowLeft, BookOpen, Palette, Eye, Milestone } from "lucide-react";
+import { Briefcase, LogOut, LayoutDashboard, MessageSquare, ChevronRight, ChevronLeft, Network, Rocket, Layers, Cpu, ArrowLeft, BookOpen, Palette, Milestone } from "lucide-react";
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/shared/lib/utils';
 
@@ -16,7 +16,6 @@ export function AdminSidebar({ activePath }: { activePath: string }) {
   const navItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/projects', icon: BookOpen, label: 'Projects' },
-    { path: '/admin/showcase', icon: Eye, label: 'Visual Showcase' },
     { path: '/admin/architecture', icon: Layers, label: 'Architecture' },
     { path: '/admin/lifecycle', icon: Milestone, label: 'Lifecycle' },
     { path: '/admin/testimoni', icon: MessageSquare, label: 'Testimonials' },
@@ -35,7 +34,7 @@ export function AdminSidebar({ activePath }: { activePath: string }) {
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         className="relative h-full flex flex-col p-1.5 rounded-2xl overflow-hidden z-10"
       >
-        <div className="flex-1 flex flex-col gap-2 p-1">
+        <div className="flex-1 flex flex-col p-1 overflow-hidden">
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
             className="h-10 rounded-xl flex items-center gap-3 px-2 text-neu-text hover:bg-black/5 dark:hover:bg-white/5 transition-colors overflow-hidden whitespace-nowrap"
@@ -48,8 +47,9 @@ export function AdminSidebar({ activePath }: { activePath: string }) {
             </AnimatePresence>
           </button>
           
-          <div className="w-full h-px bg-black/10 dark:bg-white/10 my-2" />
+          <div className="w-full h-px bg-black/10 dark:bg-white/10 my-2 shrink-0" />
 
+          <div className="flex-1 flex flex-col gap-2 overflow-y-auto pb-2 hide-scrollbar">
           {navItems.map(item => {
             const isActive = activePath === item.path;
             const Icon = item.icon;
@@ -69,8 +69,9 @@ export function AdminSidebar({ activePath }: { activePath: string }) {
               </button>
             )
           })}
+          </div>
 
-          <div className="mt-auto pt-2 space-y-2">
+          <div className="mt-auto pt-2 space-y-2 border-t border-black/10 dark:border-white/10 shrink-0">
             {activePath === '/admin/dashboard' && (
               <button onClick={() => router.push('/')} className="w-full h-10 rounded-xl flex items-center gap-3 px-2 hover:bg-black/5 dark:hover:bg-white/5 text-neu-text transition-colors overflow-hidden whitespace-nowrap">
                 <div className="min-w-[24px] flex justify-center"><ArrowLeft size={18} /></div>

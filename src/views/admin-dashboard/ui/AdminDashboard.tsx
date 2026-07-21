@@ -27,8 +27,7 @@ import { Testimonial } from "@/entities/testimonial/model/data";
 export default function AdminDashboard() {
   const [status, setStatus] = useState<"available" | "busy">("available");
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [heroConfig, setHeroConfig] = useState<any>({
-  });
+  const [heroConfig, setHeroConfig] = useState<any>({ name: '', role: '' });
   const [metrics, setMetrics] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -207,23 +206,23 @@ export default function AdminDashboard() {
                 <div
                   className={cn(
                     "text-sm font-bold transition-colors duration-300",
-                    status === "available"
+                    heroConfig.openForWork
                       ? "text-emerald-500"
                       : "text-amber-500",
                   )}
                 >
-                  {status === "available"
+                  {heroConfig.openForWork
                     ? "Open to Opportunities"
                     : "Closed to Opportunities"}
                 </div>
                 <button
-                  onClick={toggleStatus}
+                  onClick={() => setHeroConfig({ ...heroConfig, openForWork: !heroConfig.openForWork })}
                   className="relative inline-flex h-8 w-16 items-center rounded-full bg-gray-200 dark:bg-zinc-850 shadow-inner transition-colors duration-200 focus:outline-none cursor-pointer"
                 >
                   <span
                     className={cn(
                       "inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-200",
-                      status === "available"
+                      heroConfig.openForWork
                         ? "translate-x-9 bg-emerald-500"
                         : "translate-x-1 bg-zinc-400",
                     )}
@@ -255,7 +254,7 @@ export default function AdminDashboard() {
                   Hero & Intro Section
                 </h2>
                 <p className="text-xs font-mono text-neu-text-muted">
-                  Manage Metric Strip.
+                  Manage your display name, role, and metric strip.
                 </p>
               </div>
               <button
@@ -267,6 +266,37 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-6">
+              {/* Name & Role */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Display Name</label>
+                  <input
+                    value={heroConfig.name || ''}
+                    onChange={(e) => setHeroConfig({ ...heroConfig, name: e.target.value })}
+                    placeholder="Your full name"
+                    className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Role / Title</label>
+                  <input
+                    value={heroConfig.role || ''}
+                    onChange={(e) => setHeroConfig({ ...heroConfig, role: e.target.value })}
+                    placeholder="e.g. Backend Engineer"
+                    className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-neu-text-muted">Available From</label>
+                  <input
+                    value={heroConfig.availableFrom || ''}
+                    onChange={(e) => setHeroConfig({ ...heroConfig, availableFrom: e.target.value })}
+                    placeholder="e.g. Now, Jan 2027"
+                    className="w-full px-4 py-2.5 rounded-xl glass-card-inset text-sm outline-none focus:border-neu-accent border border-transparent"
+                  />
+                </div>
+              </div>
+
               {/* Metric Strip Form */}
               <div className="pt-6 border-t border-white/5 space-y-4">
                 <div className="flex items-center justify-between">

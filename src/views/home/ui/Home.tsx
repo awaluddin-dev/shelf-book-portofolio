@@ -118,6 +118,7 @@ export default function Portfolio() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null);
   const [isBannerMinimized, setIsBannerMinimized] = useState(false);
   const [focusedProject, setFocusedProject] = useState<any>(null);
   const [hoveredSkillNode, setHoveredSkillNode] = useState<any>(null);
@@ -166,29 +167,9 @@ export default function Portfolio() {
       })
       .catch(console.error);
 
-    // Fetch Hero with ETag caching
-    const cachedHeroEtag =
-      typeof window !== "undefined" ? localStorage.getItem("hero_etag") : null;
-    const cachedHeroData =
-      typeof window !== "undefined" ? localStorage.getItem("hero_data") : null;
-    const heroHeaders: Record<string, string> = {};
-    if (cachedHeroEtag && cachedHeroData) {
-      heroHeaders["If-None-Match"] = cachedHeroEtag;
-    }
-
-    fetch("/api/hero", { headers: heroHeaders })
-      .then(async (res) => {
-        if (res.status === 304 && cachedHeroData) {
-          return JSON.parse(cachedHeroData);
-        }
-        const resData = await res.json();
-        const payload = resData.data || resData;
-        if (payload.meta?.etag && typeof window !== "undefined") {
-          localStorage.setItem("hero_etag", payload.meta.etag);
-          localStorage.setItem("hero_data", JSON.stringify(resData));
-        }
-        return resData;
-      })
+    // Fetch Hero without manual localStorage caching to ensure latest data
+    fetch("/api/hero", { cache: "no-store" })
+      .then((res) => res.json())
       .then((resData) => {
         const payload = resData.data || resData;
         if (payload.heroConfig) setDynamicHeroConfig(payload.heroConfig);
@@ -975,7 +956,7 @@ export default function Portfolio() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-5xl md:text-7xl font-display font-extrabold tracking-tight text-neu-text drop-shadow-sm transition-colors duration-300"
                     >
-                      Awaluddin
+                      {dynamicHeroConfig?.name || "Awaluddin"}
                     </motion.h1>
 
                     {/* Subheadlines / Narrative Group */}
@@ -987,8 +968,8 @@ export default function Portfolio() {
                         transition={{ delay: 0.1 }}
                         className="text-lg md:text-xl font-display font-bold text-neu-accent transition-colors duration-300"
                       >
-                        Backend Engineer — Integrating LLMs into Production
-                        Systems
+                        {dynamicHeroConfig?.role ||
+                          "Backend Engineer — Integrating LLMs into Production Systems"}
                       </motion.p>
 
                       {/* Body */}
@@ -1000,7 +981,7 @@ export default function Portfolio() {
                       >
                         Node.js & Go engineer building async, event-driven
                         backend systems for enterprise & fintech. I ship LLM
-                        integrations into production — not train models in
+                        integrations into production - not train models in
                         notebooks.
                       </motion.p>
                     </div>
@@ -1051,7 +1032,7 @@ export default function Portfolio() {
                       </button>
 
                       <a
-                        href="/assets/resume/cv.pdf"
+                        href="/assets/resume/Awaluddin_cv.pdf"
                         download="Awaluddin_CV.pdf"
                         onClick={() => triggerToast("Downloading CV...")}
                         className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
@@ -1164,7 +1145,7 @@ export default function Portfolio() {
                       </span>
                       <div className="flex items-center gap-2">
                         <div className="relative flex h-2 w-2 shrink-0">
-                          {portfolioStatus === "available" ? (
+                          {dynamicHeroConfig?.openForWork ? (
                             <>
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -1179,12 +1160,12 @@ export default function Portfolio() {
                         <span
                           className={cn(
                             "font-bold",
-                            portfolioStatus === "available"
+                            dynamicHeroConfig?.openForWork
                               ? "text-emerald-500 dark:text-emerald-400"
                               : "text-amber-500 dark:text-amber-400",
                           )}
                         >
-                          {portfolioStatus === "available"
+                          {dynamicHeroConfig?.openForWork
                             ? "Open to Opportunities"
                             : "Closed to Opportunities"}
                         </span>
@@ -1196,7 +1177,8 @@ export default function Portfolio() {
                         UTC+7 (Jakarta, Indonesia)
                       </span>
                       <span className="text-neu-text-muted pl-4">
-                        Available from: Now
+                        Available from:{" "}
+                        {dynamicHeroConfig?.availableFrom || "Now"}
                       </span>
                     </div>
 
@@ -1660,7 +1642,8 @@ export default function Portfolio() {
                                 Author
                               </span>
                               <span className="text-[9px] font-mono font-bold text-white/80 leading-none">
-                                AWALUDDIN
+                                {dynamicHeroConfig?.name?.toUpperCase() ||
+                                  "AWALUDDIN"}
                               </span>
                             </div>
                             <div className="p-1.5 rounded-lg bg-black/20 border border-white/10 text-white/80">
@@ -3322,7 +3305,7 @@ export default function Portfolio() {
           <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
             <p className="text-sm font-mono text-neu-text-muted max-w-sm md:text-right">
               Verifiable recommendations from engineering leaders who have
-              worked with Awaluddin.
+              worked with {dynamicHeroConfig?.name || "Awaluddin"}.
             </p>
           </div>
         </div>
@@ -3357,12 +3340,26 @@ export default function Portfolio() {
                   )}
 
                   {/* Testimonial Quote Content */}
-                  <div className="mb-6 relative z-10">
+                  <div className="mb-6 relative z-10 flex-1 flex flex-col">
                     <div className="absolute -top-3 -left-2 text-neu-accent/30 group-hover:text-neu-accent/60 transition-colors z-10 pointer-events-none">
                       <Quote size={32} />
                     </div>
-                    <div className="p-5 pt-8 rounded-2xl glass-card-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative bg-neu-bg/40">
-                      &ldquo;{t.testimonial}&rdquo;
+                    <div className="p-5 pt-8 rounded-2xl glass-card-inset text-sm text-neu-text-muted leading-relaxed font-sans italic relative bg-neu-bg/40 flex-1 flex flex-col justify-between">
+                      <div
+                        className={
+                          t.testimonial.length > 150 ? "line-clamp-4" : ""
+                        }
+                      >
+                        &ldquo;{t.testimonial}&rdquo;
+                      </div>
+                      {t.testimonial.length > 150 && (
+                        <button
+                          onClick={() => setSelectedTestimonial(t)}
+                          className="mt-3 text-xs font-bold text-neu-accent hover:underline relative z-20 flex items-center gap-1 self-start"
+                        >
+                          See more...
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -3410,7 +3407,10 @@ export default function Portfolio() {
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto py-12 border-t border-gray-300/50 dark:border-gray-700/50 text-center text-xs font-mono text-neu-text-muted">
-        <p>© {new Date().getFullYear()} Awaluddin. All rights reserved.</p>
+        <p>
+          © {new Date().getFullYear()} {dynamicHeroConfig?.name || "Awaluddin"}.
+          All rights reserved.
+        </p>
       </footer>
 
       {/* Project Modal */}
@@ -3937,6 +3937,74 @@ export default function Portfolio() {
           >
             <Sparkles className="text-neu-accent animate-pulse" size={14} />
             <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Testimonial Modal */}
+      <AnimatePresence>
+        {selectedTestimonial && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6"
+            onClick={() => setSelectedTestimonial(null)}
+          >
+            <div className="absolute inset-0 bg-neu-bg/80 dark:bg-black/80 backdrop-blur-md" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 shadow-2xl rounded-3xl overflow-hidden relative z-10 flex flex-col max-h-[85vh]"
+            >
+              <div className="sticky top-0 z-20 flex justify-between items-center p-4 md:p-6 border-b border-gray-200/50 dark:border-white/5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
+                <h3 className="text-sm font-mono font-bold uppercase tracking-widest text-neu-text-muted">
+                  Full Testimonial
+                </h3>
+                <button
+                  onClick={() => setSelectedTestimonial(null)}
+                  className="w-8 h-8 rounded-full bg-gray-200/50 dark:bg-white/5 flex items-center justify-center text-neu-text-muted hover:text-neu-text hover:bg-gray-300/50 dark:hover:bg-white/10 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-6 md:p-8 overflow-y-auto">
+                <div className="relative z-10 mb-8">
+                  <div className="absolute -top-3 -left-2 text-neu-accent/20 z-0 pointer-events-none">
+                    <Quote size={48} />
+                  </div>
+                  <div className="p-6 md:p-8 rounded-3xl glass-card-inset text-base md:text-lg text-neu-text leading-relaxed font-sans italic relative z-10 bg-neu-bg/40 whitespace-pre-wrap">
+                    &ldquo;{selectedTestimonial.testimonial}&rdquo;
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-gray-300/30 dark:border-gray-700/30 flex flex-col gap-1">
+                  {selectedTestimonial.url ? (
+                    <a
+                      href={selectedTestimonial.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-lg font-bold text-neu-text hover:text-neu-accent hover:underline transition-colors w-fit"
+                    >
+                      {selectedTestimonial.name}
+                    </a>
+                  ) : (
+                    <span className="text-lg font-bold text-neu-text">
+                      {selectedTestimonial.name}
+                    </span>
+                  )}
+                  <div className="text-sm text-neu-text-muted">
+                    <span className="italic">{selectedTestimonial.role}</span>{" "}
+                    at{" "}
+                    <span className="font-bold">
+                      {selectedTestimonial.company}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
