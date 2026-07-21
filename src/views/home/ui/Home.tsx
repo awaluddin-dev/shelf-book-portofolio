@@ -206,9 +206,11 @@ export default function Portfolio() {
             if (isPresentA && !isPresentB) return -1;
             if (!isPresentA && isPresentB) return 1;
 
-            const yearA = parseInt(a.years.split("-")[0].trim()) || 0;
-            const yearB = parseInt(b.years.split("-")[0].trim()) || 0;
-            return yearB - yearA;
+            const startA = a.years.split("-")[0].trim();
+            const startB = b.years.split("-")[0].trim();
+            const dateA = new Date(startA).getTime() || parseInt(startA.match(/\d{4}/)?.[0] || "0");
+            const dateB = new Date(startB).getTime() || parseInt(startB.match(/\d{4}/)?.[0] || "0");
+            return dateB - dateA;
           });
           setDynamicWork(arr);
         }
