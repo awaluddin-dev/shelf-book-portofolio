@@ -264,13 +264,6 @@ export default function Portfolio() {
           },
         ];
 
-  const activeHeroConfig = dynamicHeroConfig || {
-    resumeUrl: "https://github.com/awaluddin-dev",
-    expertise: "{activeHeroConfig.expertise}",
-    grit: "{activeHeroConfig.grit}",
-    service: "{activeHeroConfig.service}",
-  };
-
   const activeMetrics =
     dynamicMetrics.length > 0
       ? dynamicMetrics
@@ -1058,7 +1051,7 @@ export default function Portfolio() {
                       </button>
 
                       <a
-                        href="/cv.pdf"
+                        href="/assets/resume/cv.pdf"
                         download="Awaluddin_CV.pdf"
                         onClick={() => triggerToast("Downloading CV...")}
                         className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-neu-text glass-card border border-neu-accent/30 hover:bg-neu-accent hover:text-white hover:border-neu-accent hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer group w-full sm:w-auto px-6"
@@ -3793,35 +3786,41 @@ export default function Portfolio() {
                                   match[1] === "mermaid" ? (
                                     <MermaidDiagram
                                       key={String(children)}
-                                      chart={String(children).replace(/\n$/, "")}
+                                      chart={String(children).replace(
+                                        /\n$/,
+                                        "",
+                                      )}
                                     />
                                   ) : (
-                                  <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
-                                    <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
-                                      <span>{match[1]}</span>
-                                      <button
-                                        onClick={() => {
-                                          navigator.clipboard.writeText(
-                                            String(children),
-                                          );
-                                        }}
-                                        className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
-                                      >
-                                        Copy
-                                      </button>
+                                    <div className="relative group/code my-6 rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-zinc-950 dark:bg-black/40">
+                                      <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-900/20 border-b border-white/5 text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                                        <span>{match[1]}</span>
+                                        <button
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(
+                                              String(children),
+                                            );
+                                          }}
+                                          className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
+                                        >
+                                          Copy
+                                        </button>
+                                      </div>
+                                      <pre className="p-5 overflow-x-auto font-mono text-sm leading-relaxed text-zinc-300 select-text bg-transparent m-0">
+                                        <code
+                                          className={`language-${match[1]}`}
+                                          dangerouslySetInnerHTML={{
+                                            __html: highlightCode(
+                                              String(children).replace(
+                                                /\n$/,
+                                                "",
+                                              ),
+                                              match[1],
+                                            ),
+                                          }}
+                                        />
+                                      </pre>
                                     </div>
-                                    <pre className="p-5 overflow-x-auto font-mono text-sm leading-relaxed text-zinc-300 select-text bg-transparent m-0">
-                                      <code
-                                        className={`language-${match[1]}`}
-                                        dangerouslySetInnerHTML={{
-                                          __html: highlightCode(
-                                            String(children).replace(/\n$/, ""),
-                                            match[1],
-                                          ),
-                                        }}
-                                      />
-                                    </pre>
-                                  </div>
                                   )
                                 ) : (
                                   <code
@@ -3868,7 +3867,6 @@ export default function Portfolio() {
                           isDark={isDark}
                         />
                       </div>
-
                     </div>
 
                     {/* Related Projects Section */}
